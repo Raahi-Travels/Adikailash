@@ -33,8 +33,13 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 FROM python:3.13-slim-bookworm AS runtime
 
-# Runs unprivileged. Nothing here needs root, and this box hosts other products.
-RUN groupadd --system app && useradd --system --gid app --home /app app
+# curl is required by Coolify's health check, which shells into the container and
+# has no Python available to it. Kept to the single package; the slim base has
+# neither curl nor wget.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app && useradd --system --gid app --home /app app
 
 WORKDIR /app
 
@@ -54,7 +59,7 @@ EXPOSE 8000
 # Coolify polls this. /health also reports whether document storage is configured,
 # so a misconfigured deploy is visible rather than silently broken.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"
+    CMD curl -fsS http://127.0.0.1:8000/health || exit 1
 
 # Two workers: the box is shared and the workload is IO-bound on Postgres, so more
 # workers would mostly consume Supabase connections rather than add throughput.
