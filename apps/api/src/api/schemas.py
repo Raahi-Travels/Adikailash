@@ -214,6 +214,19 @@ class DocumentSubmissionOut(ORMModel):
     is_accepted: bool
 
 
+class UploadTicketIn(BaseModel):
+    """Content type is required so it can be signed into the presigned URL.
+
+    Without it the ticket could be reused to upload a different kind of file than
+    the one that passed validation.
+    """
+
+    content_type: Literal[
+        "image/jpeg", "image/png", "image/heic", "application/pdf"
+    ]
+    original_filename: str | None = Field(default=None, max_length=255)
+
+
 class UploadTicketOut(BaseModel):
     """A short-lived, single-purpose upload grant.
 

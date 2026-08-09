@@ -53,8 +53,15 @@ if one fails. Keep it here.
 | `DATABASE_URL` | `postgresql+asyncpg://postgres.<ref>:<pw>@aws-1-ap-south-1.pooler.supabase.com:6543/postgres` |
 | `DIRECT_DATABASE_URL` | `postgresql+psycopg://postgres.<ref>:<pw>@aws-1-ap-south-1.pooler.supabase.com:5432/postgres` |
 | `DB_SCHEMA` | `yatra` |
-| `SUPABASE_URL` | your Supabase project URL (once storage is provisioned) |
-| `SUPABASE_SERVICE_KEY` | service role key (once storage is provisioned) |
+| `S3_ENDPOINT_URL` | `https://<project-ref>.storage.supabase.co/storage/v1/s3` |
+| `S3_REGION` | `ap-south-1` |
+| `S3_ACCESS_KEY_ID` | from Storage → S3 → Access keys |
+| `S3_SECRET_ACCESS_KEY` | shown once at creation |
+| `DOCUMENT_BUCKET` | `traveller-documents` |
+
+**Use S3 access keys, never the `service_role` key.** `service_role` bypasses RLS
+across the whole project, which on this shared database means full read/write over
+Raahi's passengers, trips and payments. S3 keys reach Storage and nothing else.
 
 Copy the real values from `apps/api/.env`. Note the port split: **6543** (transaction
 pooler) for the app, **5432** (session pooler) for migrations, which need a real session.

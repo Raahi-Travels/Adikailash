@@ -47,10 +47,18 @@ from api.schemas import (
     JourneyIn,
     JourneySummaryOut,
     StatusPublishIn,
+    UploadTicketIn,
     UploadTicketOut,
     WeatherPublishIn,
 )
-from api.storage import MAX_DOCUMENT_BYTES, ACCEPTED_DOCUMENT_TYPES, create_upload_ticket
+from api.storage import (
+    ACCEPTED_DOCUMENT_TYPES,
+    MAX_DOCUMENT_BYTES,
+    READ_URL_TTL,
+    StorageUnavailable,
+    create_read_url,
+    create_upload_ticket,
+)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -356,7 +364,10 @@ async def publish_weather(
 
 @router.post("/documents/{submission_id}/upload-ticket", response_model=UploadTicketOut)
 async def issue_upload_ticket(
-    submission_id: int, session: SessionDep, staff: ReviewerStaff
+    submission_id: int,
+    payload: UploadTicketIn,
+    session: SessionDep,
+    staff: ReviewerStaff,
 ):
     """Issue a short-lived signed upload URL.
 
@@ -367,8 +378,19 @@ async def issue_upload_ticket(
     if submission is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Submission not found.")
 
-    ticket = create_upload_ticket(submission_id=submission.id)
+    try:
+        ticket = create_upload_ticket(
+            submission_id=submission.id, content_type=payload.content_type
+        )
+    except StorageUnavailable as exc:
+        # 503, not 500: the request was valid, the deployment is incomplete.
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(exc))
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc))
+
     submission.storage_key = ticket.storage_key
+    submission.original_filename = payload.original_filename
+    submission.content_type = payload.content_type
     submission.state = DocumentState.AWAITING_UPLOAD
     await session.commit()
 
@@ -379,6 +401,45 @@ async def issue_upload_ticket(
         max_bytes=MAX_DOCUMENT_BYTES,
         accepted_content_types=list(ACCEPTED_DOCUMENT_TYPES),
     )
+
+
+@router.get("/documents/{submission_id}/download-url")
+async def issue_download_url(
+    submission_id: int,
+    request: Request,
+    session: SessionDep,
+    staff: ReviewerStaff,
+):
+    """A short-lived link to view one traveller document.
+
+    Doc 06: "Track access and download for sensitive documents." The log row is
+    written in the same transaction as the grant, so a reviewer cannot open a
+    passport scan without leaving a record of having done so.
+
+    The URL expires in minutes and is never stored. Nothing here returns the bucket
+    path itself.
+    """
+    submission = await session.get(DocumentSubmission, submission_id)
+    if submission is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Submission not found.")
+    if submission.storage_key is None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "No file has been uploaded yet.")
+
+    try:
+        url = create_read_url(storage_key=submission.storage_key)
+    except StorageUnavailable as exc:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(exc))
+
+    session.add(
+        DocumentAccessLog(
+            submission_id=submission.id,
+            staff_user_id=staff.id,
+            action="download_url_issued",
+            ip_address=request.client.host if request.client else None,
+        )
+    )
+    await session.commit()
+    return {"url": url, "expires_in_seconds": int(READ_URL_TTL.total_seconds())}
 
 
 @router.post("/documents/{submission_id}/review")

@@ -45,6 +45,28 @@ class Settings(BaseSettings):
     #: Required in production; see main.py.
     allowed_origins_raw: str = Field(default="", alias="ALLOWED_ORIGINS")
 
+    # --- Document storage (Supabase Storage over the S3 protocol) ---
+    #
+    # Read through Settings rather than os.environ so a local `.env` and a real
+    # container environment behave identically. pydantic-settings parses the file
+    # without exporting to os.environ, so a module reading os.environ directly would
+    # report "not configured" locally even with the keys filled in.
+    s3_endpoint_url: str = Field(default="", alias="S3_ENDPOINT_URL")
+    s3_region: str = Field(default="ap-south-1", alias="S3_REGION")
+    s3_access_key_id: str = Field(default="", alias="S3_ACCESS_KEY_ID")
+    s3_secret_access_key: str = Field(default="", alias="S3_SECRET_ACCESS_KEY")
+    document_bucket: str = Field(default="traveller-documents", alias="DOCUMENT_BUCKET")
+
+    @property
+    def storage_configured(self) -> bool:
+        """True only when all three secrets are real, not placeholders.
+
+        The placeholder check matters: the .env ships with PASTE_..._HERE values, and
+        without this the API would claim storage works and then fail at upload time.
+        """
+        values = (self.s3_endpoint_url, self.s3_access_key_id, self.s3_secret_access_key)
+        return all(v and not v.startswith("PASTE_") for v in values)
+
     @property
     def is_production(self) -> bool:
         return self.app_env.lower() == "production"
