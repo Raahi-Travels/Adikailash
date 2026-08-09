@@ -1,5 +1,23 @@
 # Deployment
 
+## Live (private preview)
+
+| | URL |
+|---|---|
+| Web (Vercel) | `https://adikailash-harshitqpy-6132s-projects.vercel.app` |
+| API (Coolify on the VPS) | `https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io` |
+
+Vercel Authentication is on, so the site is reachable only by the team. The API's
+`ALLOWED_ORIGINS` is pinned to the two Vercel origins and refuses everything else.
+
+**Outstanding:** `DATABASE_URL` is not set on Vercel, so the staff admin cannot sign
+in. The public site does not need it. Add it in Vercel project settings, including
+`?options=-c%20search_path%3Dyatra`, and set `BETTER_AUTH_URL` to the origin above.
+
+Coolify was configured entirely through its API. The API token lives only on the VPS
+at `/root/.coolify_ak_token` (chmod 600) and is not in this repo.
+
+
 Two services, two hosts:
 
 | Service | Host | Why |
