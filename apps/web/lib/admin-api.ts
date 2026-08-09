@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 
 /**
  * Server-side calls to the staff API.
@@ -13,7 +13,7 @@ import { auth } from "@/lib/auth";
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
 
 export async function currentStaff() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   return session?.user ?? null;
 }
 

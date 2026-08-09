@@ -18,63 +18,87 @@ import { Pool } from "pg";
  * `apps/api/src/api/models/staff.py` and migrate there. Do not let the CLI do it.
  */
 
-const connectionString = process.env.DATABASE_URL;
+/**
+ * Built lazily, on first request rather than at module load.
+ *
+ * `next build` runs with NODE_ENV=production, so a module-level check for
+ * DATABASE_URL fails the build on any host where env vars are supplied at runtime
+ * (Vercel included). Static generation has no business needing a database
+ * connection. The check still happens, just at the point where auth is actually
+ * used, where the error can reach an operator instead of a build log.
+ */
+// Typed from `build` rather than `betterAuth` so the specific model and field
+// config survives; the generic Auth<BetterAuthOptions> loses it.
+let instance: ReturnType<typeof build> | null = null;
 
-if (!connectionString && process.env.NODE_ENV === "production") {
-  throw new Error("DATABASE_URL is required for staff authentication.");
+function build() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error(
+      "DATABASE_URL is required for staff authentication. Set it in the deployment " +
+        "environment; it must include ?options=-c%20search_path%3Dyatra so better-auth " +
+        "cannot reach Raahi's public schema.",
+    );
+  }
+
+  return betterAuth({
+    database: new Pool({ connectionString }),
+
+    emailAndPassword: {
+      enabled: true,
+      // Staff accounts are created by an administrator, not self-served. Doc 06: "No
+      // one should gain broad access simply because they are part of the family."
+      disableSignUp: true,
+    },
+
+    user: {
+      modelName: "staff_users",
+      fields: { emailVerified: "email_verified", createdAt: "created_at", updatedAt: "updated_at" },
+      additionalFields: {
+        roles: { type: "string[]", required: false, input: false },
+        is_active: { type: "boolean", required: false, input: false },
+      },
+    },
+    session: {
+      modelName: "staff_sessions",
+      fields: {
+        userId: "user_id",
+        expiresAt: "expires_at",
+        ipAddress: "ip_address",
+        userAgent: "user_agent",
+        createdAt: "created_at",
+        updatedAt: "updated_at",
+      },
+    },
+    account: {
+      modelName: "staff_accounts",
+      fields: {
+        userId: "user_id",
+        accountId: "account_id",
+        providerId: "provider_id",
+        accessToken: "access_token",
+        refreshToken: "refresh_token",
+        idToken: "id_token",
+        accessTokenExpiresAt: "access_token_expires_at",
+        refreshTokenExpiresAt: "refresh_token_expires_at",
+        createdAt: "created_at",
+        updatedAt: "updated_at",
+      },
+    },
+    verification: {
+      modelName: "staff_verifications",
+      fields: { expiresAt: "expires_at", createdAt: "created_at", updatedAt: "updated_at" },
+    },
+
+    secret: process.env.BETTER_AUTH_SECRET,
+    baseURL: process.env.BETTER_AUTH_URL,
+  });
 }
 
-export const auth = betterAuth({
-  database: new Pool({ connectionString }),
+/** The auth instance. Constructs on first use, then memoised. */
+export function getAuth(): ReturnType<typeof build> {
+  instance ??= build();
+  return instance;
+}
 
-  emailAndPassword: {
-    enabled: true,
-    // Staff accounts are created by an administrator, not self-served. Doc 06: "No
-    // one should gain broad access simply because they are part of the family."
-    disableSignUp: true,
-  },
-
-  user: {
-    modelName: "staff_users",
-    fields: { emailVerified: "email_verified", createdAt: "created_at", updatedAt: "updated_at" },
-    additionalFields: {
-      roles: { type: "string[]", required: false, input: false },
-      is_active: { type: "boolean", required: false, input: false },
-    },
-  },
-  session: {
-    modelName: "staff_sessions",
-    fields: {
-      userId: "user_id",
-      expiresAt: "expires_at",
-      ipAddress: "ip_address",
-      userAgent: "user_agent",
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    },
-  },
-  account: {
-    modelName: "staff_accounts",
-    fields: {
-      userId: "user_id",
-      accountId: "account_id",
-      providerId: "provider_id",
-      accessToken: "access_token",
-      refreshToken: "refresh_token",
-      idToken: "id_token",
-      accessTokenExpiresAt: "access_token_expires_at",
-      refreshTokenExpiresAt: "refresh_token_expires_at",
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    },
-  },
-  verification: {
-    modelName: "staff_verifications",
-    fields: { expiresAt: "expires_at", createdAt: "created_at", updatedAt: "updated_at" },
-  },
-
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
-});
-
-export type StaffSession = typeof auth.$Infer.Session;
+export type StaffSession = ReturnType<typeof getAuth>["$Infer"]["Session"];

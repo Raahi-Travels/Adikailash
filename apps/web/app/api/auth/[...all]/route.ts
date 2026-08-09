@@ -1,11 +1,18 @@
 import { toNextJsHandler } from "better-auth/next-js";
 
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 
 /**
  * better-auth endpoints.
  *
- * Sits outside the [locale] segment: sign-in is not a localized page route, and the
- * i18n proxy matcher already excludes /api.
+ * The handler is resolved per request so the build never constructs a database
+ * pool. Sits outside the [locale] segment: sign-in is not a localized page route,
+ * and the i18n proxy matcher already excludes /api.
  */
-export const { GET, POST } = toNextJsHandler(auth);
+export async function GET(request: Request) {
+  return toNextJsHandler(getAuth()).GET(request);
+}
+
+export async function POST(request: Request) {
+  return toNextJsHandler(getAuth()).POST(request);
+}

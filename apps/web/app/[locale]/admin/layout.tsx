@@ -2,6 +2,13 @@ import { Link } from "@/i18n/navigation";
 import { currentStaff } from "@/lib/admin-api";
 
 /**
+ * Never prerendered. Every admin page is per-user authenticated content, and
+ * static generation would both leak a shared shell and force a database connection
+ * at build time on hosts that supply env vars only at runtime.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * Admin shell.
  *
  * Doc 02: the internal system "prioritises density, status, ownership and exceptions
