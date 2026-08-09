@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Environment — never commit provider keys, webhook secrets or DB URLs
+.env
+.env.*
+!.env.example
+
+# Traveller data must never reach the repo (doc 08: sensitive data class)
+*.sqlite
+*.db
+uploads/
+documents/
+
+# Tooling
+.DS_Store
+*.log
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/

@@ -1,0 +1,179 @@
+# Decision Register
+
+Doc 00 asks for this explicitly: a live record of what is decided, what is open, and
+who owns each open item. Coding agents must not silently invent anything listed as OPEN.
+
+Last updated: 8 August 2026
+
+---
+
+## Decided
+
+| # | Decision | Choice | Date | Rationale |
+|---|---|---|---|---|
+| D1 | Frontend framework | **Next.js App Router** + TanStack Query + Bun | 2026-08-08 | Docs 03 and 07 make organic search the primary acquisition channel: crawlable HTML, an indexable live-status page, and heavy original photography on slow mobile connections are all P0. Next's SSG/ISR, metadata and image pipeline serve those directly. TanStack Router was considered and dropped — it does not compose with Next's own router. TanStack Query is retained for client-side data. |
+| D2 | Backend | **FastAPI + uv + PostgreSQL** | 2026-08-08 | The operational domain (departures, readiness gates, allocations, status verification) is genuinely relational. Python keeps the door open for the AI-assist layer described in doc 08 without a second runtime. |
+| D3 | Working brand | **"The Sacred North"**, provisional | 2026-08-08 | Retained as the pack's working name until trademark and domain clearance. Per doc 02 this changes nothing structurally: every brand string stays central configuration. See D4. |
+| D4 | Brand portability | All brand values live in one config module; no brand string in any page, template, table name, route or env var | 2026-08-08 | Doc 02's hard requirement and doc 03's launch acceptance scenario #5. Makes D3 cheap to reverse. |
+| D5 | Positioning | **Tiered, with homestay immersion as the hero tier** | 2026-08-08 | Conventional shared departures carry volume and proven demand; a distinct homestay-led journey carries the brand story and is the one axis where local roots in Pithoragarh cannot be copied by a Delhi operator. Requires building a real host network — tracked as an operational dependency, not a content exercise. |
+| D6 | Database | **Share the Raahi Supabase Postgres; own the `yatra` schema only** | 2026-08-08 | Lets Adi Kailash content surface inside the existing Raahi mobile app later without a cross-database join or a sync job. `leads.raahi_user_id` → `public.users(id)` is the seam. See the shared-database rules below — they are not optional. |
+| D7 | Admin | **Custom admin inside the Next.js app, behind staff auth** | 2026-08-08 | Doc 06 requires role-based permissions, approval workflow and audit that a generic table editor cannot express. Also keeps operations away from Raahi's tables — Supabase Studio on this database exposes passengers and payments. |
+| D8 | Staff auth | **better-auth, staff tables in `yatra`** | 2026-08-08 | Same library the Raahi backend uses, so no new concept for the team. Staff identity stays separate from Raahi's passenger pool in `auth`. Per-person attribution is required: doc 09 makes status publishing and departure state changes attributable. |
+| D9 | Languages | **English + Hindi from launch** (O11 closed) | 2026-08-08 | Doc 01's primary segment — the called pilgrim, 35–65, devotional — is Hindi-comfortable. Doc 02: Devanagari is a first-class layout, never a smaller subtitle under English. |
+| D10 | Launch scope | **Three journey families: Adi Kailash & Om Parvat, Kumaon circuit, homestay immersion** (O6 partially closed) | 2026-08-08 | Wider than doc 09's "smallest coherent system" advice. Accepted deliberately: the Kumaon circuit sells in the months the Adi Kailash route is shut, and the homestay journey carries D5's differentiation. Cost is roughly triple the content and vendor work in a fixed eight-week photography window — that window, not engineering, is the binding constraint. |
+
+| D11 | i18n | **next-intl, `localePrefix: "always"`** | 2026-08-08 | `/en/...` and `/hi/...` symmetrically, rather than English at the root with Hindi in a subfolder — the structural form of doc 02's "first-class layout, not a smaller translation". Makes hreflang pairs trivial. Note Next.js 16 renamed the `middleware` convention to `proxy`, so the handler lives in `apps/web/proxy.ts`. |
+
+**Two i18n layers, deliberately separate.** next-intl covers UI strings, locale routing
+and formatting — things developers change. The JSONB fields below cover journey
+content — things operations edits without a deploy. Devanagari faces load on both
+locales, because an English page still renders Hindi place and journey names.
+
+### Localized content storage (D9)
+
+Translatable text is a JSONB object, `{"en": "...", "hi": "..."}`, not paired `name` /
+`name_hi` columns. A CHECK constraint requires the `en` key on every such field.
+
+Chosen because O11 anticipated "more later": a third language needs no migration, and
+paired columns would have added roughly twenty `_hi` columns across the catalogue.
+One row still carries every locale, so PostgREST reads from the Raahi mobile app stay
+a single query. The tradeoff is weaker type safety and the need for an explicit
+fallback helper when a Hindi translation is missing — `localized()` on the web side
+falls back to English rather than rendering an empty string.
+
+### What D5 changes downstream
+
+The pack (docs 01, 03) treats accommodation as a liability to disclose honestly —
+"Accommodation reality", "transparent comfort", the job of the section is to reduce
+future disappointment. Under D5 that stays true for the shared tiers, but the homestay
+tier inverts it: the stay **is** the product. Concretely:
+
+- Journey model needs stays as first-class narrative content (host, family, village,
+  kitchen, what a night there is actually like), not just a category label per segment.
+- Photography brief for the Sept–Oct 2026 window must cover hosts and interiors as
+  hero assets, not as evidence-of-honesty thumbnails.
+- Vendor records for homestay hosts carry different fields than hotel vendors
+  (doc 06's vendor model assumes properties with room counts and rate cards).
+- Pricing must be able to route a larger share to the host — the stated reason for
+  the tier existing.
+
+### Shared-database rules (D6)
+
+One Postgres now serves two products. Supabase project `<project-ref>`, ap-south-1.
+
+| Schema | Owner | Our access |
+|---|---|---|
+| `public` | Raahi intercity cabs — 31 tables, better-auth, `alembic_version` | **Read-only, via their service.** Never migrate. |
+| `auth` | Supabase GoTrue | None |
+| `yatra` | This project — 14 tables | Full |
+
+Four traps, each of which was hit and fixed while setting this up. All are silent
+failures — nothing warns you:
+
+1. **Alembic autogenerate will try to drop Raahi's entire database.** Postgres reports
+   the default schema (`public`) as `None`, not by name, so a deny-list filter misses
+   it and autogenerate reads all 31 Raahi tables as "removed". The first generated
+   migration contained 44 `DROP TABLE` statements. `alembic/env.py` now uses an
+   *allow-list* (`name == "yatra"`) in both `include_name` and `include_object`.
+   **Audit every generated migration for `op.drop_table` in `upgrade()` before running it.**
+2. **Migration heads must not share a table.** `public.alembic_version` is Raahi's.
+   Ours is `yatra.alembic_version`, via `version_table_schema`.
+3. **Enum types do not inherit the metadata schema.** Without `inherit_schema=True`
+   SQLAlchemy runs `CREATE TYPE public.departure_state`, littering Raahi's schema.
+   Use the `pg_enum` helper in `api/db.py`, never a bare `Enum(...)`.
+4. **Python-side `default=` is invisible to Postgres.** The mobile app will reach this
+   data through Supabase PostgREST, which bypasses SQLAlchemy entirely, so every
+   defaulted column also carries `server_default`.
+
+Also: enum labels use `values_callable` so the database stores `open_for_booking`,
+not `OPEN_FOR_BOOKING`. And `anon` was deliberately **not** granted on `yatra` —
+departures, leads and traveller data are not world-readable.
+
+---
+
+## Open — needed before taking money
+
+| # | Decision | Owner | Blocks |
+|---|---|---|---|
+| O1 | Legal entity and public legal name | All founders + adviser | Invoicing, contracts, footer, payment recipient |
+| O2 | Own tour-operator registration vs. disclosed operating partner per departure | Operations founder | **Any payment flow.** Docs 00/06/09 all treat this as a hard gate |
+| O3 | Deposit, protected-reservation and confirmation rules | Finance founder | Reservation states, payment button |
+| O4 | Cancellation, refund and route-disruption policy | Finance founder + adviser | Policy versioning, proposal content |
+| O5 | Route-status source hierarchy and authorised publisher | Operations founder | Live status page (a P0 surface) |
+| O6 | Final journey list, itineraries and service tiers | Operations founder | Journey content model population |
+| O7 | Domain | Brand founder | Canonical URLs, email identities |
+| O8 | Payment provider | Finance + tech | Payment adapter |
+| O9 | WhatsApp provider (Business Platform or authorised BSP) | Tech + sales | Messaging adapter |
+| O10 | Support hours, escalation and emergency ownership | Operations founder | Response-time claims on the site |
+| O11 | Languages at launch (English / Hindi) | Growth + operations | Content model, typography |
+
+---
+
+## Standing constraints (from the pack; treat as non-negotiable)
+
+- Never publish guaranteed darshan, weather, route, visibility or spiritual outcome.
+- Never present a departure as confirmed because a payment succeeded — confirmation
+  requires operator, permit and minimum-group conditions to be met.
+- Never mark route status "live" without a functioning verification process; stale
+  status must become *visibly* stale.
+- Never expose traveller identity documents through public or broadly-accessible links.
+- No medical clearance, diagnosis or fitness certification, by human or AI.
+- Real accommodation imagery only for real stays. Label provenance on every asset:
+  original / supplier-provided / licensed / illustrative / AI-generated.
+- No fabricated testimonials, traveller counts, ratings or awards.
+
+---
+
+## Timing note
+
+It is 8 August 2026, mid-monsoon. The Adi Kailash season runs roughly May–October.
+This season's demand is largely spent, which makes the target the **2027 season**.
+The Sept–Oct 2026 window is therefore for running one or two real departures and
+capturing the original photography and field content that docs 02 and 07 make
+non-substitutable. Content acquisition, not code, is the critical path.
+
+---
+
+## Reference designs (2026-08-09)
+
+Four sample-site images were provided and used as visual direction. What was taken
+and what was deliberately rejected:
+
+**Taken**
+- The live status bar as the element that occupies the top of the page (ref 2). Route,
+  permits, weather and a verification timestamp, side by side.
+- Deep navy surface with restrained gold, editorial serif display (refs 1 and 3).
+- Journey cards carrying duration, gateway and difficulty rather than only a photo.
+- Document checklist as a real, first-class page section (ref 2).
+- Devanagari used with dignity alongside English (ref 3).
+
+**Rejected, on purpose**
+- `100+ Curated Journeys`, `15+ Years of Experience`, `4.9/5 Traveller Rating`,
+  `1000+ Pilgrims Travelled with Us`. Doc 02 bans "fake traveller counts, awards or
+  ratings" and doc 09 bans "unverified traveller counts, awards or ratings". The
+  company has run zero departures; every one of these would be a fabrication on the
+  page whose job is to prove it tells the truth.
+- The testimonial from "Ananya Mehra, Mumbai". No traveller has travelled yet.
+- Prices (`From ₹28,500`). Deposit and pricing rules are decision O3, unapproved.
+- AI-generated Shiva and mountain imagery presented as the real route. Doc 02 bans
+  both "AI-generated travel images presented as real locations" and "unrelated Nepal,
+  Tibet or Ladakh imagery labelled as Adi Kailash".
+
+Photography is therefore reserved rather than faked: `PhotoSlot` renders a labelled
+empty frame that holds its aspect ratio and states what belongs there. Generic stock
+would have violated the same rule the site exists to demonstrate.
+
+### Design-skill conflicts, resolved
+
+The `taste-skill` and `impeccable` skills were applied. Two of their defaults conflict
+with the handoff docs, resolved as follows:
+
+- **Serif display.** Both discourage serif by default. Permitted here because the
+  brand brief names one (doc 02: EB Garamond / Cormorant / Playfair) and the register
+  is genuinely editorial-heritage. EB Garamond is not one of the two banned defaults.
+- **Warm off-white palette.** `impeccable` flags the `#F7F6F2` cream family as the
+  saturated 2026 AI default. Doc 02 specifies it as a brand token, and committed brand
+  colours win over the generic rule, but the site leads with navy carrying the surface
+  rather than cream-on-cream, which satisfies the intent behind the warning.
+- **Em-dashes** are banned in visible copy by `taste-skill`, so status labels, seeded
+  content and page copy use full stops or hyphens instead.

@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/**
+ * Design tokens — doc 02, "Colour system" and "Typography".
+ *
+ * Usage rule from the doc, worth repeating because it is easy to violate:
+ * "Gold should guide the eye rather than coat the interface. Most content surfaces
+ * should be snow, white or deep navy. Saffron should be meaningful, not decorative
+ * noise."
+ *
+ * There is deliberately no light/dark theme inversion. The brand uses dark navy as
+ * an intentional *section* treatment (hero, nav, premium panels) against a snow
+ * page, not as an alternate colour scheme. Inverting it would break that contrast.
+ */
+
+@theme {
+  /* Palette — doc 02 working values. Do not introduce colours outside this set. */
+  --color-midnight: #0b1d2d; /* primary dark background, nav, premium panels */
+  --color-himalayan: #1b2638; /* secondary dark surface and overlays */
+  --color-gold: #c89a4e; /* guidance, focus, active states — sparingly */
+  --color-snow: #f7f6f2; /* primary light background */
+  --color-stone: #d9d3c7; /* dividers, cards, quiet surfaces */
+  --color-teal: #2d5d5f; /* supporting informational accent */
+  --color-slate: #5a6770; /* secondary text, status-neutral */
+  --color-saffron: #a86632; /* devotional or warning accent — sparingly */
+
+  /* Semantic surfaces */
+  --color-surface: var(--color-snow);
+  --color-surface-raised: #ffffff;
+  --color-surface-quiet: var(--color-stone);
+  --color-surface-inverse: var(--color-midnight);
+
+  /* Semantic text. Body copy must stay comfortable for older travellers (doc 02). */
+  --color-ink: #16202a;
+  --color-ink-secondary: var(--color-slate);
+  --color-ink-inverse: var(--color-snow);
+
+  --color-border: #e3ded3;
+  --color-focus: var(--color-gold);
+
+  /**
+   * Status system — doc 02 requires a consistent set, and doc 03 requires that
+   * status is never communicated by colour alone. Every badge using these MUST
+   * also carry a text label, and a timestamp where the status is time-bound.
+   */
+  --color-status-open: #2d5d5f; /* open / available */
+  --color-status-limited: #a86632; /* limited / conditional / permit pending */
+  --color-status-waitlist: #5a6770; /* waitlist */
+  --color-status-suspended: #8c2f2f; /* suspended / sold out */
+  --color-status-changed: #6b4fa8; /* rescheduled */
+  --color-status-done: #4a5560; /* completed */
+  --color-status-unverified: #7a7466; /* unverified or stale */
+
+  /* Typography — doc 02: high-contrast serif for editorial, clean sans for UI.
+     Devanagari is a first-class layout, not a smaller translation. */
+  --font-serif: var(--font-heading), "Noto Serif Devanagari", Georgia, serif;
+  --font-sans: var(--font-interface), "Noto Sans Devanagari", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Readable for older travellers — doc 02 accessibility rule. */
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Doc 02: "Always support reduced-motion preferences." */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Hindi should not render as a smaller subtitle beneath English (doc 02). */
+:lang(hi) {
+  line-height: 1.75;
+}

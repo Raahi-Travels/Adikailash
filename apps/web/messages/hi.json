@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "journeys": "यात्राएँ",
+    "departures": "प्रस्थान",
+    "destinations": "गंतव्य",
+    "liveStatus": "मार्ग की स्थिति",
+    "planYourJourney": "यात्रा की तैयारी",
+    "ourStory": "हमारी कहानी",
+    "journal": "जर्नल",
+    "enquire": "संपर्क करें"
+  },
+  "common": {
+    "skipToContent": "मुख्य सामग्री पर जाएँ",
+    "switchLanguage": "Switch to English",
+    "lastVerified": "अंतिम पुष्टि {time}",
+    "toBeConfirmed": "पुष्टि होना बाकी",
+    "draft": "प्रारूप — प्रकाशित नहीं"
+  },
+  "status": {
+    "open": "खुला",
+    "limited": "सीमित पहुँच",
+    "permitPending": "परमिट लंबित",
+    "suspended": "स्थगित",
+    "closed": "बंद",
+    "notInSeason": "मौसम नहीं",
+    "unverified": "असत्यापित",
+    "recheckDue": "पुनः जाँच बाकी",
+    "notRecentlyVerified": "हाल में सत्यापित नहीं",
+    "routeHeading": "मार्ग",
+    "permitsHeading": "परमिट",
+    "weatherHeading": "मौसम",
+    "lastVerifiedHeading": "अंतिम पुष्टि"
+  },
+  "departure": {
+    "draft": "प्रारूप",
+    "waitlistOpen": "प्रतीक्षा सूची खुली",
+    "conditionalReservation": "सशर्त आरक्षण",
+    "openForBooking": "बुकिंग के लिए खुला",
+    "minimumGroupPending": "न्यूनतम समूह लंबित",
+    "confirmed": "पुष्ट",
+    "suspended": "स्थगित",
+    "rescheduled": "पुनर्निर्धारित",
+    "cancelled": "रद्द",
+    "completed": "पूर्ण"
+  },
+  "admin": {
+    "title": "संचालन",
+    "journeys": "यात्राएँ",
+    "destinations": "गंतव्य",
+    "stays": "आवास",
+    "departures": "प्रस्थान",
+    "routeStatus": "मार्ग की स्थिति",
+    "leads": "पूछताछ",
+    "needsEnglish": "सहेजने से पहले अंग्रेज़ी आवश्यक है।",
+    "needsFacts": "स्वीकृत तथ्य अनुपलब्ध — अभी प्रकाशित नहीं किया जा सकता।"
+  }
+}
