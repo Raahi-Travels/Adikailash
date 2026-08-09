@@ -198,3 +198,94 @@ export async function submitEnquiry(payload: Record<string, unknown>) {
   }
   return res.json();
 }
+
+// --- Traveller document upload -------------------------------------------------
+
+export type TravellerDocument = {
+  id: number;
+  requirement_code: string;
+  requirement_label: string;
+  requirement_description: string | null;
+  is_mandatory: boolean;
+  state: string;
+  is_uploaded: boolean;
+  is_accepted: boolean;
+  awaiting_you: boolean;
+  original_filename: string | null;
+  uploaded_at: string | null;
+  correction_reason: string | null;
+  valid_until: string | null;
+};
+
+export type TravellerChecklist = {
+  traveller_name: string | null;
+  documents: TravellerDocument[];
+  outstanding_count: number;
+  max_bytes: number;
+  accepted_content_types: string[];
+  disclaimer_code: string;
+};
+
+export async function fetchChecklist(
+  token: string,
+  locale: Locale,
+): Promise<TravellerChecklist> {
+  const res = await fetch(
+    `${BASE}/traveller/documents?token=${encodeURIComponent(token)}&locale=${locale}`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail ?? "We could not open this link.");
+  }
+  return res.json();
+}
+
+/**
+ * Upload in three steps: get a presigned URL, PUT the file straight to storage,
+ * then tell the API it landed.
+ *
+ * The file never passes through our API. That keeps a 10MB passport scan off the
+ * request path entirely, and means the API never holds the bytes.
+ */
+export async function uploadDocument(
+  token: string,
+  submissionId: number,
+  file: File,
+): Promise<void> {
+  const ticketRes = await fetch(
+    `${BASE}/traveller/documents/${submissionId}/upload-ticket?token=${encodeURIComponent(token)}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content_type: file.type,
+        original_filename: file.name,
+      }),
+    },
+  );
+  if (!ticketRes.ok) {
+    const body = await ticketRes.json().catch(() => ({}));
+    throw new Error(body.detail ?? "We could not start the upload.");
+  }
+  const ticket = await ticketRes.json();
+
+  const put = await fetch(ticket.upload_url, {
+    method: "PUT",
+    headers: { "Content-Type": file.type },
+    body: file,
+  });
+  if (!put.ok) {
+    throw new Error("The file could not be uploaded. Please try again.");
+  }
+
+  const confirm = await fetch(
+    `${BASE}/traveller/documents/${submissionId}/uploaded?token=${encodeURIComponent(token)}`,
+    { method: "POST" },
+  );
+  if (!confirm.ok) {
+    throw new Error(
+      "The file uploaded but we could not record it. Please tell the team.",
+    );
+  }
+}

@@ -214,6 +214,40 @@ class DocumentSubmissionOut(ORMModel):
     is_accepted: bool
 
 
+class TravellerDocumentOut(BaseModel):
+    """One checklist item as the traveller sees it.
+
+    `is_uploaded` and `is_accepted` are separate fields on purpose. Doc 05 forbids
+    labelling a document approved merely because it was uploaded, and a single
+    combined status is exactly how that mistake gets made in the UI.
+    """
+
+    id: int
+    requirement_code: str
+    requirement_label: str
+    requirement_description: str | None = None
+    is_mandatory: bool
+    state: str
+    is_uploaded: bool
+    is_accepted: bool
+    awaiting_you: bool
+    original_filename: str | None = None
+    uploaded_at: datetime | None = None
+    #: Customer-facing only. Internal review notes are never sent here.
+    correction_reason: str | None = None
+    valid_until: date | None = None
+
+
+class TravellerChecklistOut(BaseModel):
+    traveller_name: str | None = None
+    documents: list[TravellerDocumentOut] = Field(default_factory=list)
+    outstanding_count: int = 0
+    max_bytes: int
+    accepted_content_types: list[str] = Field(default_factory=list)
+    #: Submission is never approval, and approval is never a permit guarantee.
+    disclaimer_code: str = "checklist_does_not_guarantee_permit"
+
+
 class UploadTicketIn(BaseModel):
     """Content type is required so it can be signed into the presigned URL.
 

@@ -25,6 +25,12 @@ from api.domain.departures import (
 )
 from api.domain.status import Access, PublicationStage, SourceType
 from api.localization import resolve
+from api.models.access import (
+    DEFAULT_TTL,
+    TravellerAccessToken,
+    generate_token,
+    hash_token,
+)
 from api.models.catalogue import Destination, Journey, JourneyFamily
 from api.models.documents import (
     DocumentAccessLog,
@@ -32,6 +38,7 @@ from api.models.documents import (
     DocumentState,
     DocumentSubmission,
 )
+from api.models.leads import Lead
 from api.models.operations import Departure, DepartureStateChange, RouteSegment, StatusUpdate
 from api.models.staff import (
     CONTENT_ROLES,
@@ -401,6 +408,97 @@ async def issue_upload_ticket(
         max_bytes=MAX_DOCUMENT_BYTES,
         accepted_content_types=list(ACCEPTED_DOCUMENT_TYPES),
     )
+
+
+@router.post("/leads/{lead_id}/request-documents", status_code=201)
+async def request_documents(
+    lead_id: int,
+    session: SessionDep,
+    staff: ReviewerStaff,
+    journey_slug: str | None = None,
+):
+    """Create the checklist for a lead and issue them an access link.
+
+    Returns the token exactly once. It is stored only as a SHA-256 hash, so it cannot
+    be recovered later; if the traveller loses it, issue a new one and revoke the old.
+
+    Requirements are resolved the same way the public checklist resolves them, so a
+    traveller never sees a different list from the one on the website.
+    """
+    lead = await session.get(Lead, lead_id)
+    if lead is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Lead not found.")
+
+    stmt = select(DocumentRequirement).where(DocumentRequirement.is_active.is_(True))
+    if journey_slug:
+        journey = await session.scalar(
+            select(Journey).where(Journey.slug == journey_slug)
+        )
+        if journey is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Journey not found.")
+        stmt = stmt.where(
+            (DocumentRequirement.journey_id == journey.id)
+            | (DocumentRequirement.journey_id.is_(None))
+        )
+    else:
+        stmt = stmt.where(DocumentRequirement.journey_id.is_(None))
+
+    created = 0
+    for req in await session.scalars(stmt.order_by(DocumentRequirement.sort_order)):
+        exists = await session.scalar(
+            select(DocumentSubmission).where(
+                DocumentSubmission.lead_id == lead.id,
+                DocumentSubmission.requirement_id == req.id,
+            )
+        )
+        if exists is not None:
+            continue
+        session.add(
+            DocumentSubmission(
+                lead_id=lead.id,
+                requirement_id=req.id,
+                state=DocumentState.REQUIRED,
+            )
+        )
+        created += 1
+
+    token = generate_token()
+    session.add(
+        TravellerAccessToken(
+            lead_id=lead.id,
+            token_hash=hash_token(token),
+            expires_at=datetime.now(UTC) + DEFAULT_TTL,
+            issued_by=_actor(staff),
+        )
+    )
+    await session.commit()
+
+    return {
+        "lead_id": lead.id,
+        "requirements_added": created,
+        # Shown once. Send it to the traveller; it cannot be retrieved again.
+        "access_token": token,
+        "path": f"/documents?token={token}",
+        "expires_in_days": DEFAULT_TTL.days,
+    }
+
+
+@router.post("/access-tokens/{token_id}/revoke")
+async def revoke_access_token(
+    token_id: int, session: SessionDep, staff: ReviewerStaff
+):
+    """Revoke a traveller link.
+
+    Doc 05 requires access to be revocable. Use this the moment a link is forwarded
+    somewhere it should not have gone.
+    """
+    row = await session.get(TravellerAccessToken, token_id)
+    if row is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Token not found.")
+    row.revoked_at = datetime.now(UTC)
+    row.revoked_by = _actor(staff)
+    await session.commit()
+    return {"id": row.id, "revoked_by": row.revoked_by}
 
 
 @router.get("/documents/{submission_id}/download-url")

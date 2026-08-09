@@ -6,6 +6,7 @@ here is invisible to migrations.
 
 # Imported first: registers the public.users FK anchor before leads resolves it.
 from api.models.external import raahi_users
+from api.models.access import TravellerAccessToken, generate_token, hash_token
 from api.models.catalogue import (
     Destination,
     ItineraryStage,
@@ -92,7 +93,10 @@ __all__ = [
     "StatusUpdate",
     "Stay",
     "StayKind",
+    "TravellerAccessToken",
     "TravellerCategory",
+    "generate_token",
+    "hash_token",
     "WeatherCondition",
     "WeatherSnapshot",
     "WeatherSource",
