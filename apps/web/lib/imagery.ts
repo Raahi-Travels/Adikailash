@@ -28,6 +28,7 @@ export type SceneKey =
   | "hero"
   | "homestay-kitchen"
   | "permits"
+  | "departures"
   | "journeys/adi-kailash-om-parvat"
   | "journeys/adi-kailash-om-parvat-detail"
   | "journeys/kumaon-spiritual-circuit"
@@ -70,6 +71,12 @@ export const SCENES: Record<SceneKey, Scene> = {
     ratio: "5/4",
     brief:
       "A host family's kitchen in a Kumaon village, shot on the September field trip. Original photography only, with the household's recorded consent.",
+  },
+  departures: {
+    alt: "A mountain road winding through a valley in low light",
+    ratio: "21/9",
+    brief:
+      "The road on a departure morning, so the calendar is attached to a place rather than a spreadsheet.",
   },
   permits: {
     alt: "A barrier across a narrow mountain road beside a small checkpost hut",

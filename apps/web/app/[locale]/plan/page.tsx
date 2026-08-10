@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 
+import { Scene } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, type Locale } from "@/lib/api";
@@ -35,6 +36,17 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
           missing document at Dharchula ends the journey there. Here is what to bring
           and what we do with it.
         </p>
+
+        {/*
+          The checkpost, placed directly under the sentence about the journey ending
+          there. Doc 03 wants preparation to feel concrete rather than administrative,
+          and a barrier across a road does that better than another paragraph.
+        */}
+        <Scene
+          name="permits"
+          className="mt-10"
+          sizes="(min-width: 896px) 896px, 100vw"
+        />
 
         <section className="mt-16">
           <h2 className="font-serif text-2xl">Documents</h2>

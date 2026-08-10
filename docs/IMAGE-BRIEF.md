@@ -8,10 +8,11 @@ Prompts for the ChatGPT image thread, and where the files go.
 to WebP (1.5 MB for the set, down from 23 MB of source PNGs). They are provisional:
 `bun run check:imagery` fails on all ten until real photography replaces them.
 
-Still outstanding, and worth a second pass in the image thread: the **Aipan border**,
-the contour and grain textures, the **Open Graph card**, and the brand mark
-explorations. Those are further down this page. The Aipan is the one that will do the
-most for how the site feels.
+Still outstanding: the **Open Graph card**, the **Aipan border**, a departures header,
+the brand mark and the textures. Those have moved to
+**[docs/IMAGE-FOLLOWUP.md](IMAGE-FOLLOWUP.md)**, ordered by what is worth doing first,
+with the destination path for each. The prompts further down this page are kept as the
+record of what produced the current set.
 
 ## How this works
 

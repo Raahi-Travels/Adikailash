@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { Altitude, Departures as CalendarIcon, Group, Vehicle } from "@/components/icons";
+import { SceneBackdrop } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import { api, type Departure, type Locale } from "@/lib/api";
 import { buildMetadata, whatsappLink } from "@/lib/brand";
@@ -269,24 +270,29 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
   }
 
   return (
-    <main
-      id="main"
-      className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
-    >
-      <div className="mx-auto max-w-4xl">
-        <div className="flex items-center gap-3 text-gold">
-          <CalendarIcon className="size-6" />
-          <p className="text-sm uppercase tracking-[0.14em]">Dates</p>
+    <main id="main" className="flex-1 bg-midnight text-ink-inverse">
+      {/* Header band. The calendar reads as a spreadsheet without it; a road under the
+          heading attaches the dates to a place. Falls back to ridge art with no file. */}
+      <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
+        <SceneBackdrop name="departures" />
+        <div className="mx-auto max-w-4xl">
+          <div className="flex items-center gap-3 text-gold">
+            <CalendarIcon className="size-6" />
+            <p className="text-sm uppercase tracking-[0.14em]">Dates</p>
+          </div>
+          <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+            When we are going
+          </h1>
+          <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+            Small groups on fixed dates, plus private departures on dates you choose.
+            Each date below says exactly what it is open for right now. A date that is
+            still forming is described that way rather than sold as confirmed.
+          </p>
         </div>
-        <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-          When we are going
-        </h1>
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
-          Small groups on fixed dates, plus private departures on dates you choose. Each
-          date below says exactly what it is open for right now. A date that is still
-          forming is described that way rather than sold as confirmed.
-        </p>
+      </section>
 
+      <div className="px-4 pb-16 sm:px-6 sm:pb-20">
+        <div className="mx-auto max-w-4xl">
         {departures === null && (
           <p className="mt-12 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
             We cannot load dates right now. Please message us and we will send the
@@ -354,6 +360,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
           </Link>
           .
         </p>
+        </div>
       </div>
     </main>
   );

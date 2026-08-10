@@ -6,7 +6,7 @@ import { Scene, SceneBackdrop } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, type Locale } from "@/lib/api";
-import { brand, display, displayLocalized, whatsappLink } from "@/lib/brand";
+import { brand, displayLocalized, whatsappLink } from "@/lib/brand";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

@@ -43,7 +43,6 @@ function emit(kind: "behavioural" | "business", name: string, props?: Props) {
   const payload = { kind, name, ...props, at: new Date().toISOString() };
 
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
     console.debug("[analytics]", payload);
     return;
   }

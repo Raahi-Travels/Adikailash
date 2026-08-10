@@ -25,7 +25,6 @@ import {
 
 const FOUNDER_BRAND = "Brand founder";
 const FOUNDER_OPS = "Operations founder";
-const FOUNDER_FINANCE = "Finance founder";
 
 export const brand = {
   identity: {
