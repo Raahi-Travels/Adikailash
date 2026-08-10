@@ -102,10 +102,13 @@ export function SceneBackdrop({
       ) : (
         <SceneArt seed={name} />
       )}
-      {/* Two scrims: one flat for overall legibility, one directional so the
-          headline sits on the darkest part regardless of the image. */}
-      <div className="absolute inset-0 bg-midnight/70" />
-      <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/75 to-midnight/35" />
+      {/* Three scrims. The flat one guarantees a contrast floor whatever the image
+          turns out to be; the horizontal one keeps the headline on the darkest part
+          while letting the right side of the picture through; the bottom one blends
+          into the section below. Tuned against the darkest photograph in the set, so
+          swapping in a brighter one cannot break the headline. */}
+      <div className="absolute inset-0 bg-midnight/55" />
+      <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/70 to-midnight/20" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-midnight to-transparent" />
     </div>
   );

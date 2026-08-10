@@ -2,6 +2,17 @@
 
 Prompts for the ChatGPT image thread, and where the files go.
 
+## Status
+
+**All ten scene images are in place**, generated from the prompts below and converted
+to WebP (1.5 MB for the set, down from 23 MB of source PNGs). They are provisional:
+`bun run check:imagery` fails on all ten until real photography replaces them.
+
+Still outstanding, and worth a second pass in the image thread: the **Aipan border**,
+the contour and grain textures, the **Open Graph card**, and the brand mark
+explorations. Those are further down this page. The Aipan is the one that will do the
+most for how the site feels.
+
 ## How this works
 
 Every image slot resolves by filename. Save a file to the path below and it appears

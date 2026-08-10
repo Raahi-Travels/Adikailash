@@ -40,9 +40,13 @@ export type Scene = {
   /**
    * What the image shows, for screen readers.
    *
-   * Written as an illustration rather than a claim about a place. "An illustrated
-   * ridge line at dawn", not "Om Parvat at dawn" — because it is not Om Parvat, and
-   * alt text is where that lie would be least visible and most damaging.
+   * Describes the image, never asserts a location. "A high Himalayan range at first
+   * light", not "Om Parvat at first light" — because it is not Om Parvat, and alt
+   * text is where that lie would be least visible and most damaging.
+   *
+   * A sighted visitor sees an unlabelled photographic image, so this gives a screen
+   * reader user the same information rather than more or less of it. What records
+   * these as generated is `data-provisional`, the dev marker, and the launch gate.
    */
   alt: string;
   /** CSS aspect ratio. Reserved even when the file is missing, so no layout shift. */
@@ -55,57 +59,57 @@ export type Scene = {
 
 export const SCENES: Record<SceneKey, Scene> = {
   hero: {
-    alt: "An illustrated high Himalayan ridge line under a cold dawn sky",
+    alt: "A high Himalayan range at first light, ridge lines receding into cold haze",
     ratio: "21/9",
     brief:
       "The first sight of the range on the drive up, shot on the field trip at the hour it actually looks like this.",
     priority: true,
   },
   "homestay-kitchen": {
-    alt: "An illustrated village kitchen with a warm hearth and copper vessels",
+    alt: "A traditional Kumaoni village kitchen, firelight on copper and brass vessels",
     ratio: "5/4",
     brief:
       "A host family's kitchen in a Kumaon village, shot on the September field trip. Original photography only, with the household's recorded consent.",
   },
   permits: {
-    alt: "An illustrated checkpost barrier on a mountain road",
+    alt: "A barrier across a narrow mountain road beside a small checkpost hut",
     ratio: "3/2",
     brief:
       "The inner-line checkpost as it actually looks, so people know what to expect before they arrive.",
   },
 
   "journeys/adi-kailash-om-parvat": {
-    alt: "An illustrated pair of snow ridges above a deep valley",
+    alt: "A thin road cut across a vast rock face above a shadowed valley",
     ratio: "3/2",
     brief: "Original photography of the Adi Kailash and Om Parvat route.",
   },
   "journeys/adi-kailash-om-parvat-detail": {
-    alt: "An illustrated mountain road climbing between rock faces",
+    alt: "A high glacial valley above the treeline, a braided stream on the valley floor",
     ratio: "4/3",
     brief: "Original photography of the Adi Kailash and Om Parvat route.",
   },
   "journeys/kumaon-spiritual-circuit": {
-    alt: "An illustrated stone temple among forested hills",
+    alt: "Weathered stone temple spires among tall deodar cedars in low morning sun",
     ratio: "3/2",
     brief: "Original photography of the Kumaon circuit.",
   },
   "journeys/kumaon-spiritual-circuit-detail": {
-    alt: "An illustrated hillside temple courtyard in morning light",
+    alt: "A stone temple courtyard at dawn, mist filling the valley below",
     ratio: "4/3",
     brief: "Original photography of the Kumaon circuit.",
   },
   "journeys/homestay-immersion": {
-    alt: "An illustrated slate-roofed village house on a terraced slope",
+    alt: "Slate-roofed houses on a terraced hillside, forested ridges behind",
     ratio: "3/2",
     brief: "Original photography of the homestay villages, with consent.",
   },
   "journeys/homestay-immersion-detail": {
-    alt: "An illustrated courtyard of a Kumaoni village house",
+    alt: "The stone courtyard of a village house, copper vessels drying on a low wall",
     ratio: "4/3",
     brief: "Original photography of the homestay villages, with consent.",
   },
   "journeys/default": {
-    alt: "An illustrated Himalayan ridge line",
+    alt: "Layered Himalayan ridges receding into blue haze at sunrise",
     ratio: "3/2",
     brief: "Original photography of this route, taken by the team.",
   },
