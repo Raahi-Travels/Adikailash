@@ -18,7 +18,7 @@ from api.domain.departures import (
     is_publicly_listable,
     permitted_payment_action,
 )
-from api.routers import admin, public, traveller
+from api.routers import admin, public, reservations, traveller
 from api.storage import is_storage_configured
 
 settings = get_settings()
@@ -64,6 +64,7 @@ else:
 
 app.include_router(public.router)
 app.include_router(admin.router)
+app.include_router(reservations.router)
 app.include_router(traveller.router)
 
 

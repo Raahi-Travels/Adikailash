@@ -167,6 +167,24 @@ class DocumentSubmission(Base, TimestampMixin):
     requirement_id: Mapped[int] = mapped_column(
         ForeignKey("document_requirements.id", ondelete="RESTRICT"), nullable=False
     )
+    #: Phase 2: a submission belongs to a reservation once one exists. Nullable
+    #: because a document can legitimately be requested from a lead before they
+    #: reserve, and because every row written before reservations existed has none.
+    reservation_id: Mapped[int | None] = mapped_column(
+        ForeignKey("reservations.id", ondelete="CASCADE")
+    )
+    #: Which named traveller this belongs to. A permit is per person, so a party of
+    #: four produces four sets, and "the lead uploaded a passport" is not enough.
+    #: Named explicitly: the convention would generate a 70-character name, and
+    #: Postgres truncates at 63 and appends a hash, which then differs from what the
+    #: migration wrote.
+    reservation_traveller_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "reservation_travellers.id",
+            ondelete="CASCADE",
+            name="fk_document_submissions_res_traveller",
+        )
+    )
     lead_id: Mapped[int | None] = mapped_column(
         ForeignKey("leads.id", ondelete="CASCADE")
     )

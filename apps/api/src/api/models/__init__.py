@@ -40,8 +40,19 @@ from api.models.operations import (
     RouteSegment,
     StatusUpdate,
 )
+from api.models.reservations import (
+    PaymentDirection,
+    PaymentMethod,
+    PaymentRecord,
+    PolicyAcceptance,
+    Reservation,
+    ReservationTraveller,
+    TravellerRole,
+)
 from api.models.staff import (
     CONTENT_ROLES,
+    FINANCE_ROLES,
+    RESERVATION_ROLES,
     DEPARTURE_LIFECYCLE_ROLES,
     DOCUMENT_REVIEW_ROLES,
     SALES_ROLES,
@@ -60,6 +71,8 @@ from api.models.weather import (
 )
 
 __all__ = [
+    "FINANCE_ROLES",
+    "RESERVATION_ROLES",
     "CONTENT_ROLES",
     "ConsentChannel",
     "ConsentPurpose",
@@ -82,10 +95,16 @@ __all__ = [
     "MediaAsset",
     "MediaProvenance",
     "OperatingPartner",
+    "PaymentDirection",
+    "PaymentMethod",
+    "PaymentRecord",
+    "PolicyAcceptance",
+    "Reservation",
+    "ReservationTraveller",
     "RouteSegment",
     "SALES_ROLES",
-    "STATUS_PUBLISHING_ROLES",
     "SEVERE_CONDITIONS",
+    "STATUS_PUBLISHING_ROLES",
     "ServiceTier",
     "StaffAccount",
     "StaffRole",
@@ -97,10 +116,11 @@ __all__ = [
     "StayKind",
     "TravellerAccessToken",
     "TravellerCategory",
-    "generate_token",
-    "hash_token",
+    "TravellerRole",
     "WeatherCondition",
     "WeatherSnapshot",
     "WeatherSource",
+    "generate_token",
+    "hash_token",
     "raahi_users",
 ]

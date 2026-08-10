@@ -22,6 +22,10 @@ Last updated: 8 August 2026
 | D9 | Languages | **English + Hindi from launch** (O11 closed) | 2026-08-08 | Doc 01's primary segment — the called pilgrim, 35–65, devotional — is Hindi-comfortable. Doc 02: Devanagari is a first-class layout, never a smaller subtitle under English. |
 | D10 | Launch scope | **Three journey families: Adi Kailash & Om Parvat, Kumaon circuit, homestay immersion** (O6 partially closed) | 2026-08-08 | Wider than doc 09's "smallest coherent system" advice. Accepted deliberately: the Kumaon circuit sells in the months the Adi Kailash route is shut, and the homestay journey carries D5's differentiation. Cost is roughly triple the content and vendor work in a fixed eight-week photography window — that window, not engineering, is the binding constraint. |
 
+| D12 | O2 · Who sells the trip | **Own tour-operator registration** | 2026-08-10 | Founders chose to register and contract with travellers directly rather than fronting a licensed partner's registration. Slower to launch than the partner route, but doc 06 warns against a site that "implies a partner's registration belongs to the brand owner", and owning it removes that risk entirely. A partner may still operate a segment on the ground, so `operator_assigned` stays a confirmation gate: somebody registered has to be responsible for the inner line before anyone is told they are going. Makes **O1 the critical path** — the entity is now the thing being sold under. |
+
+| D13 | O3 · How money works, first season | **Offline only** | 2026-08-10 | No payment is taken on the website for the 2026 test departures. A coordinator records what arrived by bank transfer or UPI against the reservation, with its reference, so finance reconciles against a statement. Zero gateway risk while operations are still unproven, and it defers O8 without blocking anything. `PaymentRecord` is an append-only ledger with no balance column, so the balance is the sum of the evidence and cannot be quietly corrected. `PaymentMethod.GATEWAY` exists and is refused at the API, so adding a provider later is a change of behaviour rather than of schema. |
+
 | D11 | i18n | **next-intl, `localePrefix: "always"`** | 2026-08-08 | `/en/...` and `/hi/...` symmetrically, rather than English at the root with Hindi in a subfolder — the structural form of doc 02's "first-class layout, not a smaller translation". Makes hreflang pairs trivial. Note Next.js 16 renamed the `middleware` convention to `proxy`, so the handler lives in `apps/web/proxy.ts`. |
 
 **Two i18n layers, deliberately separate.** next-intl covers UI strings, locale routing
@@ -95,14 +99,12 @@ departures, leads and traveller data are not world-readable.
 
 | # | Decision | Owner | Blocks |
 |---|---|---|---|
-| O1 | Legal entity and public legal name | All founders + adviser | Invoicing, contracts, footer, payment recipient |
-| O2 | Own tour-operator registration vs. disclosed operating partner per departure | Operations founder | **Any payment flow.** Docs 00/06/09 all treat this as a hard gate |
-| O3 | Deposit, protected-reservation and confirmation rules | Finance founder | Reservation states, payment button |
+| O1 | Legal entity and public legal name | All founders + adviser | **Critical path since D12.** Invoicing, contracts, footer, payment recipient. Own registration means there is no partner entity to fall back on |
 | O4 | Cancellation, refund and route-disruption policy | Finance founder + adviser | Policy versioning, proposal content |
 | O5 | Route-status source hierarchy and authorised publisher | Operations founder | Live status page (a P0 surface) |
 | O6 | Final journey list, itineraries and service tiers | Operations founder | Journey content model population |
 | O7 | Domain | Brand founder | Canonical URLs, email identities |
-| O8 | Payment provider | Finance + tech | Payment adapter |
+| O8 | Payment provider | Finance + tech | Payment adapter. Deferred by D13: nothing is blocked until online payment is wanted, which is a 2027-season question |
 | O9 | WhatsApp provider (Business Platform or authorised BSP) | Tech + sales | Messaging adapter |
 | O10 | Support hours, escalation and emergency ownership | Operations founder | Response-time claims on the site |
 | O11 | Languages at launch (English / Hindi) | Growth + operations | Content model, typography |

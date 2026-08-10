@@ -446,3 +446,175 @@ class LeadUpdateIn(BaseModel):
     priority: int | None = Field(default=None, ge=0, le=3)
     loss_reason: str | None = Field(default=None, max_length=120)
     nurture_topic: str | None = Field(default=None, max_length=120)
+
+
+# --- Reservations (Phase 2, decision O3: offline payments only) -----------------
+
+
+class ReservationCreateIn(BaseModel):
+    """Open a reservation. Starts in draft; nothing is held until it is moved."""
+
+    departure_id: int
+    party_size: int = Field(ge=1, le=40)
+    #: Optional: a walk-in or a phone call is a legitimate origin with no lead row.
+    lead_id: int | None = None
+    agreed_amount: Decimal = Field(default=Decimal("0"), ge=0)
+    coordinator_staff_id: str | None = Field(default=None, max_length=64)
+    internal_note: str | None = None
+
+
+class ReservationUpdateIn(BaseModel):
+    party_size: int | None = Field(default=None, ge=1, le=40)
+    agreed_amount: Decimal | None = Field(default=None, ge=0)
+    coordinator_staff_id: str | None = Field(default=None, max_length=64)
+    next_action: str | None = Field(default=None, max_length=1000)
+    next_action_due_at: datetime | None = None
+    hold_expires_at: datetime | None = None
+    internal_note: str | None = None
+
+
+class TravellerIn(BaseModel):
+    """One named person. Identity numbers are not accepted here by design.
+
+    Doc 08 classifies document numbers as Sensitive; they belong in the document
+    submission path, which logs every access. Accepting one on this endpoint would
+    put a passport number in a table any reservation query could return.
+    """
+
+    full_name: str = Field(min_length=1, max_length=200)
+    role: str = "companion"
+    date_of_birth: date | None = None
+    relationship_to_lead: str | None = Field(default=None, max_length=80)
+    phone: str | None = Field(default=None, max_length=32)
+    email: str | None = Field(default=None, max_length=320)
+    is_senior: bool = False
+    has_disclosed_health_information: bool = False
+    dietary_note: str | None = None
+
+
+class TravellerOut(ORMModel):
+    id: int
+    full_name: str
+    role: str
+    date_of_birth: date | None = None
+    relationship_to_lead: str | None = None
+    phone: str | None = None
+    email: str | None = None
+    is_senior: bool = False
+    has_disclosed_health_information: bool = False
+    dietary_note: str | None = None
+
+
+class PaymentIn(BaseModel):
+    """Record money that actually moved. Amount is always positive."""
+
+    amount: Decimal = Field(gt=0)
+    method: str
+    direction: str = "received"
+    reference: str | None = Field(default=None, max_length=120)
+    received_at: datetime
+    note: str | None = None
+
+
+class PaymentOut(ORMModel):
+    id: int
+    direction: str
+    amount: Decimal
+    currency: str
+    method: str
+    reference: str | None = None
+    received_at: datetime
+    recorded_by: str
+    note: str | None = None
+
+
+class PolicyAcceptanceIn(BaseModel):
+    """Which version of which policy, accepted by whom.
+
+    `version` is required and unbounded by design: it must identify the exact text
+    the person saw, so a date or a content hash both work, but "latest" does not.
+    """
+
+    policy: str = Field(max_length=40)
+    version: str = Field(min_length=1, max_length=40)
+    accepted_by: str = Field(min_length=1, max_length=200)
+    accepted_at: datetime | None = None
+    channel: str | None = Field(default=None, max_length=40)
+
+
+class PolicyAcceptanceOut(ORMModel):
+    id: int
+    policy: str
+    version: str
+    accepted_by: str
+    accepted_at: datetime | None = None
+    channel: str | None = None
+    recorded_by: str | None = None
+
+
+class ReadinessOut(BaseModel):
+    """What is still missing before this group can travel."""
+
+    documents_outstanding: int = 0
+    travellers_named: int = 0
+    travellers_expected: int = 0
+    policy_accepted: bool = False
+    coordinator: str | None = None
+    amount_due: Decimal = Decimal("0")
+    amount_received: Decimal = Decimal("0")
+    balance_outstanding: Decimal = Decimal("0")
+    party_complete: bool = False
+    is_ready: bool = False
+    #: Plain-language, in the order a coordinator should chase it.
+    outstanding: list[str] = Field(default_factory=list)
+
+
+class ReservationListItemOut(BaseModel):
+    id: int
+    reference: str
+    state: str
+    departure_id: int
+    journey_name: str | None = None
+    start_date: date | None = None
+    party_size: int
+    travellers_named: int = 0
+    coordinator: str | None = None
+    group_lead_name: str | None = None
+    agreed_amount: Decimal = Decimal("0")
+    amount_received: Decimal = Decimal("0")
+    balance_outstanding: Decimal = Decimal("0")
+    next_action: str | None = None
+    next_action_due_at: datetime | None = None
+    is_overdue: bool = False
+    hold_expires_at: datetime | None = None
+    #: A hold past its expiry is holding capacity nobody has claimed.
+    hold_expired: bool = False
+    created_at: datetime
+
+
+class ReservationDetailOut(ReservationListItemOut):
+    currency: str = "INR"
+    internal_note: str | None = None
+    cancellation_reason: str | None = None
+    travellers: list[TravellerOut] = Field(default_factory=list)
+    payments: list[PaymentOut] = Field(default_factory=list)
+    acceptances: list[PolicyAcceptanceOut] = Field(default_factory=list)
+    readiness: ReadinessOut
+    #: Empty means this reservation can be confirmed right now.
+    confirmation_blockers: list[str] = Field(default_factory=list)
+    allowed_transitions: list[str] = Field(default_factory=list)
+
+
+class ReservationQueueOut(BaseModel):
+    reservations: list[ReservationListItemOut] = Field(default_factory=list)
+    total: int = 0
+    unassigned_count: int = 0
+    overdue_count: int = 0
+    expired_hold_count: int = 0
+
+
+class ReservationTransitionIn(BaseModel):
+    """Actor comes from the session, never from the body."""
+
+    target_state: str
+    reason: str = Field(min_length=1)

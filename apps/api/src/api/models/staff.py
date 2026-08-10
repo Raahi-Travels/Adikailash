@@ -86,6 +86,29 @@ SALES_ROLES = frozenset(
     }
 )
 
+#: Roles permitted to create and work reservations. Sales owns the relationship;
+#: operations needs it because readiness and departures are the same conversation.
+RESERVATION_ROLES = frozenset(
+    {
+        StaffRole.SUPER_ADMIN,
+        StaffRole.FOUNDER,
+        StaffRole.SALES,
+        StaffRole.OPS_MANAGER,
+        StaffRole.TRIP_COORDINATOR,
+    }
+)
+
+#: Roles permitted to record money. Deliberately narrower than RESERVATION_ROLES:
+#: doc 06 wants finance held separately, and under decision O3 every one of these
+#: rows is a human asserting that money actually arrived.
+FINANCE_ROLES = frozenset(
+    {
+        StaffRole.SUPER_ADMIN,
+        StaffRole.FOUNDER,
+        StaffRole.FINANCE,
+    }
+)
+
 #: Roles permitted to edit catalogue content.
 CONTENT_ROLES = frozenset(
     {
