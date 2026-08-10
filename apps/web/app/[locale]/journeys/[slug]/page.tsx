@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
-import { PhotoSlot } from "@/components/photo-slot";
+import { Scene } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import { api, type Locale, type Stay } from "@/lib/api";
+import { journeyScene } from "@/lib/imagery";
 import { whatsappLink } from "@/lib/brand";
 
 /**
@@ -143,9 +144,9 @@ export default async function JourneyDetailPage({
               />
             </dl>
           </div>
-          <PhotoSlot
-            ratio="4/3"
-            brief={`Original photography of the ${journey.name} route, taken by the team. No stock imagery, no generated images.`}
+          <Scene
+            name={journeyScene(journey.slug, "detail").key}
+            sizes="(min-width: 1024px) 45vw, 100vw"
             className="self-start"
           />
         </div>

@@ -1,5 +1,7 @@
+import { Scene } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import type { JourneySummary } from "@/lib/api";
+import { journeyScene } from "@/lib/imagery";
 
 /**
  * Journey card.
@@ -37,7 +39,15 @@ function Fact({ label, value }: { label: string; value: string | null }) {
 
 export function JourneyCard({ journey }: { journey: JourneySummary }) {
   return (
-    <article className="group flex flex-col border-t border-white/15 pt-6">
+    // `relative` is load-bearing: the title link below spreads an ::after over the
+    // whole card to make it clickable, and that overlay resolves against the nearest
+    // positioned ancestor.
+    <article className="group relative flex flex-col">
+      <Scene
+        name={journeyScene(journey.slug).key}
+        className="mb-6 transition-transform duration-500 group-hover:scale-[1.01]"
+      />
+
       <p className="text-sm text-gold">{FAMILY_LABEL[journey.family] ?? journey.family}</p>
 
       <h3 className="mt-2 font-serif text-2xl leading-snug text-ink-inverse">

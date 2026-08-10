@@ -1,16 +1,19 @@
+import { SceneArt } from "@/components/scene-art";
+
 /**
- * A reserved space for photography that does not exist yet.
+ * A slot whose photograph does not exist yet.
  *
- * Deliberately NOT filled with stock or generated imagery. Doc 02 is explicit:
- * "Unrelated Nepal, Tibet or Ladakh imagery labelled as Adi Kailash" and
- * "AI-generated travel images presented as real locations" are both banned, and
- * "generic Himalayan imagery must not substitute for route truth."
+ * Renders procedural ridge illustration rather than a grey box, so the page looks
+ * designed while still being honest. Doc 02 bans "AI-generated travel images
+ * presented as real locations", and flat two-tone vector ridges are not that: nobody
+ * mistakes them for a photograph, and the caption says plainly what is outstanding.
  *
- * A placeholder mountain would violate that on the very page whose job is to prove
- * the company tells the truth. So the slot states what belongs here and stays empty
- * until someone walks the route with a camera.
+ * What still never happens here is a synthetic image of a real place. Adi Kailash,
+ * Om Parvat, the homestays and the road come from the field trip or they do not
+ * appear at all. See `lib/imagery.ts`.
  *
- * Reserves its aspect ratio, so dropping the real image in causes no layout shift.
+ * Reserves its aspect ratio, so dropping the real photograph in causes no layout
+ * shift.
  */
 export function PhotoSlot({
   brief,
@@ -23,13 +26,23 @@ export function PhotoSlot({
 }) {
   return (
     <div
-      className={`flex items-end rounded-lg bg-himalayan/60 p-5 ring-1 ring-inset ring-white/10 ${className}`}
+      className={`relative flex items-end overflow-hidden rounded-lg ring-1 ring-inset ring-white/10 ${className}`}
       style={{ aspectRatio: ratio }}
       role="img"
-      aria-label={`Photograph pending: ${brief}`}
+      aria-label={`Illustration. Photograph pending: ${brief}`}
     >
-      <p className="max-w-[34ch] text-sm leading-relaxed text-ink-inverse/45">
-        <span className="block text-xs uppercase tracking-[0.14em] text-ink-inverse/35">
+      <div className="absolute inset-0">
+        <SceneArt seed={brief} />
+      </div>
+
+      {/* Scrim only behind the caption, so the ridge line stays readable above it. */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-midnight to-transparent"
+      />
+
+      <p className="relative max-w-[34ch] p-5 text-sm leading-relaxed text-ink-inverse/55">
+        <span className="block text-xs uppercase tracking-[0.14em] text-ink-inverse/40">
           Photograph pending
         </span>
         <span className="mt-1.5 block">{brief}</span>

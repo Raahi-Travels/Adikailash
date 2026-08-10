@@ -1,168 +1,211 @@
 # Image brief
 
-Prompts for the ChatGPT image thread, plus the one rule that decides what may be
-generated at all.
+Prompts for the ChatGPT image thread, and where the files go.
 
-## The rule, first
+## How this works
 
-`docs/DECISIONS.md` and doc 02 both ban two things outright:
+Every image slot resolves by filename. Save a file to the path below and it appears
+on the next request; delete it and the slot falls back to procedural ridge
+illustration. No code change either way, so you can iterate in the image thread
+without touching the repo.
 
-> "Unrelated Nepal, Tibet or Ladakh imagery labelled as Adi Kailash"
-> "AI-generated travel images presented as real locations"
+```bash
+bun run check:imagery
+```
 
-That is why `components/photo-slot.tsx` renders an honest empty slot instead of a
-mountain. **So: never generate a photograph of Adi Kailash, Om Parvat, the Kailash
-View Point, Gunji, Nabhidhang, a homestay interior, a host family, a road condition,
-or anything a visitor could reasonably read as a photograph of the real route.** The
-whole site is an argument that we tell the truth about this road. One synthetic
-mountain photo destroys that argument, and it is the kind of thing people notice.
+That fails while any generated image is still in place, and the pre-launch checklist
+in `docs/DEPLOY.md` runs it. When a real photograph replaces a placeholder, add its
+filename to `apps/web/public/scenes/REAL.txt` to record that it was actually taken.
 
-Those photographs come from the field trip. Nothing else fills them.
+Formats: AVIF or WebP win over JPG if both exist. JPG is fine.
 
-What *can* be generated is everything that is honestly decorative or diagrammatic:
-texture, pattern, ornament, marks, and abstract art that is plainly art. Below is
-that list.
+## The one line not to cross
 
-## Palette (paste into every prompt)
+Generated imagery as atmosphere is fine, and that is what these prompts produce.
+Generated imagery presented as **documentation of a specific named place** is not,
+because the entire site is an argument that our route information is true. So:
 
-| Name | Hex | Use |
-|---|---|---|
-| Midnight | `#0b1d2d` | primary dark ground |
-| Himalayan | `#1b2638` | secondary dark surface |
-| Snow | `#f7f6f2` | light ground, ink on dark |
-| Gold | `#c89a4e` | guidance, one accent only |
-| Saffron | `#a86632` | devotional and caution accent |
-| Slate | `#5a6770` | secondary |
+- Prompt for *a* high Himalayan ridge, not *Om Parvat*. Never ask for the Om marking
+  on the rock face, or the Adi Kailash summit profile. Those are recognisable, and a
+  synthetic version of either is the one image that could genuinely mislead someone.
+- Prompt for *a* Kumaoni village kitchen, not a named host family's home.
+- Never generate people's faces for the About page or testimonials.
 
-Typography on the site is a serif display face with Noto Serif Devanagari alongside
-it, so ornament should feel drawn rather than geometric-modern.
+Alt text throughout already describes these as illustrations rather than places. Keep
+it that way when you swap files in.
 
 ---
 
-## 1. Aipan border ornament (the highest-value asset here)
+## Scene prompts
 
-Aipan is the Kumaoni folk art the women of these villages actually paint on floors
-and doorways at festivals. It is the correct ornament for a Pithoragarh company, it
-is honestly decorative rather than a fake photograph, and no competitor is using it.
+Shared suffix, paste at the end of every scene prompt:
+
+> Cinematic, restrained, editorial travel photography. Cool blue-toned palette built
+> around deep midnight blue #0b1d2d with warm gold #c89a4e only in the light itself.
+> Natural light, no artificial colour grading, no HDR, no oversaturation. Muted and
+> calm rather than dramatic. No text, no watermark, no logo, no people looking at
+> camera, no tourists in bright modern hiking gear.
+
+### `hero.jpg` — 2400 × 1030 (21:9)
+
+Sits behind the headline under a heavy scrim, so it needs to work as texture. Keep
+the left third quiet; that is where the type sits.
+
+> A wide cinematic view of a high Himalayan range at first light, seen from a
+> distance. Layered ridge lines receding into cold blue haze, the furthest almost
+> dissolved into the sky. The nearest ridge in deep shadow. A narrow band of warm
+> gold light catching only the highest snow along the top edge. Vast empty sky in the
+> upper left. No foreground detail, no people, no buildings, no road.
+
+### `homestay-kitchen.jpg` — 1500 × 1200 (5:4)
+
+The most important image on the site. Doc 01 puts the host family at the centre of
+the whole business, and this is the only slot that shows what that means.
+
+> The interior of a traditional Kumaoni village kitchen in the Uttarakhand
+> Himalaya. A low mud-plastered hearth with a small wood fire, blackened copper and
+> brass vessels stacked on a stone shelf, a slate floor. Warm firelight is the only
+> light source, falling off quickly into darkness at the edges. A single small window
+> letting in cold blue morning light from outside, contrasting with the fire. Lived
+> in and clean, not staged, not rustic-chic. No people, no faces, no modern
+> appliances, no decorative styling.
+
+### `permits.jpg` — 1600 × 1067 (3:2)
+
+> A remote mountain checkpost on a high Himalayan road. A simple painted barrier
+> across a narrow single-lane road cut into a rock face, a small concrete hut beside
+> it. Overcast flat light, cold and undramatic. A steep drop on one side. Utilitarian
+> and unglamorous, the way an administrative checkpoint actually looks. No signage
+> text, no people, no vehicles, no flags.
+
+### `journeys/adi-kailash-om-parvat.jpg` — 1600 × 1067 (3:2)
+
+Note the constraint: this is the flagship card, and it must not be a synthetic Om
+Parvat. An unnamed high ridge does the same job honestly.
+
+> A narrow unpaved mountain road cutting across a vast bare rock face high in the
+> Himalaya, seen from a distance so the road is a thin line and the scale of the
+> mountain dominates. Deep valley below filled with shadow. Cold morning light. No
+> vehicles, no people, no snow peaks identifiable as any specific mountain.
+
+### `journeys/adi-kailash-om-parvat-detail.jpg` — 1600 × 1200 (4:3)
+
+> A high-altitude Himalayan valley above the treeline, brown and grey scree slopes
+> rising on both sides, a braided glacial stream running through the flat valley
+> floor. Thin cold air, flat overcast light, no vegetation but low scrub. Empty and
+> severe. No people, no structures, no prayer flags.
+
+### `journeys/kumaon-spiritual-circuit.jpg` — 1600 × 1067 (3:2)
+
+> An ancient stone temple complex in the lower Kumaon Himalaya, surrounded by tall
+> deodar cedar forest. Weathered grey stone shikhara spires, moss in the joints,
+> worn stone steps. Soft misty morning light filtering through the trees. Quiet and
+> old. No people, no bright cloth, no marigold decoration, no crowds.
+
+### `journeys/kumaon-spiritual-circuit-detail.jpg` — 1600 × 1200 (4:3)
+
+> A stone temple courtyard at dawn in the Kumaon hills. Worn flagstones still wet,
+> a low stone wall, forested ridges visible beyond and below. Mist sitting in the
+> valley. First warm light just reaching the top of the far ridge. No people, no
+> offerings, no text carved or painted.
+
+### `journeys/homestay-immersion.jpg` — 1600 × 1067 (3:2)
+
+> A small Kumaoni village on a terraced hillside in Uttarakhand. Traditional houses
+> with grey slate roofs and carved wooden window frames, stepped agricultural
+> terraces falling away below, forested ridges behind. Late afternoon light. Ordinary
+> and inhabited, not picturesque. No people, no laundry lines, no satellite dishes.
+
+### `journeys/homestay-immersion-detail.jpg` — 1600 × 1200 (4:3)
+
+> The stone courtyard of a traditional Kumaoni house. A carved wooden door frame,
+> slate paving, a low wall with copper vessels drying on it, a wooden bench. Warm
+> low afternoon light raking across the stone. Quiet domestic detail. No people, no
+> faces.
+
+### `journeys/default.jpg` — 1600 × 1067 (3:2)
+
+Used by any journey added later that has no image of its own.
+
+> Layered Himalayan ridge lines receding into blue haze, seen from high altitude.
+> Simple, calm, no distinguishing features. No people, no structures, no road.
+
+---
+
+## Ornament and texture
+
+These are the assets where generation is unambiguously the right tool, and they do
+more for a premium feel than any photograph.
+
+### Aipan border — the highest-value asset here
+
+Aipan is the Kumaoni folk art the women in these villages actually paint at
+festivals. It is the correct ornament for a Pithoragarh company, it is honestly
+decorative, and nobody else in this market is using it.
 
 > A single horizontal border ornament in the Kumaoni Aipan folk-art tradition of
-> Uttarakhand: fine continuous white line-work on a deep midnight blue background,
-> hex #0b1d2d, lines in warm off-white #f7f6f2. Geometric and rhythmic, built from
-> repeating dots, interlocking triangles, lotus-petal arcs and a continuous
-> unbroken outline, the way Aipan is painted by hand with a fingertip. Symmetrical,
-> tileable left to right, roughly 1600 by 200 pixels. Flat, no gradients, no
-> shading, no drop shadow, no 3D. Hand-painted quality with slight natural
-> irregularity in the line weight, not vector-perfect. No text, no figures, no
-> deities, no religious icons.
+> Uttarakhand: fine continuous white line-work on deep midnight blue #0b1d2d, lines
+> in warm off-white #f7f6f2. Geometric and rhythmic, built from repeating dots,
+> interlocking triangles, lotus-petal arcs and a continuous unbroken outline, the way
+> Aipan is painted by hand with a fingertip. Symmetrical, tileable left to right,
+> 1600 by 200 pixels. Flat, no gradients, no shading, no 3D. Hand-painted quality
+> with slight natural irregularity in line weight, not vector-perfect. No text, no
+> figures, no deities.
 
-Ask for three variants: a narrow divider, a wider header band, and a corner unit.
+Ask for three: a narrow divider, a wider header band, and a corner unit. Then a
+second pass in `#a86632` on `#f7f6f2` for light sections.
 
-**Second pass, inverted:** same prompt, `#a86632` lines on `#f7f6f2` ground, for
-light sections.
+### Topographic contour texture
 
-## 2. Topographic contour texture
+> A seamless tileable background texture of topographic contour lines, as on a survey
+> map of steep Himalayan terrain. Thin single-weight lines in #1b2638 on #0b1d2d,
+> extremely low contrast, like a watermark. Dense irregular closed contours
+> suggesting ridges and river valleys. No labels, no numbers, no legend, no colour
+> fill. Flat vector look. 2048 by 2048, tiles seamlessly on all four edges.
 
-A section background that says "terrain" without pretending to be a place.
-
-> A seamless tileable background texture of topographic contour lines, as on a
-> survey map of steep Himalayan terrain. Thin single-weight lines in #1b2638 on a
-> #0b1d2d background, extremely low contrast, barely visible, like a watermark.
-> Dense irregular closed contours suggesting ridges and river valleys. No labels, no
-> numbers, no legend, no colour fills, no shading. Flat vector look. 2048 by 2048,
-> tiles seamlessly on all four edges.
-
-Also generate a `#f7f6f2` on `#f7f6f2`-adjacent version for light sections.
-
-## 3. Ridge-line section divider
-
-> A wide horizontal silhouette of a Himalayan ridge line, drawn as a single flat
-> shape with no detail inside it. Solid #0b1d2d shape on a transparent background.
-> Sharp asymmetric peaks of varying height, the profile of a high snow-free rock
-> ridge seen from a distance, not a symmetrical cartoon triangle mountain. 2400 by
-> 300 pixels, the shape anchored to the bottom edge. Flat, graphic, poster-like. No
-> sky, no clouds, no sun, no snow caps, no trees, no text.
-
-Generate three so sections do not repeat the same profile.
-
-## 4. Paper grain overlay
-
-Stops the large dark fields from looking like flat CSS.
+### Paper grain overlay
 
 > A subtle paper grain texture: fine irregular fibre noise, like handmade Himalayan
-> lokta paper held to the light. Neutral grey, very low contrast, intended to be
-> overlaid at 4 percent opacity in multiply mode. Seamlessly tileable, 1024 by 1024.
-> No visible seams, no repeating pattern, no colour cast, no text.
+> lokta paper held to the light. Neutral grey, very low contrast, for overlay at 4
+> percent opacity in multiply mode. Seamlessly tileable, 1024 by 1024. No visible
+> seams, no colour cast, no text.
 
-## 5. Open Graph share card background
+### Open Graph card — `public/og/default.jpg`, 1200 × 630
 
-Every WhatsApp forward of a link shows this. It is worth getting right.
+Every WhatsApp forward of a link shows this.
 
-> A 1200 by 630 pixel social share card background. Deep midnight blue #0b1d2d
-> ground. In the lower third, a flat solid silhouette of an asymmetric Himalayan
-> ridge line in a slightly darker blue #071624. Across the upper area, a very faint
-> topographic contour texture at low opacity. A single small eight-pointed star in
-> gold #c89a4e in the upper right. Generous empty space in the upper left for
-> typography to be added later. Flat, restrained, editorial. No text, no logo, no
-> people, no photographic elements, no lens flare, no glow.
+> A 1200 by 630 social share card background. Deep midnight blue #0b1d2d ground. In
+> the lower third, a flat solid silhouette of an asymmetric Himalayan ridge line in
+> darker blue #071624. Across the upper area a very faint topographic contour texture
+> at low opacity. A single small eight-pointed star in gold #c89a4e upper right.
+> Generous empty space in the upper left for typography added later. Flat, restrained,
+> editorial. No text, no logo, no people, no lens flare.
 
-## 6. Brand mark refinements
+### Brand mark
 
-The current mark is three peaks with an eight-point star, in
-`components/site-chrome.tsx`. Worth exploring alternatives before committing.
+The current mark is in `apps/web/components/site-chrome.tsx`. Worth exploring before
+committing.
 
 > A minimal logo mark: three overlapping mountain peaks reduced to clean straight
-> lines, with a small eight-pointed guiding star resting just above and right of the
-> tallest peak. Single-weight stroke, no fill, gold #c89a4e on transparent.
-> Geometric, calm, balanced in a square. Must stay legible at 16 pixels. Flat vector
-> style, no gradient, no shadow, no 3D, no text, no circle badge around it.
+> lines, with a small eight-pointed guiding star just above and right of the tallest
+> peak. Single-weight stroke, no fill, gold #c89a4e on transparent. Geometric, calm,
+> balanced in a square. Legible at 16 pixels. Flat vector, no gradient, no shadow, no
+> text, no circular badge.
 
-Ask for six variations on one sheet, then pick.
-
-## 7. Empty and error state ornament
-
-For "no departures published yet" and similar.
-
-> A small decorative ornament: a single continuous line drawing of a winding
-> mountain switchback road curling from bottom left to top right, ending at a small
-> eight-pointed star. Single-weight stroke in #c89a4e on transparent background.
-> Sparse, calm, lots of empty space. 400 by 400. Flat vector, no fill, no shading,
-> no landscape, no vehicles, no text.
-
-## 8. Route diagram base (a diagram, not a photograph)
-
-A schematic route map is honest: nobody mistakes it for a photo, and it genuinely
-helps someone understand the journey.
-
-> A clean schematic route diagram in the style of a transit map, not a geographic
-> map. A single vertical line running bottom to top with evenly spaced circular
-> station markers along it. Line and markers in #c89a4e on a #0b1d2d background.
-> Small mountain glyphs beside two of the upper markers. Generous space to the right
-> of each marker for labels to be added later. Flat, minimal, precise. No text, no
-> place names, no compass rose, no terrain, no borders.
-
-Place names get set in real type afterwards, so they can be translated into Hindi
-and corrected when the route changes.
+Ask for six variations on one sheet, then pick. Trace the winner by hand so the
+header and favicon stay sharp.
 
 ---
 
-## What to do with them
+## Before the site goes public
 
-- Aipan borders, contour texture and paper grain: `apps/web/public/textures/`
-- Ridge dividers and ornaments: inline SVG if small, otherwise `public/ornament/`
-- OG card: `public/og/` and reference it from `buildMetadata` in
-  `apps/web/lib/brand/helpers.ts` once a domain exists (decision O7)
-- Brand mark: replace `Mark` in `apps/web/components/site-chrome.tsx`
+The field-trip shot list. Each of these replaces the file of the same name:
 
-Ask for SVG where the asset is line art. Where the tool returns raster, ask for the
-largest size available and trace the marks by hand; the mark in particular must be
-real vector to stay sharp in the header and as a favicon.
-
-## Still not generated, ever
-
-The field-trip shot list, unchanged:
-
-- Adi Kailash and Om Parvat from the viewpoints, with the date and weather recorded
-- The road itself, including the bad sections. Doc 02 wants the route told truthfully.
+- The range from the road, at the hour it actually looks like that
+- The road itself, including the bad sections
 - Host families and their kitchens, with recorded consent (see `/policies/consent`)
 - Gunji, Nabhidhang, Kalapani, Budhi as they actually look
-- The team, so the About page has real faces on it
+- The checkpost, so people know what to expect
+- The three of you, so the About page has real faces on it
+
+Then add each filename to `public/scenes/REAL.txt` and `bun run check:imagery` passes.

@@ -126,6 +126,7 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 
 ## 3. Before the first public deploy
 
+- [ ] Replace the placeholder imagery: `bun run --cwd apps/web check:imagery` must pass
 - [ ] Purge demo data: `uv run --project apps/api python -m api.seed_demo --purge`
 - [ ] Delete the test staff account (`ops@example.invalid`)
 - [ ] Create real staff accounts: `bun run scripts/create-staff.ts <email> <pw> <name> <roles>`

@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { JourneyCard } from "@/components/journey-card";
 import { LiveStatusBar } from "@/components/live-status-bar";
-import { PhotoSlot } from "@/components/photo-slot";
+import { Scene, SceneBackdrop } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, type Locale } from "@/lib/api";
@@ -25,9 +25,11 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   return (
     <main id="main" className="flex-1 bg-midnight text-ink-inverse">
-      {/* Hero. Editorial-manifesto shape: the line is the design, so no asset
-          competes with it. Two text elements plus CTAs, per hero stack discipline. */}
-      <section className="px-4 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-24">
+      {/* Hero. Editorial-manifesto shape: the line is the design, and the backdrop is
+          heavily scrimmed so it supports the headline rather than competing with it.
+          With no backdrop file present this degrades to the original typographic hero. */}
+      <section className="relative isolate overflow-hidden px-4 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-24 lg:pb-28 lg:pt-32">
+        <SceneBackdrop name="hero" />
         <div className="mx-auto max-w-6xl">
           {/* Measure tuned so the line breaks after "plan." rather than mid-clause.
               Descender clearance matters here: "journeys" and "beginning" both drop
@@ -136,10 +138,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               </svg>
             </Link>
           </div>
-          <PhotoSlot
-            ratio="5/4"
-            brief="A host family's kitchen in a Kumaon village, shot on the September field trip. Original photography only, with the household's recorded consent."
-          />
+          <Scene name="homestay-kitchen" sizes="(min-width: 1024px) 50vw, 100vw" />
         </div>
       </section>
 

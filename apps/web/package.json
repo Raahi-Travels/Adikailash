@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:imagery": "bun run scripts/check-imagery.ts"
   },
   "dependencies": {
     "better-auth": "^1.6.26",
