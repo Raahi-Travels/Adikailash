@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
+import {
+  captureAttribution,
+  trackBehaviour,
+  trackBusiness,
+} from "@/lib/analytics";
 import { submitEnquiry, type JourneySummary } from "@/lib/api";
 
 /**
@@ -22,6 +27,14 @@ const LABEL = "block text-sm text-ink-inverse/85";
 export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const started = useRef(false);
+
+  /** Fires once, on the first real keystroke. A page view is not a form start. */
+  function onFirstInput() {
+    if (started.current) return;
+    started.current = true;
+    trackBehaviour("enquiry_form_started", captureAttribution());
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,7 +43,7 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
     setError(null);
 
     try {
-      await submitEnquiry({
+      const created = await submitEnquiry({
         name: form.get("name") || null,
         phone: form.get("phone") || null,
         email: form.get("email") || null,
@@ -54,6 +67,19 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
           },
         ],
       });
+
+      // Business event, and only here. Doc 07: "Use server-confirmed business events
+      // ... rather than treating button clicks as sales." The submit click above is
+      // not a lead; this line runs only after the API returned one.
+      trackBusiness("lead_created", {
+        lead_id: created?.id ?? null,
+        journey: String(form.get("journey_slug") ?? "") || null,
+        ...captureAttribution(),
+      });
+      if (form.get("status_alerts") === "on" || form.get("promotional") === "on") {
+        trackBusiness("consent_granted", { lead_id: created?.id ?? null });
+      }
+
       setState("sent");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -78,7 +104,12 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+    <form
+      onSubmit={onSubmit}
+      onInput={onFirstInput}
+      className="space-y-6"
+      noValidate
+    >
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label className={LABEL} htmlFor="name">

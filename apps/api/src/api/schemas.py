@@ -392,3 +392,57 @@ class DocumentReviewIn(BaseModel):
     correction_reason: LocalizedIn | None = None
     waiver_reason: str | None = None
     valid_until: date | None = None
+
+
+# ------------------------------------------------------------------- sales workspace
+
+
+class LeadListItemOut(BaseModel):
+    """One row in the sales queue.
+
+    Doc 04's manager view is built around exceptions, so the row carries what makes a
+    lead *actionable* — owner, next action, whether it is overdue — rather than a
+    generic contact dump.
+    """
+
+    id: int
+    name: str | None = None
+    phone: str | None = None
+    email: str | None = None
+    origin_city: str | None = None
+    journey_name: str | None = None
+    group_size: int | None = None
+    is_senior_inclusive: bool | None = None
+    primary_concern: str | None = None
+    stage: str
+    priority: int
+    owner: str | None = None
+    next_action: str | None = None
+    next_action_due_at: datetime | None = None
+    #: Derived, not stored: a due date in the past.
+    is_overdue: bool = False
+    #: Doc 04: "Leads without owner" is a first-class management view.
+    is_unassigned: bool = False
+    first_touch_source: str | None = None
+    campaign: str | None = None
+    created_at: datetime
+    consents: list[str] = Field(default_factory=list)
+
+
+class LeadQueueOut(BaseModel):
+    leads: list[LeadListItemOut] = Field(default_factory=list)
+    unassigned_count: int = 0
+    overdue_count: int = 0
+    total: int = 0
+
+
+class LeadUpdateIn(BaseModel):
+    """Sales edits. Stage changes that close a lead must carry a reason."""
+
+    stage: str | None = None
+    owner: str | None = Field(default=None, max_length=120)
+    next_action: str | None = Field(default=None, max_length=1000)
+    next_action_due_at: datetime | None = None
+    priority: int | None = Field(default=None, ge=0, le=3)
+    loss_reason: str | None = Field(default=None, max_length=120)
+    nurture_topic: str | None = Field(default=None, max_length=120)

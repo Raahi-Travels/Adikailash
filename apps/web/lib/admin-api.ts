@@ -36,14 +36,17 @@ export async function adminGet<T>(path: string): Promise<T | null> {
   }
 }
 
-export async function adminPost<T>(
+async function send<T>(
+  method: "POST" | "PATCH",
   path: string,
   body: unknown,
 ): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
   try {
-    const res = await authedFetch(path, { method: "POST", body: JSON.stringify(body) });
+    const res = await authedFetch(path, { method, body: JSON.stringify(body) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // The API's 422 messages are written for the person reading them ("A lost lead
+      // needs a reason"), so surface them rather than replacing with a generic string.
       return { ok: false, error: data.detail ?? `Request failed (${res.status}).` };
     }
     return { ok: true, data: data as T };
@@ -54,3 +57,9 @@ export async function adminPost<T>(
     };
   }
 }
+
+export const adminPost = <T>(path: string, body: unknown) =>
+  send<T>("POST", path, body);
+
+export const adminPatch = <T>(path: string, body: unknown) =>
+  send<T>("PATCH", path, body);

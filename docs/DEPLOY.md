@@ -10,9 +10,12 @@
 Vercel Authentication is on, so the site is reachable only by the team. The API's
 `ALLOWED_ORIGINS` is pinned to the two Vercel origins and refuses everything else.
 
-**Outstanding:** `DATABASE_URL` is not set on Vercel, so the staff admin cannot sign
-in. The public site does not need it. Add it in Vercel project settings, including
-`?options=-c%20search_path%3Dyatra`, and set `BETTER_AUTH_URL` to the origin above.
+`DATABASE_URL` is set on Vercel, with `?options=-c%20search_path%3Dyatra`. It needs a
+redeploy to take effect, after which staff sign-in works in production.
+
+`BETTER_AUTH_URL` is deliberately **left unset**. There are two valid origins (the
+project origin and the per-deployment one), and better-auth infers the origin per
+request. Pinning it to one would break sign-in on the other.
 
 Coolify was configured entirely through its API. The API token lives only on the VPS
 at `/root/.coolify_ak_token` (chmod 600) and is not in this repo.

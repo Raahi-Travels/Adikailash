@@ -26,6 +26,7 @@ function Mark({ className = "" }: { className?: string }) {
 
 const NAV = [
   { href: "/journeys", key: "journeys" },
+  { href: "/departures", key: "departures" },
   { href: "/status", key: "liveStatus" },
   { href: "/plan", key: "planYourJourney" },
 ] as const;
@@ -152,7 +153,25 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <p className="border-t border-white/10 pt-6 text-xs leading-relaxed">
+        <nav
+          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm"
+          aria-label="Policies"
+        >
+          <Link href="/policies/terms" className="hover:text-ink-inverse">
+            Terms
+          </Link>
+          <Link href="/policies/cancellation" className="hover:text-ink-inverse">
+            Cancellation and refunds
+          </Link>
+          <Link href="/policies/privacy" className="hover:text-ink-inverse">
+            Privacy
+          </Link>
+          <Link href="/policies/consent" className="hover:text-ink-inverse">
+            Consent
+          </Link>
+        </nav>
+
+        <p className="text-xs leading-relaxed">
           We do not guarantee darshan, weather, visibility or route access. High
           altitude travel carries real health risk; please consult a qualified doctor
           about your own fitness. Route and permit information on this site is what our

@@ -38,18 +38,22 @@ from api.models.documents import (
     DocumentState,
     DocumentSubmission,
 )
-from api.models.leads import Lead
+from api.models.leads import Lead, LeadStage
 from api.models.operations import Departure, DepartureStateChange, RouteSegment, StatusUpdate
 from api.models.staff import (
     CONTENT_ROLES,
     DEPARTURE_LIFECYCLE_ROLES,
     DOCUMENT_REVIEW_ROLES,
+    SALES_ROLES,
     STATUS_PUBLISHING_ROLES,
     StaffUser,
 )
 from api.models.weather import WeatherCondition, WeatherSnapshot, WeatherSource
 from api.schemas import (
     DepartureTransitionIn,
+    LeadListItemOut,
+    LeadQueueOut,
+    LeadUpdateIn,
     DocumentReviewIn,
     JourneyIn,
     JourneySummaryOut,
@@ -629,3 +633,155 @@ async def pending_documents(session: SessionDep, staff: ReviewerStaff, locale: s
             }
         )
     return out
+
+
+# -------------------------------------------------------------------- sales workspace
+
+SalesStaff = Annotated[
+    StaffUser, Depends(require_roles(SALES_ROLES, "working the sales queue"))
+]
+
+
+@router.get("/leads", response_model=LeadQueueOut)
+async def lead_queue(
+    session: SessionDep,
+    staff: SalesStaff,
+    locale: str = "en",
+    stage: str | None = None,
+    unassigned: bool = False,
+    overdue: bool = False,
+):
+    """The sales queue.
+
+    Doc 04 wants "a practical workspace rather than a raw contact list", so the
+    default ordering puts unowned and overdue leads first. A lead nobody owns is the
+    single failure this view exists to prevent.
+    """
+    now = datetime.now(UTC)
+
+    stmt = select(Lead)
+    if stage:
+        stmt = stmt.where(Lead.stage == stage)
+    if unassigned:
+        stmt = stmt.where(Lead.owner.is_(None))
+    if overdue:
+        stmt = stmt.where(
+            Lead.next_action_due_at.is_not(None), Lead.next_action_due_at < now
+        )
+
+    rows = list(await session.scalars(stmt.order_by(desc(Lead.created_at))))
+
+    items: list[LeadListItemOut] = []
+    for lead in rows:
+        journey_name = None
+        if lead.journey_id is not None:
+            j = await session.get(Journey, lead.journey_id)
+            if j is not None:
+                journey_name = resolve(j.name, locale)
+
+        await session.refresh(lead, ["consents"])
+        items.append(
+            LeadListItemOut(
+                id=lead.id,
+                name=lead.name,
+                phone=lead.phone,
+                email=lead.email,
+                origin_city=lead.origin_city,
+                journey_name=journey_name,
+                group_size=lead.group_size,
+                is_senior_inclusive=lead.is_senior_inclusive,
+                primary_concern=lead.primary_concern,
+                stage=lead.stage.value,
+                priority=lead.priority,
+                owner=lead.owner,
+                next_action=lead.next_action,
+                next_action_due_at=lead.next_action_due_at,
+                is_overdue=bool(
+                    lead.next_action_due_at and lead.next_action_due_at < now
+                ),
+                is_unassigned=lead.owner is None,
+                first_touch_source=lead.first_touch_source,
+                campaign=lead.campaign,
+                created_at=lead.created_at,
+                consents=[
+                    c.purpose.value for c in lead.consents if c.withdrawn_at is None
+                ],
+            )
+        )
+
+    # Sort in Python rather than SQL: the ordering is "what needs a human first",
+    # which is a product rule, not an index.
+    items.sort(key=lambda i: (not i.is_unassigned, not i.is_overdue, -i.priority))
+
+    return LeadQueueOut(
+        leads=items,
+        unassigned_count=sum(1 for i in items if i.is_unassigned),
+        overdue_count=sum(1 for i in items if i.is_overdue),
+        total=len(items),
+    )
+
+
+@router.patch("/leads/{lead_id}", response_model=LeadListItemOut)
+async def update_lead(
+    lead_id: int, payload: LeadUpdateIn, session: SessionDep, staff: SalesStaff
+):
+    """Assign an owner, set the next action, or move the stage.
+
+    Marking a lead lost requires a reason. Doc 04: loss reasons "inform product and
+    campaign decisions"; a blank one teaches nobody anything, and the database
+    rejects it anyway.
+    """
+    lead = await session.get(Lead, lead_id)
+    if lead is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Lead not found.")
+
+    if payload.stage is not None:
+        try:
+            new_stage = LeadStage(payload.stage)
+        except ValueError:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Unknown stage.")
+        if new_stage is LeadStage.LOST and not (
+            payload.loss_reason or lead.loss_reason
+        ):
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "A lost lead needs a reason. It is how campaigns and pages get fixed.",
+            )
+        lead.stage = new_stage
+
+    if payload.owner is not None:
+        lead.owner = payload.owner or None
+    if payload.next_action is not None:
+        lead.next_action = payload.next_action or None
+    if payload.next_action_due_at is not None:
+        lead.next_action_due_at = payload.next_action_due_at
+    if payload.priority is not None:
+        lead.priority = payload.priority
+    if payload.loss_reason is not None:
+        lead.loss_reason = payload.loss_reason or None
+    if payload.nurture_topic is not None:
+        lead.nurture_topic = payload.nurture_topic or None
+
+    await session.commit()
+
+    now = datetime.now(UTC)
+    return LeadListItemOut(
+        id=lead.id,
+        name=lead.name,
+        phone=lead.phone,
+        email=lead.email,
+        origin_city=lead.origin_city,
+        group_size=lead.group_size,
+        is_senior_inclusive=lead.is_senior_inclusive,
+        primary_concern=lead.primary_concern,
+        stage=lead.stage.value,
+        priority=lead.priority,
+        owner=lead.owner,
+        next_action=lead.next_action,
+        next_action_due_at=lead.next_action_due_at,
+        is_overdue=bool(lead.next_action_due_at and lead.next_action_due_at < now),
+        is_unassigned=lead.owner is None,
+        first_touch_source=lead.first_touch_source,
+        campaign=lead.campaign,
+        created_at=lead.created_at,
+    )

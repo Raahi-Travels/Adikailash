@@ -76,6 +76,16 @@ DOCUMENT_REVIEW_ROLES = frozenset(
     {StaffRole.SUPER_ADMIN, StaffRole.OPS_MANAGER, StaffRole.DOCUMENT_REVIEWER}
 )
 
+#: Roles permitted to work the sales queue. Deliberately excludes read_only.
+SALES_ROLES = frozenset(
+    {
+        StaffRole.SUPER_ADMIN,
+        StaffRole.FOUNDER,
+        StaffRole.SALES,
+        StaffRole.OPS_MANAGER,
+    }
+)
+
 #: Roles permitted to edit catalogue content.
 CONTENT_ROLES = frozenset(
     {
