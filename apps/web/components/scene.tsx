@@ -20,6 +20,7 @@ export function Scene({
   className = "",
   sizes = "(min-width: 1024px) 33vw, 100vw",
   overlay = false,
+  priority,
 }: {
   name: SceneKey;
   className?: string;
@@ -27,6 +28,12 @@ export function Scene({
   sizes?: string;
   /** Adds a bottom-up scrim, for images that sit under text. */
   overlay?: boolean;
+  /**
+   * Overrides the slot's own `priority`. Set it where a slot is the largest thing
+   * above the fold on one page but not on others, which is otherwise an
+   * unfixable-looking LCP warning.
+   */
+  priority?: boolean;
 }) {
   const scene = SCENES[name];
   const src = sceneSrc(name);
@@ -46,7 +53,7 @@ export function Scene({
         alt={scene.alt}
         fill
         sizes={sizes}
-        priority={scene.priority}
+        priority={priority ?? scene.priority}
         className="object-cover"
       />
       {overlay && (

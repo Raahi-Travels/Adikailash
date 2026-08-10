@@ -46,6 +46,8 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
           name="permits"
           className="mt-10"
           sizes="(min-width: 896px) 896px, 100vw"
+          /* The largest thing above the fold on this page, so it is the LCP. */
+          priority
         />
 
         <section className="mt-16">
