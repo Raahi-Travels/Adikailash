@@ -38,7 +38,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   const wa = whatsappLink({ intent: "journey" });
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-midnight/95 backdrop-blur">
+    <header data-site-chrome className="sticky top-0 z-30 border-b border-white/10 bg-midnight/95 backdrop-blur">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-snow focus:px-3 focus:py-2 focus:text-ink"
@@ -119,7 +119,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   const operator = brand.legal.operatorDisclosure;
 
   return (
-    <footer className="border-t border-white/10 bg-midnight px-4 py-12 text-ink-inverse/70 sm:px-6">
+    <footer data-site-chrome className="border-t border-white/10 bg-midnight px-4 py-12 text-ink-inverse/70 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <div className="flex items-center gap-2.5 text-ink-inverse">
           <Mark className="size-6 text-gold" />

@@ -694,3 +694,92 @@ class TravellerBookingOut(BaseModel):
     #: Plain language, the same list the coordinator sees, minus anything internal.
     outstanding: list[str] = Field(default_factory=list)
     is_ready: bool = False
+    #: What we have told this party, newest first. Doc 09: preserve a record of what
+    #: customers were told.
+    updates: list[UpdateOut] = Field(default_factory=list)
+
+
+# --- Departure manifest and booking updates (Phase 3) ---------------------------
+
+
+class ManifestTravellerOut(BaseModel):
+    """One person on the manifest.
+
+    This is the list a coordinator reads out at a checkpost, so it carries what
+    matters there and nothing else. No contact details for companions, no health
+    detail: only the flag saying somebody should go and read it where access is
+    logged.
+    """
+
+    full_name: str
+    role: str
+    date_of_birth: date | None = None
+    is_senior: bool = False
+    has_disclosed_health_information: bool = False
+    documents_outstanding: int = 0
+    permit_documents_outstanding: int = 0
+
+
+class ManifestPartyOut(BaseModel):
+    reservation_id: int
+    reference: str
+    state: str
+    group_lead: str | None = None
+    coordinator: str | None = None
+    party_size: int
+    travellers: list[ManifestTravellerOut] = Field(default_factory=list)
+    documents_outstanding: int = 0
+    permit_documents_outstanding: int = 0
+    policy_accepted: bool = False
+    balance_outstanding: Decimal = Decimal("0")
+
+
+class ManifestOut(BaseModel):
+    """Everything needed to decide whether a departure can leave.
+
+    `blockers` and `warnings` are separate because conflating them makes the screen
+    noise. A blocker stops the departure; a warning is worth chasing and is never a
+    reason to hold a convoy at Dharchula.
+    """
+
+    departure_id: int
+    journey_name: str | None = None
+    tier_name: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
+    gateway: str | None = None
+    state: str
+    operator_name: str | None = None
+    capacity: int = 0
+
+    parties: list[ManifestPartyOut] = Field(default_factory=list)
+    confirmed_parties: int = 0
+    confirmed_travellers: int = 0
+    unresolved_holds: int = 0
+
+    can_depart: bool = False
+    blockers: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class UpdateIn(BaseModel):
+    """Something to tell a party. There is no edit endpoint by design."""
+
+    category: str = "general"
+    title: str = Field(min_length=1, max_length=200)
+    body: str = Field(min_length=1)
+
+
+class UpdateOut(ORMModel):
+    id: int
+    category: str
+    title: str
+    body: str
+    published_by: str
+    acknowledged_at: datetime | None = None
+    created_at: datetime
+
+
+# `TravellerBookingOut` references `UpdateOut`, which is declared later in this
+# module for grouping reasons. Resolve it explicitly rather than reordering.
+TravellerBookingOut.model_rebuild()

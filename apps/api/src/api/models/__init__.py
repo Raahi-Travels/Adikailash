@@ -47,7 +47,9 @@ from api.models.reservations import (
     PolicyAcceptance,
     Reservation,
     ReservationTraveller,
+    ReservationUpdate,
     TravellerRole,
+    UpdateCategory,
 )
 from api.models.staff import (
     CONTENT_ROLES,
@@ -71,6 +73,8 @@ from api.models.weather import (
 )
 
 __all__ = [
+    "ReservationUpdate",
+    "UpdateCategory",
     "FINANCE_ROLES",
     "RESERVATION_ROLES",
     "CONTENT_ROLES",

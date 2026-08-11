@@ -8,7 +8,11 @@ import {
   PAYMENT_METHODS,
   POLICIES,
   STATE_TONE,
+  UPDATE_CATEGORIES,
+  UPDATE_TONE,
   stateLabel,
+  updateCategoryLabel,
+  type BookingUpdate,
   type ReservationDetail,
 } from "@/lib/reservations";
 
@@ -151,6 +155,21 @@ async function recordAcceptance(formData: FormData) {
   );
 }
 
+async function publishUpdate(formData: FormData) {
+  "use server";
+  if (!(await currentStaff())) return;
+  const id = String(formData.get("id"));
+  const locale = String(formData.get("locale") ?? "en");
+
+  await run(locale, id, () =>
+    adminPost(`/admin/reservations/${id}/updates`, {
+      category: formData.get("category"),
+      title: String(formData.get("title") ?? "").trim(),
+      body: String(formData.get("body") ?? "").trim(),
+    }),
+  );
+}
+
 async function moveState(formData: FormData) {
   "use server";
   if (!(await currentStaff())) return;
@@ -197,6 +216,9 @@ export default async function ReservationDetailPage({
 
   const r = await adminGet<ReservationDetail>(`/admin/reservations/${id}`);
   if (!r) notFound();
+
+  const updates =
+    (await adminGet<BookingUpdate[]>(`/admin/reservations/${id}/updates`)) ?? [];
 
   const hidden = (
     <>
@@ -654,6 +676,76 @@ export default async function ReservationDetailPage({
           </label>
           <button type="submit" className={BUTTON}>
             Record
+          </button>
+        </form>
+      </section>
+
+      {/* --------------------------------------------------------------- updates */}
+
+      <section className="mt-10">
+        <h2 className="font-serif text-xl">What we have told them</h2>
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+          Appears on their booking page immediately, and is marked as seen when they
+          open it. There is no edit or delete: the record is only worth anything if it
+          says what they actually saw, so a correction is a new update.
+        </p>
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/45">
+          This does not send anything. Until a messaging provider is chosen (O9),
+          somebody still picks up the phone.
+        </p>
+
+        {updates.length > 0 && (
+          <div className="mt-5">
+            {updates.map((u) => (
+              <article key={u.id} className="border-t border-white/12 py-4">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs ring-1 ${UPDATE_TONE[u.category] ?? "text-ink-inverse/60 ring-white/15"}`}
+                  >
+                    {updateCategoryLabel(u.category)}
+                  </span>
+                  <h3 className="text-[15px]">{u.title}</h3>
+                  <span className="ml-auto text-sm text-ink-inverse/40">
+                    {u.published_by}, {when(u.created_at, true)}
+                  </span>
+                </div>
+                <p className="mt-2 max-w-[70ch] whitespace-pre-line text-[15px] leading-relaxed text-ink-inverse/75">
+                  {u.body}
+                </p>
+                <p className="mt-2 text-sm text-ink-inverse/45">
+                  {u.acknowledged_at
+                    ? `Seen ${when(u.acknowledged_at, true)}`
+                    : "Not opened yet"}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
+
+        <form action={publishUpdate} className="mt-5 space-y-3">
+          {hidden}
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="min-w-44">
+              <span className={LABEL}>Category</span>
+              <select name="category" className={`mt-1 ${FIELD}`} defaultValue="general">
+                {UPDATE_CATEGORIES.map(([value, label]) => (
+                  <option key={value} value={value} className="bg-midnight">
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="min-w-64 flex-1">
+              <span className={LABEL}>Title</span>
+              <input name="title" required className={`mt-1 ${FIELD}`} />
+            </label>
+          </div>
+          <label className="block">
+            <span className={LABEL}>What you are telling them</span>
+            <textarea name="body" required rows={3} className={`mt-1 ${FIELD}`} />
+          </label>
+          <button type="submit" className={BUTTON}>
+            Publish to their booking page
           </button>
         </form>
       </section>

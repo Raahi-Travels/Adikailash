@@ -166,6 +166,11 @@ class Reservation(Base, TimestampMixin):
     acceptances: Mapped[list[PolicyAcceptance]] = relationship(
         back_populates="reservation", cascade="all, delete-orphan"
     )
+    updates: Mapped[list[ReservationUpdate]] = relationship(
+        back_populates="reservation",
+        cascade="all, delete-orphan",
+        order_by="ReservationUpdate.created_at.desc()",
+    )
 
 
 class ReservationTraveller(Base, TimestampMixin):
@@ -328,3 +333,65 @@ class PaymentRecord(Base, TimestampMixin):
     note: Mapped[str | None] = mapped_column(Text)
 
     reservation: Mapped[Reservation] = relationship(back_populates="payments")
+
+
+class UpdateCategory(enum.StrEnum):
+    """Why we are writing. Category decides tone and urgency, not access."""
+
+    ROUTE_CHANGE = "route_change"
+    PREPARATION = "preparation"
+    PAYMENT = "payment"
+    DEPARTURE_LOGISTICS = "departure_logistics"
+    INCIDENT = "incident"
+    GENERAL = "general"
+
+
+class ReservationUpdate(Base, TimestampMixin):
+    """Something we told this party, kept as a record.
+
+    Doc 09's Phase 3 exit condition is that operations "preserve a record of what
+    customers were told". That is the whole purpose of this table, and it shapes two
+    decisions.
+
+    **It is append-only in practice.** There is no edit endpoint. A message that was
+    sent cannot be quietly reworded afterwards, because the value of the record is
+    that it says what the customer actually saw. A correction is a new update.
+
+    **Author and time are required.** When a route closes and a family asks what they
+    were told and when, the answer has to be a row, not a memory of a phone call.
+
+    Sending is out of scope here: decision O9 has not settled a WhatsApp provider, so
+    this records and displays. When a provider exists it reads this table rather than
+    replacing it.
+    """
+
+    __tablename__ = "reservation_updates"
+    __table_args__ = (
+        CheckConstraint("length(trim(title)) > 0", name="update_title_present"),
+        CheckConstraint("length(trim(body)) > 0", name="update_body_present"),
+        CheckConstraint("length(trim(published_by)) > 0", name="update_author_present"),
+        Index("ix_reservation_updates_reservation", "reservation_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    reservation_id: Mapped[int] = mapped_column(
+        ForeignKey("reservations.id", ondelete="CASCADE"), nullable=False
+    )
+
+    category: Mapped[UpdateCategory] = mapped_column(
+        pg_enum(UpdateCategory, "update_category"),
+        nullable=False,
+        default=UpdateCategory.GENERAL,
+        server_default=text("'general'"),
+    )
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+
+    #: Doc 09 wants attribution on anything a customer relies on.
+    published_by: Mapped[str] = mapped_column(String(120), nullable=False)
+
+    #: Set when the traveller opened the page carrying this update. Evidence that it
+    #: was seen, not merely sent, which is the question that matters after a dispute.
+    acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    reservation: Mapped[Reservation] = relationship(back_populates="updates")

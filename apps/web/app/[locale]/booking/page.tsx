@@ -65,6 +65,23 @@ type Booking = {
   documents_outstanding: number;
   outstanding: string[];
   is_ready: boolean;
+  updates: {
+    id: number;
+    category: string;
+    title: string;
+    body: string;
+    published_by: string;
+    created_at: string;
+  }[];
+};
+
+const UPDATE_LABEL: Record<string, string> = {
+  route_change: "Route change",
+  preparation: "Preparation",
+  departure_logistics: "Departure logistics",
+  payment: "Payment",
+  incident: "Incident",
+  general: "Update",
 };
 
 const METHOD_LABEL: Record<string, string> = {
@@ -185,6 +202,39 @@ export default async function BookingPage({
                 {booking.state_meaning}
               </p>
             </section>
+
+            {booking.updates.length > 0 && (
+              <section className="mt-10">
+                <h2 className="font-serif text-2xl">From your coordinator</h2>
+                <div className="mt-4">
+                  {booking.updates.map((u) => (
+                    <article key={u.id} className="border-t border-white/12 py-5">
+                      <div className="flex flex-wrap items-baseline gap-x-3">
+                        <span
+                          className={`text-sm ${
+                            u.category === "route_change" || u.category === "incident"
+                              ? "text-saffron"
+                              : "text-ink-inverse/45"
+                          }`}
+                        >
+                          {UPDATE_LABEL[u.category] ?? "Update"}
+                        </span>
+                        <span className="ml-auto text-sm text-ink-inverse/45">
+                          {when(u.created_at, locale)}
+                        </span>
+                      </div>
+                      <h3 className="mt-1.5 text-[17px]">{u.title}</h3>
+                      <p className="mt-2 max-w-[62ch] whitespace-pre-line text-[15px] leading-relaxed text-ink-inverse/75">
+                        {u.body}
+                      </p>
+                      <p className="mt-2 text-sm text-ink-inverse/40">
+                        {u.published_by}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <section className="mt-10">
               <div className="flex items-center gap-2.5">
@@ -359,6 +409,20 @@ export default async function BookingPage({
                 </p>
               )}
             </section>
+
+            <div className="mt-10 border-t border-white/12 pt-8">
+              <h2 className="font-serif text-2xl">Take it with you</h2>
+              <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                There is no mobile network for long stretches above Dharchula. Print
+                this before you leave, or save it as a PDF.
+              </p>
+              <Link
+                href={`/booking/pack?token=${encodeURIComponent(value)}`}
+                className="mt-5 inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+              >
+                Open your trip pack
+              </Link>
+            </div>
 
             <p className="mt-10 text-sm leading-relaxed text-ink-inverse/50">
               This page is live. It changes as your booking does, so it is worth

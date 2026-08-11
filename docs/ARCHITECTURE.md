@@ -114,7 +114,8 @@ believe them, and start a conversation:
 - Lead capture with consent and attribution
 - Admin sufficient to edit journeys, departures and publish a verified status
 
-Reservations, payments, the traveller portal and the ops control centre are Phase 2+
+Reservations, the traveller portal, the departure manifest and booking updates are
+built. Online payments, supplier payables and the incident record are Phase 3+
 and can run on spreadsheets for the first departures. Doc 09 explicitly permits this:
 "Manual is acceptable; invisible is not."
 

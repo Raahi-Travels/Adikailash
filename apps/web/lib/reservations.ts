@@ -82,9 +82,43 @@ export type ReservationDetail = ReservationListItem & {
     recorded_by: string | null;
   }[];
   readiness: Readiness;
+  updates?: BookingUpdate[];
   confirmation_blockers: string[];
   allowed_transitions: string[];
 };
+
+export type BookingUpdate = {
+  id: number;
+  category: string;
+  title: string;
+  body: string;
+  published_by: string;
+  acknowledged_at: string | null;
+  created_at: string;
+};
+
+/** Category decides tone and urgency, never who can see it. */
+export const UPDATE_CATEGORIES = [
+  ["route_change", "Route change"],
+  ["preparation", "Preparation"],
+  ["departure_logistics", "Departure logistics"],
+  ["payment", "Payment"],
+  ["incident", "Incident"],
+  ["general", "General"],
+] as const;
+
+export const UPDATE_TONE: Record<string, string> = {
+  route_change: "text-status-limited ring-status-limited/30",
+  incident: "text-status-suspended ring-status-suspended/30",
+  payment: "text-ink-inverse/70 ring-white/20",
+  preparation: "text-ink-inverse/70 ring-white/20",
+  departure_logistics: "text-ink-inverse/70 ring-white/20",
+  general: "text-ink-inverse/60 ring-white/15",
+};
+
+export function updateCategoryLabel(value: string): string {
+  return UPDATE_CATEGORIES.find(([v]) => v === value)?.[1] ?? value;
+}
 
 export type ReservationQueue = {
   reservations: ReservationListItem[];

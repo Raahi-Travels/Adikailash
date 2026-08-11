@@ -101,3 +101,38 @@ h3 {
 :lang(hi) {
   line-height: 1.75;
 }
+
+/**
+ * Print.
+ *
+ * The trip pack is the one page meant to leave the screen: doc 09 lists a printed
+ * offline pack among Phase 3's manual allowances, and above Dharchula there is no
+ * network to fall back on. Site chrome is navigation, which paper does not have, and
+ * the dark header would waste most of a cartridge printing a black band.
+ *
+ * Applied globally rather than on that page, because the header and footer are
+ * rendered by the layout and a page cannot reach them.
+ */
+@media print {
+  /*
+    Only the site's own chrome, matched by an explicit marker. A bare `footer`
+    selector also hit the trip pack's own footer, which carries the altitude and
+    route disclaimers, so printing silently dropped exactly the text that most
+    needs to be on the paper.
+  */
+  [data-site-chrome] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 10.5pt;
+  }
+
+  /* Never break a traveller's row or a coordinator's message across two sheets. */
+  article,
+  li {
+    break-inside: avoid;
+  }
+}

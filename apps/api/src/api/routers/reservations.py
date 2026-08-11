@@ -56,7 +56,9 @@ from api.models.reservations import (
     PolicyAcceptance,
     Reservation,
     ReservationTraveller,
+    ReservationUpdate,
     TravellerRole,
+    UpdateCategory,
 )
 from api.models.staff import FINANCE_ROLES, RESERVATION_ROLES, StaffUser
 from api.schemas import (
@@ -70,6 +72,8 @@ from api.schemas import (
     ReservationTransitionIn,
     ReservationUpdateIn,
     TravellerIn,
+    UpdateIn,
+    UpdateOut,
 )
 
 router = APIRouter(prefix="/admin/reservations", tags=["reservations"])
@@ -684,3 +688,55 @@ async def request_documents(
         "access_token": token,
         "expires_at": (datetime.now(UTC) + DEFAULT_TTL).isoformat(),
     }
+
+
+# --------------------------------------------------------------------- updates
+
+
+@router.get("/{reservation_id}/updates", response_model=list[UpdateOut])
+async def list_updates(
+    reservation_id: int, session: SessionDep, staff: ReservationStaff
+):
+    reservation = await _load(session, reservation_id)
+    await session.refresh(reservation, ["updates"])
+    return list(reservation.updates)
+
+
+@router.post("/{reservation_id}/updates", response_model=UpdateOut, status_code=201)
+async def publish_update(
+    reservation_id: int,
+    payload: UpdateIn,
+    session: SessionDep,
+    staff: ReservationStaff,
+):
+    """Tell a party something, and keep the record.
+
+    Visible on their booking page immediately. There is deliberately no edit or
+    delete endpoint: the value of this record is that it says what the customer
+    actually saw, and a message that can be quietly reworded afterwards is not
+    evidence of anything. A correction is a new update.
+
+    This does not send anything. Decision O9 has not settled a WhatsApp provider, so
+    a coordinator still picks up the phone; when a provider exists it will read this
+    table rather than replace it.
+    """
+    await _load(session, reservation_id)
+
+    try:
+        category = UpdateCategory(payload.category)
+    except ValueError:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY, "Unknown update category."
+        ) from None
+
+    update = ReservationUpdate(
+        reservation_id=reservation_id,
+        category=category,
+        title=payload.title.strip(),
+        body=payload.body.strip(),
+        published_by=staff.name,
+    )
+    session.add(update)
+    await session.commit()
+    await session.refresh(update)
+    return update

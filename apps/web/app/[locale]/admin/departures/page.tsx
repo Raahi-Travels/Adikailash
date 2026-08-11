@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 
 import { api, type Departure, type Locale } from "@/lib/api";
+import { Link } from "@/i18n/navigation";
 import { adminGet, adminPost, currentStaff } from "@/lib/admin-api";
 
 /**
@@ -76,7 +77,15 @@ export default async function AdminDeparturesPage({
                 </p>
               </div>
               <div className="text-right text-sm">
-                <p>{departure.state_label}</p>
+                <p>
+                  {departure.state_label}
+                  <Link
+                    href={`/admin/departures/${departure.id}/manifest`}
+                    className="ml-3 text-gold underline-offset-4 hover:underline"
+                  >
+                    Manifest
+                  </Link>
+                </p>
                 <p className="mt-0.5 text-ink-inverse/50">
                   {departure.reserved_count} of {departure.capacity} held ·{" "}
                   {departure.payment_action === "none"

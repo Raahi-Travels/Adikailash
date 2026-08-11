@@ -42,6 +42,7 @@ from api.schemas import (
     BookingTravellerOut,
     TravellerBookingOut,
     TravellerChecklistOut,
+    UpdateOut,
     TravellerDocumentOut,
     UploadTicketIn,
     UploadTicketOut,
@@ -349,7 +350,17 @@ async def my_booking(
         )
 
     reservation = access.reservation
-    await session.refresh(reservation, ["travellers", "payments", "acceptances"])
+    await session.refresh(
+        reservation, ["travellers", "payments", "acceptances", "updates"]
+    )
+
+    # Opening the page is the acknowledgement. Doc 09 asks for a record of what
+    # customers were told; "sent" is weaker evidence than "seen", and this is the
+    # only moment we can honestly claim the latter.
+    now = datetime.now(UTC)
+    for update in reservation.updates:
+        if update.acknowledged_at is None:
+            update.acknowledged_at = now
 
     departure = await session.get(Departure, reservation.departure_id)
     journey_name = None
@@ -444,4 +455,16 @@ async def my_booking(
         documents_outstanding=outstanding_docs,
         outstanding=readiness.outstanding,
         is_ready=readiness.is_ready,
+        updates=[
+            UpdateOut(
+                id=u.id,
+                category=u.category.value,
+                title=u.title,
+                body=u.body,
+                published_by=u.published_by,
+                acknowledged_at=u.acknowledged_at,
+                created_at=u.created_at,
+            )
+            for u in reservation.updates
+        ],
     )
