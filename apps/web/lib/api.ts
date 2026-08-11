@@ -206,6 +206,8 @@ export type TravellerDocument = {
   requirement_code: string;
   requirement_label: string;
   requirement_description: string | null;
+  /** Whose document this is. Null on older lead-level checklists. */
+  for_traveller: string | null;
   is_mandatory: boolean;
   state: string;
   is_uploaded: boolean;

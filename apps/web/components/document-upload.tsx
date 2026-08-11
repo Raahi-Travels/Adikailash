@@ -146,6 +146,16 @@ export function DocumentUpload({
     );
   }
 
+  // Preserve API order within each person, and keep people in first-seen order.
+  const grouped = new Map<string | null, Row[]>();
+  for (const doc of rows) {
+    const key = doc.for_traveller ?? null;
+    const bucket = grouped.get(key);
+    if (bucket) bucket.push(doc);
+    else grouped.set(key, [doc]);
+  }
+  const groups = [...grouped.entries()];
+
   return (
     <div>
       <p className="text-[15px] text-ink-inverse/70">
@@ -154,8 +164,23 @@ export function DocumentUpload({
           : `${data.outstanding_count} of ${rows.length} still need something from you.`}
       </p>
 
-      <ul className="mt-8 space-y-5">
-        {rows.map((doc) => (
+      {/*
+        Grouped by person. A party of four produces four identical "Government photo
+        ID" rows, and an ungrouped list of them is unusable: the group lead cannot
+        tell which one still needs their father's passport.
+      */}
+      {groups.map(([traveller, docs]) => (
+        <section key={traveller ?? "party"} className="mt-8">
+          {traveller && (
+            <h3 className="text-sm uppercase tracking-[0.12em] text-gold">
+              {traveller}
+              <span className="ml-3 normal-case tracking-normal text-ink-inverse/45">
+                {docs.filter((d) => d.awaiting_you).length} of {docs.length} outstanding
+              </span>
+            </h3>
+          )}
+      <ul className="mt-4 space-y-5">
+        {docs.map((doc) => (
           <li key={doc.id} className="border-t border-white/12 pt-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
@@ -230,6 +255,8 @@ export function DocumentUpload({
           </li>
         ))}
       </ul>
+        </section>
+      ))}
 
       <p className="mt-10 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/55">
         Sending these does not guarantee a permit. Permits are issued by the

@@ -226,6 +226,9 @@ class TravellerDocumentOut(BaseModel):
     requirement_code: str
     requirement_label: str
     requirement_description: str | None = None
+    #: Whose document this is. A party of four produces four identical-looking
+    #: "Government photo ID" rows, and without a name the list is unusable.
+    for_traveller: str | None = None
     is_mandatory: bool
     state: str
     is_uploaded: bool
@@ -618,3 +621,76 @@ class ReservationTransitionIn(BaseModel):
 
     target_state: str
     reason: str = Field(min_length=1)
+
+
+class BookingTravellerOut(BaseModel):
+    """A party member as the group lead sees them.
+
+    Names and whether altitude planning treats them as an elder. No contact details
+    for other adults, no health flag, no date of birth: doc 05 says the portal shows
+    the traveller their own record, and one person's medication is not another
+    person's business even inside a family.
+    """
+
+    full_name: str
+    role: str
+    is_senior: bool = False
+
+
+class BookingPaymentOut(BaseModel):
+    """The payment trail, as evidence rather than as a balance."""
+
+    direction: str
+    amount: Decimal
+    method: str
+    reference: str | None = None
+    received_at: datetime
+
+
+class BookingAcceptanceOut(BaseModel):
+    policy: str
+    version: str
+    accepted_by: str
+    accepted_at: datetime | None = None
+
+
+class TravellerBookingOut(BaseModel):
+    """What a traveller sees at their own link.
+
+    Doc 09's Phase 2 exit condition is that every reserved group has a visible state,
+    payment trail, accepted terms, preparation owner and next action. This is the
+    customer half of "visible". `state_label` and `state_meaning` exist because
+    "held" is the word that would mislead someone into cancelling other plans.
+    """
+
+    reference: str
+    state: str
+    #: Short, plain, and never more confident than the state.
+    state_label: str
+    #: One sentence saying what it actually means for them.
+    state_meaning: str
+    journey_name: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
+    gateway: str | None = None
+
+    party_size: int
+    travellers: list[BookingTravellerOut] = Field(default_factory=list)
+
+    #: Doc 05: "Named coordinator." Null renders as an honest gap, not a fake name.
+    coordinator: str | None = None
+
+    amount_due: Decimal = Decimal("0")
+    amount_received: Decimal = Decimal("0")
+    balance_outstanding: Decimal = Decimal("0")
+    currency: str = "INR"
+    payments: list[BookingPaymentOut] = Field(default_factory=list)
+    #: True while decision O8 is open. The portal must not show a pay button.
+    online_payment_available: bool = False
+
+    accepted_policies: list[BookingAcceptanceOut] = Field(default_factory=list)
+
+    documents_outstanding: int = 0
+    #: Plain language, the same list the coordinator sees, minus anything internal.
+    outstanding: list[str] = Field(default_factory=list)
+    is_ready: bool = False

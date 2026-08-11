@@ -98,7 +98,8 @@ Each external provider sits behind a thin port so the vendor choice stays revers
 - `payments` — provider TBD (O8). Idempotent webhook handling; a payment never
   confirms a departure by itself.
 - `storage` — private object storage for traveller documents, signed time-limited
-  access only. Not built until Phase 2.
+  access only. Built in Phase 2: `/booking` opens from the same token as
+  `/documents` and shows state, party, payment trail and accepted terms.
 - `analytics` — behavioural events client-side, business events server-confirmed.
   These stay distinguishable (doc 07's requirement).
 

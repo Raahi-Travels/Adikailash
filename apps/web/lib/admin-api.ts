@@ -37,7 +37,7 @@ export async function adminGet<T>(path: string): Promise<T | null> {
 }
 
 async function send<T>(
-  method: "POST" | "PATCH",
+  method: "POST" | "PATCH" | "DELETE",
   path: string,
   body: unknown,
 ): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
@@ -45,9 +45,21 @@ async function send<T>(
     const res = await authedFetch(path, { method, body: JSON.stringify(body) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      // The API's 422 messages are written for the person reading them ("A lost lead
-      // needs a reason"), so surface them rather than replacing with a generic string.
-      return { ok: false, error: data.detail ?? `Request failed (${res.status}).` };
+      /*
+        The API's messages are written for the person reading them ("A lost lead
+        needs a reason"), so surface them rather than replacing with a generic
+        string. A refused reservation transition returns `detail: { reasons: [...] }`
+        rather than a string, because a coordinator chasing one blocker at a time is
+        how departures slip. Join them, or this renders as "[object Object]".
+      */
+      const detail = data.detail;
+      const error =
+        typeof detail === "string"
+          ? detail
+          : Array.isArray(detail?.reasons)
+            ? detail.reasons.join(" ")
+            : `Request failed (${res.status}).`;
+      return { ok: false, error };
     }
     return { ok: true, data: data as T };
   } catch (err) {
@@ -63,3 +75,5 @@ export const adminPost = <T>(path: string, body: unknown) =>
 
 export const adminPatch = <T>(path: string, body: unknown) =>
   send<T>("PATCH", path, body);
+
+export const adminDelete = <T>(path: string) => send<T>("DELETE", path, undefined);

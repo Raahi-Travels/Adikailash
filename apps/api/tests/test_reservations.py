@@ -16,6 +16,7 @@ import pytest
 
 from api.domain.reservations import (
     ConfirmationGates,
+    format_inr,
     Readiness,
     ReservationState,
     TransitionRefused,
@@ -248,6 +249,35 @@ def test_readiness_singular_plural():
     )
     assert "1 document outstanding" in one.outstanding
     assert "1 traveller still to be named" in one.outstanding
+
+
+@pytest.mark.parametrize(
+    ("amount", "expected"),
+    [
+        ("0", "₹0"),
+        ("999", "₹999"),
+        ("1000", "₹1,000"),
+        ("150000", "₹1,50,000"),
+        ("1500000", "₹15,00,000"),
+        ("12345678", "₹1,23,45,678"),
+    ],
+)
+def test_indian_digit_grouping(amount: str, expected: str):
+    """Lakh grouping, not thousands. The web app formats with en-IN, so Python's
+    default `:,` would print the same number two different ways on one screen."""
+    assert format_inr(Decimal(amount)) == expected
+
+
+def test_readiness_balance_uses_indian_grouping():
+    readiness = Readiness(
+        travellers_named=2,
+        travellers_expected=2,
+        policy_accepted=True,
+        coordinator="Ops",
+        amount_due=Decimal("150000"),
+        amount_received=Decimal("0"),
+    )
+    assert "₹1,50,000 still to be received" in readiness.outstanding
 
 
 def test_party_size_of_zero_is_not_complete():

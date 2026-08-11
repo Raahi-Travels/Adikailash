@@ -232,6 +232,29 @@ def can_confirm(gates: ConfirmationGates) -> bool:
 # ------------------------------------------------------------------------ readiness
 
 
+def format_inr(amount: Decimal) -> str:
+    """Indian digit grouping: 1,50,000 rather than 150,000.
+
+    Python's `:,` gives thousands grouping, which is wrong for every reader of this
+    product. The web app already formats with `en-IN`, so without this the same
+    number appears two different ways on the same screen.
+    """
+    whole = int(amount)
+    sign = "-" if whole < 0 else ""
+    digits = str(abs(whole))
+    if len(digits) <= 3:
+        return f"{sign}₹{digits}"
+    # Last three digits, then pairs, which is what the lakh/crore system does.
+    head, tail = digits[:-3], digits[-3:]
+    groups = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    if head:
+        groups.insert(0, head)
+    return f"{sign}₹{','.join(groups)},{tail}"
+
+
 @dataclass(frozen=True, slots=True)
 class Readiness:
     """What is outstanding before this group can travel.
@@ -283,7 +306,7 @@ class Readiness:
         if not self.policy_accepted:
             items.append("Terms not accepted")
         if self.balance_outstanding > 0:
-            items.append(f"₹{self.balance_outstanding:,.0f} still to be received")
+            items.append(f"{format_inr(self.balance_outstanding)} still to be received")
         return items
 
 

@@ -128,7 +128,10 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 
 - [ ] Replace the placeholder imagery: `bun run --cwd apps/web check:imagery` must pass
 - [ ] Purge demo data: `uv run --project apps/api python -m api.seed_demo --purge`
-- [ ] Delete the test staff account (`ops@example.invalid`)
+- [ ] Delete every test staff account (`ops@example.invalid`, `ops.test@example.invalid`).
+      This database is shared with Raahi's production and the API is publicly
+      reachable, so a leftover account with a known password is a live hole, not a
+      tidiness issue.
 - [ ] Create real staff accounts: `bun run scripts/create-staff.ts <email> <pw> <name> <roles>`
 - [ ] Confirm `/health` reports `document_storage_configured: true` if uploads are in use
 - [ ] Confirm `payments_enabled: false` (it should be, until O2 to O4)

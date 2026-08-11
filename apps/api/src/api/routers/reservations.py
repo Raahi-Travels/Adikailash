@@ -36,8 +36,18 @@ from api.domain.reservations import (
     transition,
 )
 from api.localization import resolve
+from api.models.access import (
+    DEFAULT_TTL,
+    TravellerAccessToken,
+    generate_token,
+    hash_token,
+)
 from api.models.catalogue import Journey
-from api.models.documents import DocumentState, DocumentSubmission
+from api.models.documents import (
+    DocumentRequirement,
+    DocumentState,
+    DocumentSubmission,
+)
 from api.models.operations import Departure
 from api.models.reservations import (
     PaymentDirection,
@@ -591,3 +601,86 @@ async def transition_reservation(
 
     await session.commit()
     return await _detail(session, reservation_id)
+
+
+@router.post("/{reservation_id}/request-documents", status_code=201)
+async def request_documents(
+    reservation_id: int,
+    session: SessionDep,
+    staff: ReservationStaff,
+):
+    """Create a document checklist per named traveller, and issue one access link.
+
+    Per traveller, not per party: a permit is issued against a person, so a party of
+    four produces four sets. "The group lead uploaded a passport" is not enough and
+    the old lead-level checklist quietly implied it was.
+
+    Requirements resolve the same way the public checklist resolves them, so nobody
+    ever sees a different list from the one on the website.
+
+    The token is returned exactly once. It is stored only as a SHA-256 hash, so a
+    lost link is reissued and the old one revoked, never recovered.
+    """
+    reservation = await _load(session, reservation_id)
+    if not reservation.travellers:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Name the travellers first. Permits are issued against people, so there "
+            "is nothing to ask for until we know who is going.",
+        )
+
+    departure = await session.get(Departure, reservation.departure_id)
+    stmt = select(DocumentRequirement).where(DocumentRequirement.is_active.is_(True))
+    if departure:
+        stmt = stmt.where(
+            (DocumentRequirement.journey_id == departure.journey_id)
+            | (DocumentRequirement.journey_id.is_(None))
+        )
+    requirements = list(await session.scalars(stmt.order_by(DocumentRequirement.sort_order)))
+
+    created = 0
+    for traveller in reservation.travellers:
+        for req in requirements:
+            exists = await session.scalar(
+                select(DocumentSubmission).where(
+                    DocumentSubmission.reservation_traveller_id == traveller.id,
+                    DocumentSubmission.requirement_id == req.id,
+                )
+            )
+            if exists is not None:
+                continue
+            session.add(
+                DocumentSubmission(
+                    reservation_id=reservation.id,
+                    reservation_traveller_id=traveller.id,
+                    lead_id=reservation.lead_id,
+                    departure_id=reservation.departure_id,
+                    requirement_id=req.id,
+                    traveller_name=traveller.full_name,
+                    state=DocumentState.REQUIRED,
+                )
+            )
+            created += 1
+
+    token = generate_token()
+    session.add(
+        TravellerAccessToken(
+            reservation_id=reservation.id,
+            lead_id=reservation.lead_id,
+            token_hash=hash_token(token),
+            expires_at=datetime.now(UTC) + DEFAULT_TTL,
+            issued_by=staff.name,
+        )
+    )
+    await session.commit()
+
+    return {
+        "reservation_id": reservation.id,
+        "reference": reservation.reference,
+        "requirements_per_traveller": len(requirements),
+        "documents_created": created,
+        "travellers": len(reservation.travellers),
+        # Shown once. There is no endpoint that can return it again.
+        "access_token": token,
+        "expires_at": (datetime.now(UTC) + DEFAULT_TTL).isoformat(),
+    }

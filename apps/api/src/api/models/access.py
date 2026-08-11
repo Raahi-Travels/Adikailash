@@ -60,18 +60,36 @@ def hash_token(token: str) -> str:
 
 
 class TravellerAccessToken(Base, TimestampMixin):
-    """One shareable link to one lead's document checklist."""
+    """One shareable link to a traveller's own record.
+
+    Originally a lead's document checklist; since Phase 2 it can also open a
+    reservation, which carries the state, the payment trail and the accepted terms.
+    """
 
     __tablename__ = "traveller_access_tokens"
     __table_args__ = (
         CheckConstraint("expires_at > created_at", name="expiry_is_forward"),
         Index("ix_traveller_access_tokens_hash", "token_hash", unique=True),
         Index("ix_traveller_access_tokens_lead", "lead_id"),
+        Index("ix_traveller_access_tokens_reservation", "reservation_id"),
+        # A token has to open something. Both columns are nullable so either kind of
+        # link is expressible, which without this would also make "neither" expressible.
+        CheckConstraint(
+            "lead_id is not null or reservation_id is not null",
+            name="token_points_at_something",
+        ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    lead_id: Mapped[int] = mapped_column(
-        ForeignKey("leads.id", ondelete="CASCADE"), nullable=False
+    #: Phase 2: a link can now open a reservation rather than only a lead. Nullable
+    #: on both sides because a document request to a lead predates any reservation,
+    #: and a walk-in reservation never had a lead. The check constraint below is what
+    #: stops a token that points at nothing.
+    reservation_id: Mapped[int | None] = mapped_column(
+        ForeignKey("reservations.id", ondelete="CASCADE")
+    )
+    lead_id: Mapped[int | None] = mapped_column(
+        ForeignKey("leads.id", ondelete="CASCADE")
     )
     token_hash: Mapped[str] = mapped_column(String(64), nullable=False)
 
