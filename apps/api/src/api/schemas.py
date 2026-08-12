@@ -1016,3 +1016,59 @@ class ArticleReviewIn(BaseModel):
 
     author: str | None = Field(default=None, max_length=120)
     state: str | None = None
+
+
+# --- Route-status subscriptions (Phase 4) --------------------------------------
+
+
+class SubscribeIn(BaseModel):
+    """Ask for route alerts.
+
+    `channel` and `destination` rather than a typed phone/email pair, because the
+    same record has to serve WhatsApp, SMS and email and decision O9 has not chosen.
+    """
+
+    channel: str = "email"
+    destination: str = Field(min_length=3, max_length=320)
+    name: str | None = Field(default=None, max_length=200)
+    #: Null subscribes to every segment, which is what most people want.
+    route_segment_slug: str | None = None
+    source_page: str | None = Field(default=None, max_length=200)
+    #: Must be true. Present so the request carries an explicit act of consent rather
+    #: than consent being implied by the endpoint being called.
+    consent: bool = False
+
+
+class SubscriptionOut(BaseModel):
+    state: str
+    channel: str
+    #: Partially masked. A confirmation screen should not print somebody's full
+    #: number back at them on a page that might be shoulder-read.
+    destination_hint: str
+    segment_name: str | None = None
+    message: str
+
+
+class OutboundMessageOut(ORMModel):
+    id: int
+    channel: str
+    destination: str
+    subject: str
+    body: str
+    urgency: str
+    state: str
+    send_after: datetime
+    sent_at: datetime | None = None
+    suppressed_reason: str | None = None
+    created_at: datetime
+
+
+class OutboundQueueOut(BaseModel):
+    messages: list[OutboundMessageOut] = Field(default_factory=list)
+    queued: int = 0
+    suppressed: int = 0
+    sent: int = 0
+    active_subscribers: int = 0
+    #: False until decision O9 settles a provider. The admin says so rather than
+    #: letting a growing backlog look like a bug.
+    sending_enabled: bool = False

@@ -96,7 +96,20 @@ def requires_english(column: str) -> CheckConstraint:
 
 
 class TimestampMixin:
-    """Matches Raahi's column convention: snake_case, timestamptz, server defaults."""
+    """Audit timestamps, with server defaults.
+
+    Note these are `timestamp WITHOUT time zone`: the annotation is `datetime` and no
+    explicit type is given, so SQLAlchemy infers a naive column. Values are UTC in
+    practice because `func.now()` runs on a UTC server, and ordering and display are
+    unaffected.
+
+    What it does affect is comparison from Python. Passing an aware datetime into a
+    query against these columns raises "can't subtract offset-naive and offset-aware
+    datetimes" from asyncpg. Compare server-side (`func.now() - interval '1 day'`) or
+    use one of the explicit `DateTime(timezone=True)` columns instead. Every column
+    that carries operational meaning — `verified_at`, `send_after`, `occurred_at` —
+    already declares its timezone explicitly for exactly this reason.
+    """
 
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now(),

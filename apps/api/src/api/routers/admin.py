@@ -62,7 +62,7 @@ from api.schemas import (
     UploadTicketOut,
     WeatherPublishIn,
 )
-from api import indexnow
+from api import indexnow, notifications
 from api.storage import (
     ACCEPTED_DOCUMENT_TYPES,
     MAX_DOCUMENT_BYTES,
@@ -306,6 +306,11 @@ async def publish_status(
     # Bing's index. This never blocks and never raises: the publish already
     # succeeded, and telling Microsoft about it is a courtesy.
     indexnow.submit(indexnow.status_urls())
+
+    # Fan out to subscribers. Only a material change produces messages: a
+    # re-verification that says the road is still open updates the page and
+    # interrupts nobody. See api.domain.subscriptions.
+    await notifications.queue_status_alerts(session, update)
 
     return {
         "id": update.id,

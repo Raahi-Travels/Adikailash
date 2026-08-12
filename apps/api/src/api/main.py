@@ -25,6 +25,7 @@ from api.routers import (
     operations,
     public,
     reservations,
+    subscriptions,
     traveller,
 )
 from api.storage import is_storage_configured
@@ -72,6 +73,7 @@ else:
 
 app.include_router(public.router)
 app.include_router(content.router)
+app.include_router(subscriptions.router)
 app.include_router(admin.router)
 app.include_router(reservations.router)
 app.include_router(manifest.router)

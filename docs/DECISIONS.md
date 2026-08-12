@@ -32,6 +32,10 @@ Last updated: 8 August 2026
 
 | D16 | Rooming granularity | **Traveller to stay, per night** | 2026-08-11 | Precise enough to answer a family asking where their parents will sleep, which doc 01 puts at the centre of this business, and no more precise than a 3-4 bed shared room in somebody's house can actually be. Room-level allocation was rejected: those rooms rarely have stable identities to allocate against. Over-capacity is a blocker, not a note, because it is what leaves a family outside at night at altitude. |
 
+| D17 | Route alerts | **Send on change, never on re-verification** | 2026-08-12 | A coordinator re-verifies a segment roughly twice a day through the season. Alerting on every publish would produce ~60 messages a season saying the road is still open; everyone mutes us, and the one message that says it *closed* lands in a channel nobody reads. So `material_change()` compares access to the previous published access and returns false when nothing moved — the page still updates, which is where somebody who wants to check goes. Closure is urgent and ignores the 21:00–07:00 IST quiet window; everything else waits for morning. Three messages per subscriber per day is a hard cap, and a segment flapping past it is an operations problem, not something to forward. Rules live in `domain/subscriptions.py` with no database, so they are testable against a season before anyone is messaged. |
+
+| D18 | Unsubscribing | **One click, no login — but the click is a POST** | 2026-08-12 | The link in every message resolves to a page with a single button rather than unsubscribing on load. Corporate mail scanners and link-preview crawlers fetch every URL in an incoming message before the recipient sees it, so a mutating GET would silently unsubscribe people who never opened the mail. Idempotent by design: a second click returns success, not an error. Anything already queued for that subscriber is suppressed rather than sent, because a message going out *after* somebody left is the most common way this kind of system breaks its promise. |
+
 | D11 | i18n | **next-intl, `localePrefix: "always"`** | 2026-08-08 | `/en/...` and `/hi/...` symmetrically, rather than English at the root with Hindi in a subfolder — the structural form of doc 02's "first-class layout, not a smaller translation". Makes hreflang pairs trivial. Note Next.js 16 renamed the `middleware` convention to `proxy`, so the handler lives in `apps/web/proxy.ts`. |
 
 **Two i18n layers, deliberately separate.** next-intl covers UI strings, locale routing
@@ -111,7 +115,8 @@ departures, leads and traveller data are not world-readable.
 | O6 | Final journey list, itineraries and service tiers | Operations founder | Journey content model population |
 | O7 | Domain | Brand founder | Canonical URLs, email identities |
 | O8 | Payment provider | Finance + tech | Payment adapter. Deferred by D13: nothing is blocked until online payment is wanted, which is a 2027-season question |
-| O9 | WhatsApp provider (Business Platform or authorised BSP) | Tech + sales | Messaging adapter |
+| O9 | WhatsApp provider (Business Platform or authorised BSP) | Tech + sales | Messaging adapter. **Now the only thing between the alert queue and a subscriber.** Everything upstream is built and running: people can subscribe, confirm, and unsubscribe, and every route change produces the exact rows that would go out — visible at `GET /admin/alert-queue`. Nothing sends, and the admin says so rather than implying otherwise. Also needs a plain WhatsApp number for the site |
+| O7 (note) | Domain | Brand founder | Additionally blocks the unsubscribe link: until `PUBLIC_SITE_ORIGIN` is set, queued message bodies carry a visible `[SITE ORIGIN NOT CONFIGURED]` placeholder instead of a silently relative link |
 | O10 | Support hours, escalation and emergency ownership | Operations founder | Response-time claims on the site |
 | O11 | Languages at launch (English / Hindi) | Growth + operations | Content model, typography |
 

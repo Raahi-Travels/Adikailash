@@ -52,6 +52,13 @@ from api.models.reservations import (
     TravellerRole,
     UpdateCategory,
 )
+from api.models.subscriptions import (
+    OutboundMessage,
+    OutboundState,
+    StatusSubscription,
+    SubscriptionChannel,
+    SubscriptionState,
+)
 from api.models.supply import (
     Incident,
     RoomingAssignment,
@@ -82,6 +89,11 @@ from api.models.weather import (
 )
 
 __all__ = [
+    "SubscriptionState",
+    "SubscriptionChannel",
+    "StatusSubscription",
+    "OutboundState",
+    "OutboundMessage",
     "ArticleState",
     "ArticleFaq",
     "ArticleCluster",

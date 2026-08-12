@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { StatusBadge } from "@/components/status-badge";
+import { StatusAlerts } from "@/components/status-alerts";
 import { StatusLd } from "@/components/structured-data";
 import { api, type Locale } from "@/lib/api";
 import { buildMetadata } from "@/lib/brand";
@@ -221,7 +222,11 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
           </section>
         )}
 
-        <p className="mt-16 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/55">
+        <div className="mt-16">
+          <StatusAlerts />
+        </div>
+
+        <p className="mt-10 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/55">
           We publish what we can verify and mark what we cannot. Nothing on this page is
           a guarantee of access, weather or darshan. If a segment matters to your
           travel, ask us before you set out.
