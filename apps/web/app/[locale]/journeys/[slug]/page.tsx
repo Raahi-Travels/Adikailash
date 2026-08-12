@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { Scene } from "@/components/scene";
+import { BreadcrumbLd, JourneyLd } from "@/components/structured-data";
 import { Link } from "@/i18n/navigation";
 import { api, type Locale, type Stay } from "@/lib/api";
 import { journeyScene } from "@/lib/imagery";
@@ -63,6 +64,15 @@ export default async function JourneyDetailPage({
     .filter((s): s is Stay => s !== null && s.kind === "homestay");
 
   return (
+    <>
+      <JourneyLd journey={journey} locale={locale} />
+      <BreadcrumbLd
+        locale={locale}
+        trail={[
+          { name: "Journeys", path: "/journeys" },
+          { name: journey.name, path: `/journeys/${journey.slug}` },
+        ]}
+      />
     <main id="main" className="flex-1 bg-midnight text-ink-inverse">
       <section className="px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-20">
         <div className="mx-auto max-w-6xl">
@@ -274,5 +284,6 @@ export default async function JourneyDetailPage({
         </div>
       </section>
     </main>
+    </>
   );
 }

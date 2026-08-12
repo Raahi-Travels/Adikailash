@@ -10,12 +10,21 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata = buildMetadata({
+/**
+ * `generateMetadata` rather than a static export, purely so the canonical can
+ * carry the locale. A canonical that guessed the locale would point half the
+ * site at the wrong URL.
+ */
+export async function generateMetadata({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  return buildMetadata({
   title: "Plan your journey",
   description:
     "Documents, permits, altitude and preparation for the journey to Adi Kailash and Om Parvat.",
   path: "/plan",
-});
+    locale,
+  });
+}
 
 export default async function PlanPage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;

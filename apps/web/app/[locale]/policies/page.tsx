@@ -13,12 +13,21 @@ import { POLICIES, POLICY_ORDER } from "@/lib/policies";
  * reading at this page.
  */
 
-export const metadata = buildMetadata({
+/**
+ * `generateMetadata` rather than a static export, purely so the canonical can
+ * carry the locale. A canonical that guessed the locale would point half the
+ * site at the wrong URL.
+ */
+export async function generateMetadata({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  return buildMetadata({
   title: "Policies",
   description:
     "Terms of service, cancellation and refunds, privacy, and the consent we ask for. Written to be read before you book.",
   path: "/policies",
-});
+    locale,
+  });
+}
 
 export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { brand } from "./config";
+import { siteOrigin } from "@/lib/site-url";
 import { display, isSettled, valueOf } from "./types";
 
 /**
@@ -44,16 +45,53 @@ export function whatsappLink(context: EnquiryContext = {}): string | null {
  *
  * `metadataBase` is only set once a domain exists (O7); Next will warn rather than
  * silently resolve OG images against a guessed origin.
+ *
+ * **hreflang is emitted whenever `path` is known.** Decision D11 gives symmetrical
+ * `/en/` and `/hi/` prefixes, so the pair is derivable rather than configured. Doc 02
+ * calls Hindi "a first-class layout, not a smaller translation"; declaring the two as
+ * alternates is the structural form of that, and it stops them competing with each
+ * other in the index. No SEO tool we reviewed checks hreflang, so nothing will catch
+ * this if it breaks.
+ *
+ * `x-default` points at English because it is the default locale, not because it
+ * matters more: it is the fallback when a crawler cannot infer a preference.
+ *
+ * **`canonical` needs the current locale**, so it is emitted only when `locale` is
+ * passed. Guessing would be worse than omitting: a wrong canonical tells search
+ * engines a page lives somewhere it does not, and that is expensive to undo.
  */
 export function buildMetadata(input: {
   title: string;
   description: string;
+  /** Locale-agnostic path, e.g. `/status`. Drives hreflang and canonical. */
   path?: string;
+  /** The locale being rendered. Required before a canonical is emitted. */
+  locale?: string;
   /** Overrides the default share card. Path under `public/`, e.g. `/og/status.jpg`. */
   image?: string;
 }): Metadata {
   const domain = valueOf(brand.web.domain);
   const suffix = display(brand.web.seoTitleSuffix);
+
+  const { origin, isProvisional } = siteOrigin();
+  /*
+    Only advertise alternates against an asserted origin. Under a preview host these
+    would teach search engines URLs we intend to abandon, and robots disallows
+    everything there anyway.
+  */
+  const alternates =
+    input.path && !isProvisional
+      ? {
+          ...(input.locale
+            ? { canonical: `${origin}/${input.locale}${input.path}` }
+            : {}),
+          languages: {
+            en: `${origin}/en${input.path}`,
+            hi: `${origin}/hi${input.path}`,
+            "x-default": `${origin}/en${input.path}`,
+          },
+        }
+      : undefined;
 
   /*
     The share card is gated on the domain (decision O7), not on the file existing.
@@ -71,6 +109,7 @@ export function buildMetadata(input: {
     title: cardTitle,
     description: input.description,
     ...(domain ? { metadataBase: new URL(`https://${domain}`) } : {}),
+    ...(alternates ? { alternates } : {}),
     openGraph: {
       title: cardTitle,
       description: input.description,

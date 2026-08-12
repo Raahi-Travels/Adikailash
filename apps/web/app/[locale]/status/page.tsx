@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { StatusBadge } from "@/components/status-badge";
+import { StatusLd } from "@/components/structured-data";
 import { api, type Locale } from "@/lib/api";
 import { buildMetadata } from "@/lib/brand";
 
@@ -13,12 +14,21 @@ import { buildMetadata } from "@/lib/brand";
  * timestamps and named verifiers, so it can be read, cited and quoted.
  */
 
-export const metadata = buildMetadata({
+/**
+ * `generateMetadata` rather than a static export, purely so the canonical can
+ * carry the locale. A canonical that guessed the locale would point half the
+ * site at the wrong URL.
+ */
+export async function generateMetadata({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  return buildMetadata({
   title: "Route and permit status",
   description:
     "Current road, permit and weather conditions on the route to Adi Kailash and Om Parvat, with the time each was last verified.",
   path: "/status",
-});
+    locale,
+  });
+}
 
 const SOURCE_LABEL: Record<string, string> = {
   official_notice: "Official notice",
@@ -56,6 +66,8 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
   const data = await api.status(locale as Locale);
 
   return (
+    <>
+      {data && <StatusLd status={data} locale={locale} />}
     <main id="main" className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20">
       <div className="mx-auto max-w-4xl">
         <h1 className="font-serif text-4xl leading-tight sm:text-5xl">
@@ -216,5 +228,6 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
         </p>
       </div>
     </main>
+    </>
   );
 }

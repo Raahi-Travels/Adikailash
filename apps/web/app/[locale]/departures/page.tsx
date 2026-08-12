@@ -18,12 +18,21 @@ import { buildMetadata, whatsappLink } from "@/lib/brand";
  * Dates are grouped by month because that is how people actually plan leave.
  */
 
-export const metadata = buildMetadata({
+/**
+ * `generateMetadata` rather than a static export, purely so the canonical can
+ * carry the locale. A canonical that guessed the locale would point half the
+ * site at the wrong URL.
+ */
+export async function generateMetadata({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  return buildMetadata({
   title: "Departure dates",
   description:
     "Confirmed and forming departure dates for Adi Kailash and Om Parvat, with group size, what is included and what each date is currently open for.",
   path: "/departures",
-});
+    locale,
+  });
+}
 
 /**
  * What the visitor may do, keyed by departure **state**.
