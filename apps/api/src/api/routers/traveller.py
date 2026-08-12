@@ -16,7 +16,7 @@ read another family's documents.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -31,13 +31,22 @@ from api.models.documents import (
     DocumentSubmission,
 )
 from api.domain.reservations import Readiness
-from api.models.catalogue import Journey
+from api.models.catalogue import ItineraryStage, Journey, Stay
 from api.models.leads import Lead
-from api.models.operations import Departure
+from api.models.operations import (
+    Departure,
+    DepartureCheckIn,
+    OperatingPartner,
+    StatusUpdate,
+)
 from api.models.reservations import PaymentDirection, Reservation, TravellerRole
 from api.models.staff import StaffUser
 from api.schemas import (
     BookingAcceptanceOut,
+    CompanionDayOut,
+    CompanionOut,
+    SharedCheckInOut,
+    SharedContactOut,
     BookingPaymentOut,
     BookingTravellerOut,
     TravellerBookingOut,
@@ -467,4 +476,147 @@ async def my_booking(
             )
             for u in reservation.updates
         ],
+    )
+
+
+@router.get("/companion", response_model=CompanionOut)
+async def my_companion(
+    session: SessionDep,
+    locale: LocaleDep,
+    token: str = Query(min_length=20),
+):
+    """The during-trip page, in a single payload.
+
+    Doc 05's operational minimum: cached itinerary, named coordinator and emergency
+    numbers, pickup and next movement, stay information, day notes, route alerts and
+    a help path.
+
+    **One request rather than five, deliberately.** This is read in the Vyas valley
+    where there is no network for two days at a stretch, from whatever the browser
+    managed to cache before the group left Dharchula. A page assembled from several
+    endpoints is a page that renders four-fifths of itself in the one place it
+    actually has to work. `generated_at` travels with the payload so the page can say
+    "saved 9 hours ago" rather than implying it is live.
+    """
+    access = await _resolve(session, token)
+    if access.reservation is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "This link does not open a journey yet.",
+        )
+
+    reservation = access.reservation
+    departure = await session.get(Departure, reservation.departure_id)
+    journey = await session.get(Journey, departure.journey_id) if departure else None
+
+    today = date.today()
+    days: list[CompanionDayOut] = []
+    if departure and departure.itinerary_version_id:
+        stages = list(
+            await session.scalars(
+                select(ItineraryStage)
+                .where(
+                    ItineraryStage.itinerary_version_id
+                    == departure.itinerary_version_id
+                )
+                .order_by(ItineraryStage.day_number)
+            )
+        )
+        for stage in stages:
+            on_date = (
+                departure.start_date + timedelta(days=stage.day_number - 1)
+                if departure.start_date
+                else None
+            )
+            stay_name = stay_note = None
+            if stage.stay_id:
+                stay = await session.get(Stay, stage.stay_id)
+                if stay is not None:
+                    stay_name = resolve(stay.name, locale)
+                    # The honest limitations, not the sales copy. Somebody arriving
+                    # at 9pm at 3,500m needs to know there is no hot water before
+                    # they get there, not after.
+                    stay_note = resolve(stay.limitations_note, locale)
+            days.append(
+                CompanionDayOut(
+                    day=stage.day_number,
+                    on_date=on_date,
+                    title=resolve(stage.title, locale) or f"Day {stage.day_number}",
+                    travel_note=resolve(stage.travel_note, locale),
+                    altitude_note=resolve(stage.altitude_note, locale),
+                    staying_at=stay_name,
+                    stay_note=stay_note,
+                    is_route_dependent=stage.is_route_dependent,
+                    is_today=on_date == today,
+                )
+            )
+
+    current = next((d for d in days if d.is_today), None)
+    # The next movement is the day *after* today, or the first day when the journey
+    # has not started — which is the thing somebody actually opens this page to check
+    # the night before.
+    following = None
+    if current is not None:
+        following = next((d for d in days if d.day == current.day + 1), None)
+    elif days:
+        following = next((d for d in days if d.on_date and d.on_date >= today), days[0])
+
+    # Doc 05 wants a named coordinator and an emergency number on this page, and
+    # they are the single most important thing on it. What we can honestly publish
+    # today is the operating partner's support contact — the entity legally
+    # responsible for this departure, per doc 06. A dedicated 24-hour operations
+    # number waits on decision O10, and inventing one here would be worse than the
+    # gap: a relative dialling a number nobody answers at 2am is the exact failure
+    # this page exists to prevent.
+    contacts: list[SharedContactOut] = []
+    if departure and departure.operating_partner_id:
+        partner = await session.get(OperatingPartner, departure.operating_partner_id)
+        if partner is not None and partner.support_contact:
+            contacts.append(
+                SharedContactOut(
+                    label=(partner.public_name or partner.legal_name),
+                    phone=partner.support_contact,
+                    note="The operator legally responsible for this departure.",
+                )
+            )
+
+    notices: list[str] = []
+    for update in await session.scalars(
+        select(StatusUpdate)
+        .where(StatusUpdate.access != "open")
+        .order_by(StatusUpdate.verified_at.desc())
+        .limit(5)
+    ):
+        summary = resolve(update.summary, locale)
+        if summary:
+            notices.append(summary)
+
+    latest = None
+    if departure is not None:
+        row = await session.scalar(
+            select(DepartureCheckIn)
+            .where(DepartureCheckIn.departure_id == departure.id)
+            .order_by(DepartureCheckIn.occurred_at.desc())
+            .limit(1)
+        )
+        if row is not None:
+            latest = SharedCheckInOut(
+                at=row.occurred_at,
+                note=(f"{row.location}. {row.note}" if row.location else row.note),
+                posted_by=row.posted_by,
+            )
+
+    return CompanionOut(
+        reference=reservation.reference,
+        journey_name=resolve(journey.name, locale) if journey else "Your journey",
+        starts_on=departure.start_date if departure else None,
+        ends_on=departure.end_date if departure else None,
+        state=reservation.state.value,
+        days=days,
+        today=current,
+        next_movement=following,
+        contacts=contacts,
+        route_notices=notices,
+        latest_check_in=latest,
+        generated_at=datetime.now(UTC),
     )

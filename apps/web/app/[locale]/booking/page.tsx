@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 
+import { FamilyShares } from "@/components/family-shares";
 import { Caution, Permit, Verified } from "@/components/icons";
 import { Link } from "@/i18n/navigation";
 import { buildMetadata } from "@/lib/brand";
@@ -410,18 +411,33 @@ export default async function BookingPage({
               )}
             </section>
 
+            <FamilyShares token={value} />
+
             <div className="mt-10 border-t border-white/12 pt-8">
               <h2 className="font-serif text-2xl">Take it with you</h2>
               <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
                 There is no mobile network for long stretches above Dharchula. Print
                 this before you leave, or save it as a PDF.
               </p>
-              <Link
-                href={`/booking/pack?token=${encodeURIComponent(value)}`}
-                className="mt-5 inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
-              >
-                Open your trip pack
-              </Link>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href={`/booking/pack?token=${encodeURIComponent(value)}`}
+                  className="inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                >
+                  Open your trip pack
+                </Link>
+                {/*
+                  The companion is the during-trip page. It caches itself, so opening
+                  it once before leaving is what makes it work at altitude — which is
+                  why the link says that rather than just naming the page.
+                */}
+                <Link
+                  href={`/trip?token=${encodeURIComponent(value)}`}
+                  className="inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                >
+                  Open your journey page — do this before you leave
+                </Link>
+              </div>
             </div>
 
             <p className="mt-10 text-sm leading-relaxed text-ink-inverse/50">

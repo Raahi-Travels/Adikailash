@@ -113,6 +113,25 @@ h3 {
  * Applied globally rather than on that page, because the header and footer are
  * rendered by the layout and a page cannot reach them.
  */
+/*
+ * Quiet pages: the trip companion, the family share view, the feedback form.
+ *
+ * These are reached by a capability link, not by browsing, and none of them should
+ * carry the marketing nav. A relative worried about somebody at altitude does not
+ * need an "Enquire" button, and doc 05 is explicit that the companion "should not
+ * encourage phone use at moments where attention, safety or reverence matter" — a
+ * row of navigation is precisely that invitation.
+ *
+ * Done with `:has()` rather than by splitting the routes into a layout group. The
+ * header and footer are rendered by `[locale]/layout.tsx`, which every route shares;
+ * removing them for three pages would mean moving twenty route directories into a
+ * `(site)` group. This is three lines, reversible, and needs no JavaScript — so
+ * there is no flash of chrome before it disappears.
+ */
+body:has([data-quiet-page]) [data-site-chrome] {
+  display: none;
+}
+
 @media print {
   /*
     Only the site's own chrome, matched by an explicit marker. A bare `footer`

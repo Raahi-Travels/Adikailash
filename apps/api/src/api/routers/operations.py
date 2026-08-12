@@ -37,7 +37,7 @@ from api.domain.supply import (
 )
 from api.localization import resolve
 from api.models.catalogue import Stay
-from api.models.operations import Departure
+from api.models.operations import Departure, DepartureCheckIn
 from api.models.reservations import (
     PaymentDirection,
     PaymentMethod,
@@ -58,9 +58,11 @@ from api.models.supply import (
     SupplierPayment,
 )
 from api.schemas import (
+    CheckInIn,
     EconomicsOut,
     IncidentIn,
     IncidentOut,
+    SharedCheckInOut,
     IncidentUpdateIn,
     RoomingAssignmentIn,
     RoomingBedOut,
@@ -655,3 +657,47 @@ async def update_incident(
     await session.commit()
     await session.refresh(incident)
     return _incident_out(incident)
+
+
+@router.post("/departures/{departure_id}/check-in", response_model=SharedCheckInOut)
+async def post_check_in(
+    departure_id: int,
+    payload: CheckInIn,
+    session: SessionDep,
+    staff: AnyOpsStaff,
+):
+    """A coordinator says where the group is and that everyone is well.
+
+    This is the source for both the family share view and the traveller companion.
+    It is typed by a person on purpose — doc 05 wants a check-in *offered*, and an
+    automatic "they should be in Gunji by now" derived from the itinerary would be a
+    claim we cannot stand behind at exactly the moment a family is relying on it.
+
+    Append-only. Correcting a check-in means posting another one, so a family sees
+    that a correction happened rather than history changing quietly under them.
+
+    `is_shareable=false` keeps it internal: true, useful operationally, and not
+    something to put in front of a relative without context.
+    """
+    departure = await session.get(Departure, departure_id)
+    if departure is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Departure not found.")
+
+    row = DepartureCheckIn(
+        departure_id=departure_id,
+        note=payload.note.strip(),
+        location=payload.location,
+        # The staff member's *name*, not their email. This string is shown to a
+        # family member on a share link, and doc 05 asks for a named coordinator —
+        # "ops@example.invalid" is neither a name nor something to hand to an
+        # external party. The email is the fallback only so the NOT NULL check can
+        # never be what stops a check-in being posted from the field.
+        posted_by=staff.name or staff.email or staff.id,
+        occurred_at=payload.occurred_at or datetime.now(UTC),
+        is_shareable=payload.is_shareable,
+    )
+    session.add(row)
+    await session.commit()
+    await session.refresh(row)
+
+    return SharedCheckInOut(at=row.occurred_at, note=row.note, posted_by=row.posted_by)

@@ -154,6 +154,25 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           </div>
         </div>
 
+        {/*
+          Doc 03 puts partnerships and B2B ground handling behind the main
+          navigation — "Press, partnerships or B2B ground handling later". They are
+          real revenue lines (doc 01 rates ground handling P1), and an agency
+          operations head will look in the footer. A traveller should not have to
+          step over them on the way to a journey.
+        */}
+        <nav
+          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm"
+          aria-label="More"
+        >
+          <Link href="/private" className="hover:text-ink-inverse">
+            Private groups and international travellers
+          </Link>
+          <Link href="/partners" className="hover:text-ink-inverse">
+            Ground handling for agencies
+          </Link>
+        </nav>
+
         <nav
           className="flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm"
           aria-label="Policies"

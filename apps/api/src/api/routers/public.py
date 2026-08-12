@@ -25,7 +25,15 @@ from api.models.catalogue import (
     ServiceTier,
 )
 from api.models.documents import DocumentRequirement
-from api.models.leads import ConsentChannel, ConsentPurpose, Lead, LeadConsent
+from api.models.leads import (
+    ConsentChannel,
+    ConsentPurpose,
+    EnquiryDetail,
+    EnquiryKind,
+    Lead,
+    LeadConsent,
+)
+from api.routers.advocacy import attribute_referral
 from api.models.operations import Departure, RouteSegment, StatusUpdate
 from api.models.weather import WeatherSnapshot
 from api.schemas import (
@@ -452,6 +460,7 @@ async def create_lead(payload: LeadIn, request: Request, session: SessionDep):
         journey_id = j.id if j else None
 
     lead = Lead(
+        enquiry_kind=EnquiryKind(payload.enquiry_kind),
         name=payload.name,
         phone=payload.phone,
         email=payload.email,
@@ -472,6 +481,20 @@ async def create_lead(payload: LeadIn, request: Request, session: SessionDep):
     )
     session.add(lead)
     await session.flush()
+
+    # The specialised forms carry a second page of answers. Created only when the
+    # form actually sent one, so the common WhatsApp enquiry does not get an empty
+    # row of fifteen nulls attached to it.
+    if payload.detail is not None:
+        session.add(
+            EnquiryDetail(lead_id=lead.id, **payload.detail.model_dump(exclude_none=True))
+        )
+
+    # Attribution, per doc 07. An unrecognised code is still recorded: somebody
+    # mistyped, and a coordinator who can see what they typed can find the right
+    # traveller and thank them.
+    if payload.referral_code and payload.referral_code.strip():
+        await attribute_referral(session, lead.id, payload.referral_code.strip())
 
     now = datetime.now(UTC)
     evidence = f"Enquiry form at {payload.landing_page or request.url.path}"

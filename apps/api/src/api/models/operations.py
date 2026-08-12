@@ -23,6 +23,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    func,
     text,
     UniqueConstraint,
 )
@@ -237,3 +238,53 @@ class DepartureStateChange(Base, TimestampMixin):
     )
     actor: Mapped[str] = mapped_column(String(120), nullable=False)
     reason: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class DepartureCheckIn(Base, TimestampMixin):
+    """A coordinator saying where the group is and that everyone is well.
+
+    Doc 05 asks for a "daily movement or check-in summary" on the family share, and
+    lists a "daily check-in or traveller pulse" under the during-trip companion. Both
+    read this one table rather than each growing their own, because two sources for
+    "where is the group" is how a family gets told two different things.
+
+    **Posted by a person, never inferred.** There is no derivation from GPS, from a
+    schedule, or from the itinerary saying they *should* be in Gunji by now. A
+    check-in means somebody with the group typed it, and the family view says who and
+    when — an automatic one would be a claim we cannot stand behind at exactly the
+    moment it matters most.
+
+    Append-only. A correction is a new check-in, so the family sees that a correction
+    happened rather than history quietly changing under them.
+    """
+
+    __tablename__ = "departure_check_ins"
+    __table_args__ = (
+        CheckConstraint("length(trim(note)) > 0", name="check_in_note_present"),
+        CheckConstraint("length(trim(posted_by)) > 0", name="check_in_author_present"),
+        Index("ix_departure_check_ins_departure", "departure_id", "occurred_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    departure_id: Mapped[int] = mapped_column(
+        ForeignKey("departures.id", ondelete="CASCADE"), nullable=False
+    )
+
+    #: Where the group actually is, at settlement granularity. Not an address.
+    location: Mapped[str | None] = mapped_column(String(160))
+    #: Plain sentences a worried relative can read: "Reached Gunji at 4pm, everyone
+    #: well, resting tomorrow for altitude."
+    note: Mapped[str] = mapped_column(Text, nullable=False)
+    posted_by: Mapped[str] = mapped_column(String(120), nullable=False)
+
+    #: When the thing happened, which is not when it was typed — a coordinator may
+    #: only get signal hours later, and the family should see the earlier time.
+    occurred_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    #: False keeps it internal: an operational note that is true but not something to
+    #: put in front of a family without context.
+    is_shareable: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default=text("true")
+    )

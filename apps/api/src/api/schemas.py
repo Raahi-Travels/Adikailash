@@ -316,6 +316,17 @@ class LeadIn(BaseModel):
 
     consents: list[ConsentIn] = Field(default_factory=list)
 
+    #: Which form this came through. The specialised pages post the same endpoint —
+    #: doc 04 wants one pipeline, not three inboxes for a three-person team.
+    enquiry_kind: Literal[
+        "standard", "private_or_international", "b2b_ground_handling"
+    ] = "standard"
+    #: Present only for the specialised forms.
+    detail: EnquiryDetailIn | None = None
+    #: Typed by the enquirer, exactly as they read it off a message. Normalised and
+    #: matched server-side; an unrecognised code is still recorded.
+    referral_code: str | None = Field(default=None, max_length=40)
+
     @field_validator("preferred_language")
     @classmethod
     def _known_locale(cls, v: str) -> str:
@@ -1072,3 +1083,280 @@ class OutboundQueueOut(BaseModel):
     #: False until decision O9 settles a provider. The admin says so rather than
     #: letting a growing backlog look like a bug.
     sending_enabled: bool = False
+
+
+# --------------------------------------------------------------- specialised enquiries
+
+
+class EnquiryDetailIn(BaseModel):
+    """The extra answers doc 03 asks for on the private/international form, plus the
+    B2B ground-handling fields.
+
+    Every field is optional. Doc 03 says "Ask only what is necessary for the current
+    stage", and the current stage is *getting somebody to write to us at all*. A
+    fourteen-field required form on a first contact from Ohio is how you convert a
+    curious traveller into a bounce.
+    """
+
+    # Private / international
+    date_flexibility: str | None = Field(default=None, max_length=2000)
+    group_size_min: int | None = Field(default=None, ge=1, le=200)
+    group_size_max: int | None = Field(default=None, ge=1, le=200)
+    age_range: str | None = Field(default=None, max_length=120)
+    experience_preference: str | None = Field(default=None, max_length=2000)
+    gateway_needs: str | None = Field(default=None, max_length=2000)
+    interests: str | None = Field(default=None, max_length=2000)
+    time_zone: str | None = Field(default=None, max_length=64)
+    consultation_window: str | None = Field(default=None, max_length=160)
+    consultation_channel: str | None = Field(default=None, max_length=40)
+    #: Doc 03: what the traveller *chooses* to disclose. Never required, never shown
+    #: in a list view, never exported to a partner.
+    accessibility_needs: str | None = Field(default=None, max_length=2000)
+
+    # B2B ground handling
+    company_name: str | None = Field(default=None, max_length=200)
+    company_role: str | None = Field(default=None, max_length=120)
+    company_website: str | None = Field(default=None, max_length=300)
+    company_registration: str | None = Field(default=None, max_length=80)
+    services_needed: str | None = Field(default=None, max_length=1000)
+    volume_estimate: str | None = Field(default=None, max_length=200)
+    season_of_interest: str | None = Field(default=None, max_length=120)
+
+
+# ----------------------------------------------------------------- advocacy
+
+
+class FeedbackIn(BaseModel):
+    """The private post-trip form.
+
+    Ratings are 1-5 and `None` means unanswered — which is emphatically not a 1. A
+    form posting 0 for an untouched control would otherwise record every skipped
+    question as the worst possible score and open a complaint that nobody made.
+    """
+
+    submitted_by: str | None = Field(default=None, max_length=200)
+
+    sales_promise_accuracy: int | None = Field(default=None, ge=1, le=5)
+    preparation: int | None = Field(default=None, ge=1, le=5)
+    pickup_and_transport: int | None = Field(default=None, ge=1, le=5)
+    accommodation: int | None = Field(default=None, ge=1, le=5)
+    coordinator_support: int | None = Field(default=None, ge=1, le=5)
+    route_communication: int | None = Field(default=None, ge=1, le=5)
+    spiritual_and_cultural: int | None = Field(default=None, ge=1, le=5)
+
+    recommend_score: int | None = Field(default=None, ge=0, le=10)
+    what_went_well: str | None = Field(default=None, max_length=4000)
+    what_went_wrong: str | None = Field(default=None, max_length=4000)
+
+
+class FeedbackOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    submitted_at: datetime | None = None
+    #: What we will do next, in words, so submitting does not feel like a void.
+    message: str = ""
+    #: True when the answers opened at least one complaint. The traveller is told
+    #: plainly that somebody will call, rather than being thanked and forgotten.
+    will_follow_up: bool = False
+
+
+class ComplaintOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    dimension: str
+    rating: int | None = None
+    detail: str | None = None
+    resolution_state: str
+    resolution_note: str | None = None
+    resolved_by: str | None = None
+    resolved_at: datetime | None = None
+
+
+class ComplaintResolutionIn(BaseModel):
+    """Resolving a complaint requires saying what was done.
+
+    `resolution_note` is required and non-empty at the schema, the domain and the
+    database. Three layers for one rule because "resolved" with no note is a
+    coordinator clearing a screen, and the whole review gate depends on this
+    meaning something.
+    """
+
+    state: Literal["resolved", "acknowledged"]
+    resolution_note: str = Field(min_length=10, max_length=4000)
+
+
+class FeedbackReviewOut(BaseModel):
+    """A staff view of one feedback record and whether we may ask for a review."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    reservation_id: int
+    reservation_reference: str | None = None
+    submitted_at: datetime | None = None
+    submitted_by: str | None = None
+    recommend_score: int | None = None
+    what_went_well: str | None = None
+    what_went_wrong: str | None = None
+    ratings: dict[str, int] = Field(default_factory=dict)
+    complaints: list[ComplaintOut] = Field(default_factory=list)
+    open_complaint_count: int = 0
+    #: Empty means we may ask. Non-empty is the list of things to do first.
+    review_request_blockers: list[str] = Field(default_factory=list)
+    already_asked: bool = False
+
+
+class ReviewRequestIn(BaseModel):
+    platform: Literal["google", "tripadvisor", "own_site"]
+    #: Asked separately, per doc 07 step 5. Bundling these is how a family's
+    #: photograph ends up on a landing page after they agreed to write a sentence.
+    may_publish_written_review: bool = False
+    may_publish_images: bool = False
+    may_publish_story: bool = False
+    permission_note: str | None = Field(default=None, max_length=2000)
+
+
+class ReviewRequestOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    platform: str
+    asked_at: datetime | None = None
+    asked_by: str | None = None
+    may_publish_written_review: bool = False
+    may_publish_images: bool = False
+    may_publish_story: bool = False
+
+
+class ReferralOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    code: str
+    referrer_name: str | None = None
+    terms_version: str
+    benefit: str | None = None
+    is_active: bool = True
+    #: How many people arrived with it. Attribution is the point (doc 07).
+    times_used: int = 0
+    #: Ready to paste into a message, with no superlatives put in their mouth.
+    share_text: str = ""
+    terms: list[str] = Field(default_factory=list)
+
+
+# ------------------------------------------------------------- family sharing
+
+
+class FamilyShareIn(BaseModel):
+    label: str = Field(min_length=1, max_length=120)
+    #: A group lead who does not want daily movement shared can say so here without
+    #: giving up the link entirely.
+    shows_check_ins: bool = True
+
+
+class FamilyShareOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    label: str
+    #: The full URL to send. Returned once at creation and on the manage list —
+    #: the group lead needs to be able to re-send it.
+    url: str = ""
+    expires_at: datetime
+    revoked_at: datetime | None = None
+    shows_check_ins: bool = True
+    view_count: int = 0
+    last_viewed_at: datetime | None = None
+
+
+class SharedContactOut(BaseModel):
+    label: str
+    phone: str
+    note: str | None = None
+
+
+class SharedDayOut(BaseModel):
+    #: Named `on_date` rather than `date`: a field called `date` shadows the
+    #: imported `date` type inside the class body, and every later annotation in the
+    #: model fails to resolve. Pydantic reports it as an unevaluatable annotation
+    #: several classes further down, which is a long way from the cause.
+    day: int
+    on_date: date | None = None
+    title: str
+    staying_at: str | None = None
+
+
+class SharedCheckInOut(BaseModel):
+    at: datetime
+    note: str
+    posted_by: str
+
+
+class FamilyViewOut(BaseModel):
+    """The reassurance view. Mirrors `api.domain.sharing.FamilyView` exactly.
+
+    Kept as its own model rather than serialising an ORM object, for the same reason
+    the domain type exists: nothing sensitive can reach it without somebody adding a
+    field here on purpose.
+    """
+
+    journey_name: str
+    starts_on: date | None = None
+    ends_on: date | None = None
+    traveller_first_names: list[str] = Field(default_factory=list)
+    days: list[SharedDayOut] = Field(default_factory=list)
+    contacts: list[SharedContactOut] = Field(default_factory=list)
+    latest_check_in: SharedCheckInOut | None = None
+    route_notices: list[str] = Field(default_factory=list)
+    shared_by: str | None = None
+    shared_with_label: str | None = None
+
+
+# ------------------------------------------------------------- trip companion
+
+
+class CheckInIn(BaseModel):
+    note: str = Field(min_length=1, max_length=2000)
+    location: str | None = Field(default=None, max_length=160)
+    occurred_at: datetime | None = None
+    is_shareable: bool = True
+
+
+class CompanionDayOut(BaseModel):
+    day: int
+    on_date: date | None = None
+    title: str
+    travel_note: str | None = None
+    altitude_note: str | None = None
+    staying_at: str | None = None
+    stay_note: str | None = None
+    is_route_dependent: bool = False
+    #: Today, per the departure's dates. Drives what the page opens on.
+    is_today: bool = False
+
+
+class CompanionOut(BaseModel):
+    """Everything the during-trip page needs, in one payload.
+
+    One request rather than several on purpose: this is cached and read at 4,000m
+    with no signal, and a page assembled from five endpoints is a page that renders
+    four-fifths of itself in the one place it has to work.
+    """
+
+    reference: str
+    journey_name: str
+    starts_on: date | None = None
+    ends_on: date | None = None
+    state: str
+
+    days: list[CompanionDayOut] = Field(default_factory=list)
+    today: CompanionDayOut | None = None
+    next_movement: CompanionDayOut | None = None
+
+    contacts: list[SharedContactOut] = Field(default_factory=list)
+    route_notices: list[str] = Field(default_factory=list)
+    latest_check_in: SharedCheckInOut | None = None
+
+    #: When the server built this. The page shows it when serving from cache, so
+    #: "last saved 9 hours ago" is visible rather than implied to be live.
+    generated_at: datetime
