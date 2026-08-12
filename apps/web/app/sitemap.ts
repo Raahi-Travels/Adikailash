@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { api } from "@/lib/api";
+import { api, guides } from "@/lib/api";
 import { POLICY_ORDER } from "@/lib/policies";
 import { routing } from "@/i18n/routing";
 import { siteOrigin } from "@/lib/site-url";
@@ -93,6 +93,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     );
   }
+
+  /*
+    Guides. `lastModified` is the real last review, not a build time — the whole
+    point of the freshness model is that the date means something, and a sitemap
+    claiming every page changed today would undo it.
+  */
+  const articles = await guides.list("en");
+  for (const article of articles ?? []) {
+    entries.push(
+      ...localized(`/guides/${article.slug}`, {
+        changeFrequency: article.is_time_sensitive ? "weekly" : "monthly",
+        priority: article.is_pillar ? 0.8 : 0.6,
+        ...(article.last_reviewed_at
+          ? { lastModified: new Date(article.last_reviewed_at) }
+          : {}),
+      }),
+    );
+  }
+
+  entries.push(...localized("/guides", { changeFrequency: "weekly", priority: 0.7 }));
 
   return entries;
 }

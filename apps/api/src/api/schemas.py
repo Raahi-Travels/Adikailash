@@ -959,3 +959,60 @@ class IncidentOut(ORMModel):
     is_overdue: bool = False
     needs_founder: bool = False
     obligations: list[str] = Field(default_factory=list)
+
+
+# --- Content hub (Phase 4, doc 07) ---------------------------------------------
+
+
+class ArticleFaqOut(BaseModel):
+    question: str
+    answer: str
+
+
+class ArticleSummaryOut(BaseModel):
+    slug: str
+    cluster: str
+    title: str
+    #: The standalone answer. Rendered at the top of the page and in listings, because
+    #: a listing that shows only a title makes the reader click to find out whether
+    #: the page is even about their question.
+    answer: str
+    is_pillar: bool = False
+    author: str | None = None
+    reviewed_by: str | None = None
+    last_reviewed_at: datetime | None = None
+    next_review_due: datetime | None = None
+    #: current | due_soon | stale. Derived, never stored.
+    freshness: str = "stale"
+    freshness_label: str = "Not recently reviewed"
+    #: True where a stale page is actively misleading rather than merely old.
+    is_time_sensitive: bool = False
+    published_at: datetime | None = None
+
+
+class ArticleDetailOut(ArticleSummaryOut):
+    body: str | None = None
+    journey_slug: str | None = None
+    faqs: list[ArticleFaqOut] = Field(default_factory=list)
+    #: Supporting pieces under a pillar, so the cluster is navigable.
+    related: list[ArticleSummaryOut] = Field(default_factory=list)
+
+
+class ArticleIn(BaseModel):
+    slug: str = Field(min_length=1, max_length=160)
+    cluster: str
+    title: LocalizedIn
+    answer: LocalizedIn
+    body: LocalizedIn | None = None
+    journey_slug: str | None = None
+    is_pillar: bool = False
+    parent_slug: str | None = None
+    review_interval_days: int = Field(default=180, ge=1, le=1095)
+    internal_note: str | None = None
+
+
+class ArticleReviewIn(BaseModel):
+    """Record a review. `reviewed_by` comes from the session, never the body."""
+
+    author: str | None = Field(default=None, max_length=120)
+    state: str | None = None

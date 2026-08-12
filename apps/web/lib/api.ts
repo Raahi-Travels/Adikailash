@@ -291,3 +291,49 @@ export async function uploadDocument(
     );
   }
 }
+
+
+// --- Content hub (Phase 4) -----------------------------------------------------
+
+export type ArticleFaq = { question: string; answer: string };
+
+export type ArticleSummary = {
+  slug: string;
+  cluster: string;
+  title: string;
+  /** The standalone answer. Shown in listings so a reader can stop here. */
+  answer: string;
+  is_pillar: boolean;
+  author: string | null;
+  reviewed_by: string | null;
+  last_reviewed_at: string | null;
+  next_review_due: string | null;
+  freshness: "current" | "due_soon" | "stale";
+  freshness_label: string;
+  /** True where a stale page is actively misleading rather than merely old. */
+  is_time_sensitive: boolean;
+  published_at: string | null;
+};
+
+export type ArticleDetail = ArticleSummary & {
+  body: string | null;
+  journey_slug: string | null;
+  faqs: ArticleFaq[];
+  related: ArticleSummary[];
+};
+
+export const guides = {
+  /**
+   * Cached briefly rather than never. A guide is not live data, but its freshness
+   * label is derived at read time, so a long cache would let a page keep claiming
+   * "reviewed" after it had lapsed.
+   */
+  list: (locale: Locale, cluster?: string) =>
+    get<ArticleSummary[]>(
+      `/guides${cluster ? `?cluster=${cluster}` : ""}`,
+      locale,
+      300,
+    ),
+  detail: (slug: string, locale: Locale) =>
+    get<ArticleDetail>(`/guides/${slug}`, locale, 300),
+};

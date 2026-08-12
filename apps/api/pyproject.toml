@@ -13,6 +13,7 @@ dependencies = [
     "boto3>=1.35",
     "fastapi>=0.141.1",
     "greenlet>=3.5.4",
+    "httpx>=0.28",
     "psycopg[binary]>=3.3.4",
     "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0",

@@ -28,6 +28,7 @@ const NAV = [
   { href: "/journeys", key: "journeys" },
   { href: "/departures", key: "departures" },
   { href: "/status", key: "liveStatus" },
+  { href: "/guides", key: "guides" },
   { href: "/plan", key: "planYourJourney" },
 ] as const;
 

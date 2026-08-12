@@ -57,6 +57,16 @@ class Settings(BaseSettings):
     s3_secret_access_key: str = Field(default="", alias="S3_SECRET_ACCESS_KEY")
     document_bucket: str = Field(default="traveller-documents", alias="DOCUMENT_BUCKET")
 
+    # --- Public site identity and IndexNow ---
+    #
+    # The API needs to know the public origin to submit URLs, and it cannot read the
+    # web app's brand config. Empty means no submissions, which is the correct state
+    # until decision O7 settles a domain.
+    public_site_origin: str = Field(default="", alias="PUBLIC_SITE_ORIGIN")
+    #: Any opaque string, 8 to 128 hex-ish characters. Must also be served at
+    #: `<origin>/<key>.txt` or IndexNow refuses every submission with a 403.
+    indexnow_key: str = Field(default="", alias="INDEXNOW_KEY")
+
     @property
     def storage_configured(self) -> bool:
         """True only when all three secrets are real, not placeholders.

@@ -62,6 +62,7 @@ from api.schemas import (
     UploadTicketOut,
     WeatherPublishIn,
 )
+from api import indexnow
 from api.storage import (
     ACCEPTED_DOCUMENT_TYPES,
     MAX_DOCUMENT_BYTES,
@@ -299,6 +300,13 @@ async def publish_status(
     )
     session.add(update)
     await session.commit()
+
+    # Fire and forget. A verified status is only worth publishing if the surfaces
+    # that quote it are fresh, and ChatGPT search and Copilot both retrieve from
+    # Bing's index. This never blocks and never raises: the publish already
+    # succeeded, and telling Microsoft about it is a courtesy.
+    indexnow.submit(indexnow.status_urls())
+
     return {
         "id": update.id,
         "segment": segment.slug,

@@ -79,6 +79,8 @@ if one fails. Keep it here.
 | `S3_ACCESS_KEY_ID` | from Storage → S3 → Access keys |
 | `S3_SECRET_ACCESS_KEY` | shown once at creation |
 | `DOCUMENT_BUCKET` | `traveller-documents` |
+| `PUBLIC_SITE_ORIGIN` | the public origin, e.g. `https://thesacrednorth.in`. Empty means no IndexNow submissions, which is correct until O7 |
+| `INDEXNOW_KEY` | any opaque 8-128 char string. **Must match the web app's value** |
 
 **Use S3 access keys, never the `service_role` key.** `service_role` bypasses RLS
 across the whole project, which on this shared database means full read/write over
@@ -114,6 +116,8 @@ enquiry form directly to this API, and a page served over HTTPS cannot call HTTP
 | `DATABASE_URL` | `postgresql://postgres.<ref>:<pw>@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?options=-c%20search_path%3Dyatra` | Server-only, for better-auth |
 | `BETTER_AUTH_SECRET` | `openssl rand -base64 32` | Generate a **new** one; do not reuse the dev value |
 | `BETTER_AUTH_URL` | the deployed origin | Must be set in production; unset only works in dev |
+| `NEXT_PUBLIC_SITE_URL` | the public origin | **Asserting this turns indexing on.** Until it or a settled domain is present, robots disallows everything and no canonical is emitted |
+| `INDEXNOW_KEY` | same value as the API | Served at `/indexnow-key.txt`. Without it every IndexNow submission is refused with a 403 |
 
 The `search_path=yatra` on `DATABASE_URL` is load-bearing. It is what stops better-auth
 from reaching Raahi's `public` schema, which holds their own `account` / `session` /
