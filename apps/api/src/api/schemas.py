@@ -783,3 +783,179 @@ class UpdateOut(ORMModel):
 # `TravellerBookingOut` references `UpdateOut`, which is declared later in this
 # module for grouping reasons. Resolve it explicitly rather than reordering.
 TravellerBookingOut.model_rebuild()
+
+
+# --- Suppliers, payables, rooming and incidents (Phase 3) ----------------------
+
+
+class SupplierIn(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    kind: str
+    contact_name: str | None = Field(default=None, max_length=160)
+    phone: str | None = Field(default=None, max_length=32)
+    village: str | None = Field(default=None, max_length=160)
+    stay_id: int | None = None
+    reliability_note: str | None = None
+
+
+class SupplierOut(ORMModel):
+    id: int
+    name: str
+    kind: str
+    contact_name: str | None = None
+    phone: str | None = None
+    village: str | None = None
+    stay_id: int | None = None
+    reliability_note: str | None = None
+    is_active: bool = True
+
+
+class SupplierBookingIn(BaseModel):
+    supplier_id: int
+    service: str = Field(min_length=1)
+    starts_on: date | None = None
+    ends_on: date | None = None
+    agreed_cost: Decimal = Field(default=Decimal("0"), ge=0)
+    note: str | None = None
+
+
+class SupplierBookingUpdateIn(BaseModel):
+    state: str | None = None
+    service: str | None = None
+    agreed_cost: Decimal | None = Field(default=None, ge=0)
+    cancellation_reason: str | None = None
+    note: str | None = None
+
+
+class SupplierPaymentIn(BaseModel):
+    """Money paid to a supplier. Same shape as the customer ledger, other direction."""
+
+    amount: Decimal = Field(gt=0)
+    method: str
+    direction: str = "received"
+    reference: str | None = Field(default=None, max_length=120)
+    paid_at: datetime
+    note: str | None = None
+
+
+class SupplierPaymentOut(ORMModel):
+    id: int
+    direction: str
+    amount: Decimal
+    currency: str
+    method: str
+    reference: str | None = None
+    paid_at: datetime
+    recorded_by: str
+    note: str | None = None
+
+
+class SupplierBookingOut(BaseModel):
+    id: int
+    supplier_id: int
+    supplier_name: str
+    kind: str
+    service: str
+    state: str
+    starts_on: date | None = None
+    ends_on: date | None = None
+    agreed_cost: Decimal = Decimal("0")
+    paid: Decimal = Decimal("0")
+    outstanding: Decimal = Decimal("0")
+    #: Paying more than agreed is a variation nobody recorded, or a mistake. Both
+    #: need a human, so it is surfaced rather than clamped.
+    is_overpaid: bool = False
+    currency: str = "INR"
+    confirmed_by: str | None = None
+    cancellation_reason: str | None = None
+    note: str | None = None
+    payments: list[SupplierPaymentOut] = Field(default_factory=list)
+
+
+class EconomicsOut(BaseModel):
+    """Per-departure unit economics, from committed cost and agreed revenue."""
+
+    customer_revenue_agreed: Decimal = Decimal("0")
+    customer_revenue_received: Decimal = Decimal("0")
+    committed_cost: Decimal = Decimal("0")
+    paid_to_suppliers: Decimal = Decimal("0")
+    owed_to_suppliers: Decimal = Decimal("0")
+    margin: Decimal = Decimal("0")
+    margin_percent: Decimal | None = None
+    is_loss_making: bool = False
+
+
+class RoomingAssignmentIn(BaseModel):
+    reservation_traveller_id: int
+    stay_id: int
+    night: date
+    note: str | None = None
+
+
+class RoomingBedOut(BaseModel):
+    id: int
+    reservation_traveller_id: int
+    traveller_name: str
+    stay_id: int
+    stay_name: str
+    night: date
+    note: str | None = None
+
+
+class RoomingOut(BaseModel):
+    beds: list[RoomingBedOut] = Field(default_factory=list)
+    nights: list[date] = Field(default_factory=list)
+    #: Over-capacity strands a family at altitude at night, so it is a blocker.
+    over_capacity: list[str] = Field(default_factory=list)
+    #: Somebody has to ask the household before the vehicles leave.
+    unknown_capacity: list[str] = Field(default_factory=list)
+    unassigned: list[str] = Field(default_factory=list)
+    is_complete: bool = False
+
+
+class IncidentIn(BaseModel):
+    """Report something that went wrong.
+
+    `observed` is what was seen. It is never a diagnosis: the standing constraint is
+    "no medical clearance, diagnosis or fitness certification, by human or AI".
+    """
+
+    severity: str
+    category: str
+    occurred_at: datetime
+    observed: str = Field(min_length=1)
+    immediate_action: str | None = None
+    departure_id: int | None = None
+    reservation_id: int | None = None
+    reservation_traveller_id: int | None = None
+    supplier_id: int | None = None
+
+
+class IncidentUpdateIn(BaseModel):
+    immediate_action: str | None = None
+    outcome: str | None = None
+    travellers_informed: bool | None = None
+    #: Setting this closes the incident. The API refuses without an outcome.
+    resolve: bool = False
+
+
+class IncidentOut(ORMModel):
+    id: int
+    severity: str
+    category: str
+    occurred_at: datetime
+    observed: str
+    immediate_action: str | None = None
+    outcome: str | None = None
+    reported_by: str
+    resolved_at: datetime | None = None
+    resolved_by: str | None = None
+    travellers_informed: bool = False
+    departure_id: int | None = None
+    reservation_id: int | None = None
+    created_at: datetime
+    #: Derived from severity and how long it has been open.
+    is_open: bool = True
+    is_overdue: bool = False
+    needs_founder: bool = False
+    obligations: list[str] = Field(default_factory=list)

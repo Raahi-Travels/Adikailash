@@ -85,6 +85,12 @@ export default async function AdminDeparturesPage({
                   >
                     Manifest
                   </Link>
+                  <Link
+                    href={`/admin/departures/${departure.id}/ops`}
+                    className="ml-3 text-gold underline-offset-4 hover:underline"
+                  >
+                    Operations
+                  </Link>
                 </p>
                 <p className="mt-0.5 text-ink-inverse/50">
                   {departure.reserved_count} of {departure.capacity} held ·{" "}

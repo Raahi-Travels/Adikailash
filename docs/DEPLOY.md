@@ -132,6 +132,9 @@ send `X-Robots-Tag: noindex`, but that is not access control.
       This database is shared with Raahi's production and the API is publicly
       reachable, so a leftover account with a known password is a live hole, not a
       tidiness issue.
+- [ ] To remove somebody later, set `is_active = false` rather than deleting the row.
+      A delete SET NULLs the coordinator on their reservations and then fails the
+      check that a confirmed reservation must have one. That refusal is correct.
 - [ ] Create real staff accounts: `bun run scripts/create-staff.ts <email> <pw> <name> <roles>`
 - [ ] Confirm `/health` reports `document_storage_configured: true` if uploads are in use
 - [ ] Confirm `payments_enabled: false` (it should be, until O2 to O4)

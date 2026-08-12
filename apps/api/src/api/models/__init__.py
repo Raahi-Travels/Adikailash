@@ -51,9 +51,17 @@ from api.models.reservations import (
     TravellerRole,
     UpdateCategory,
 )
+from api.models.supply import (
+    Incident,
+    RoomingAssignment,
+    Supplier,
+    SupplierBooking,
+    SupplierPayment,
+)
 from api.models.staff import (
     CONTENT_ROLES,
     FINANCE_ROLES,
+    INCIDENT_ROLES,
     RESERVATION_ROLES,
     DEPARTURE_LIFECYCLE_ROLES,
     DOCUMENT_REVIEW_ROLES,
@@ -73,6 +81,12 @@ from api.models.weather import (
 )
 
 __all__ = [
+    "INCIDENT_ROLES",
+    "SupplierPayment",
+    "SupplierBooking",
+    "Supplier",
+    "RoomingAssignment",
+    "Incident",
     "ReservationUpdate",
     "UpdateCategory",
     "FINANCE_ROLES",

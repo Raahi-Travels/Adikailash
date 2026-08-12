@@ -109,6 +109,23 @@ FINANCE_ROLES = frozenset(
     }
 )
 
+#: Roles permitted to report an incident. Deliberately the widest set in this file.
+#: Doc 06 wants least privilege on *reading* sensitive data; reporting that something
+#: went wrong is the opposite problem, and a coordinator who cannot file one because
+#: of a permission is a coordinator who tells nobody.
+INCIDENT_ROLES = frozenset(
+    {
+        StaffRole.SUPER_ADMIN,
+        StaffRole.FOUNDER,
+        StaffRole.OPS_MANAGER,
+        StaffRole.TRIP_COORDINATOR,
+        StaffRole.SALES,
+        StaffRole.DOCUMENT_REVIEWER,
+        StaffRole.STATUS_PUBLISHER,
+        StaffRole.FINANCE,
+    }
+)
+
 #: Roles permitted to edit catalogue content.
 CONTENT_ROLES = frozenset(
     {
@@ -143,6 +160,13 @@ class StaffUser(Base, TimestampMixin):
         ARRAY(String(40)), nullable=False, server_default=text("'{read_only}'")
     )
     #: Revocation without deletion, so past attributions stay resolvable.
+    #:
+    #: This is the supported way to remove somebody. Deleting a staff row SET NULLs
+    #: `reservations.coordinator_staff_id`, which then violates the check constraint
+    #: requiring a confirmed reservation to have a coordinator, and the delete fails
+    #: with an opaque error. That refusal is correct: a confirmed family must not be
+    #: left in nobody's inbox. Deactivate here, reassign their reservations, and the
+    #: record of who did what survives.
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True, server_default=text("true"), nullable=False
     )

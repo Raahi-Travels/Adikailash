@@ -26,6 +26,12 @@ Last updated: 8 August 2026
 
 | D13 | O3 · How money works, first season | **Offline only** | 2026-08-10 | No payment is taken on the website for the 2026 test departures. A coordinator records what arrived by bank transfer or UPI against the reservation, with its reference, so finance reconciles against a statement. Zero gateway risk while operations are still unproven, and it defers O8 without blocking anything. `PaymentRecord` is an append-only ledger with no balance column, so the balance is the sum of the evidence and cannot be quietly corrected. `PaymentMethod.GATEWAY` exists and is refused at the API, so adding a provider later is a change of behaviour rather than of schema. |
 
+| D14 | Vehicles, drivers and guides | **Hire per departure from local suppliers** | 2026-08-11 | No fleet. The unit is a *booking of a supplier for a departure*, which is how a three-person team actually runs a first season, and it avoids modelling a scheduling problem nobody has. An owned vehicle, if one is ever bought, is recorded as a supplier the company happens to control, so nothing needs rewriting if that changes. |
+
+| D15 | Supplier money | **A payables ledger mirroring the customer one** | 2026-08-11 | Append-only, no balance column on either side of the business, so neither can drift from its evidence and a mistake is corrected by recording a refund rather than an edit. The symmetry is what makes per-departure margin real rather than a spreadsheet guess, which doc 09's Phase 4 calls unit-economics visibility. Still offline: no gateway on either side. |
+
+| D16 | Rooming granularity | **Traveller to stay, per night** | 2026-08-11 | Precise enough to answer a family asking where their parents will sleep, which doc 01 puts at the centre of this business, and no more precise than a 3-4 bed shared room in somebody's house can actually be. Room-level allocation was rejected: those rooms rarely have stable identities to allocate against. Over-capacity is a blocker, not a note, because it is what leaves a family outside at night at altitude. |
+
 | D11 | i18n | **next-intl, `localePrefix: "always"`** | 2026-08-08 | `/en/...` and `/hi/...` symmetrically, rather than English at the root with Hindi in a subfolder — the structural form of doc 02's "first-class layout, not a smaller translation". Makes hreflang pairs trivial. Note Next.js 16 renamed the `middleware` convention to `proxy`, so the handler lives in `apps/web/proxy.ts`. |
 
 **Two i18n layers, deliberately separate.** next-intl covers UI strings, locale routing

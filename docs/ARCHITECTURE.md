@@ -115,7 +115,8 @@ believe them, and start a conversation:
 - Admin sufficient to edit journeys, departures and publish a verified status
 
 Reservations, the traveller portal, the departure manifest and booking updates are
-built. Online payments, supplier payables and the incident record are Phase 3+
+built. Suppliers, payables, rooming, the departure manifest and the incident record are
+built. Online payments (blocked on O8) and Phase 4 growth are what remain
 and can run on spreadsheets for the first departures. Doc 09 explicitly permits this:
 "Manual is acceptable; invisible is not."
 
