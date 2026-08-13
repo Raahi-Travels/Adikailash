@@ -63,6 +63,17 @@ class Settings(BaseSettings):
     # web app's brand config. Empty means no submissions, which is the correct state
     # until decision O7 settles a domain.
     public_site_origin: str = Field(default="", alias="PUBLIC_SITE_ORIGIN")
+
+    # --- Assistant (doc 08's AI layer) ---
+    #
+    # Empty means the assistant runs retrieval-only: it still finds and cites approved
+    # passages, it just does not draft prose from them. That is a supported mode, not
+    # a broken one — most of the value is the retrieval.
+    openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
+    #: The provider's model slug, exactly as OpenRouter lists it. Configuration
+    #: rather than a constant: catalogues change faster than deploys, and a slug
+    #: baked into source is a silent failure the day it is renamed.
+    openrouter_model: str = Field(default="", alias="OPENROUTER_MODEL")
     #: Any opaque string, 8 to 128 hex-ish characters. Must also be served at
     #: `<origin>/<key>.txt` or IndexNow refuses every submission with a 403.
     indexnow_key: str = Field(default="", alias="INDEXNOW_KEY")
@@ -76,6 +87,20 @@ class Settings(BaseSettings):
         """
         values = (self.s3_endpoint_url, self.s3_access_key_id, self.s3_secret_access_key)
         return all(v and not v.startswith("PASTE_") for v in values)
+
+    @property
+    def assistant_configured(self) -> bool:
+        """Both halves present and not a placeholder.
+
+        Same shape as `storage_configured`: the .env ships with PASTE_..._HERE values
+        and without this check the API would claim the assistant works, then fail on
+        the first draft.
+        """
+        return bool(
+            self.openrouter_api_key
+            and not self.openrouter_api_key.startswith("PASTE_")
+            and self.openrouter_model
+        )
 
     @property
     def is_production(self) -> bool:

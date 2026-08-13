@@ -45,6 +45,7 @@ from sqlalchemy import (
     UniqueConstraint,
     text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.db import Base, LocalizedText, TimestampMixin, pg_enum, requires_english
@@ -194,3 +195,57 @@ class ArticleFaq(Base, TimestampMixin):
     )
 
     article: Mapped[Article] = relationship(back_populates="faqs")
+
+
+class AssistQuery(Base, TimestampMixin):
+    """One question put to the assistant, and what it did with it.
+
+    Doc 08's guardrails end with "logging and evaluation", and this is both. Without
+    it there is no way to answer the two questions that decide whether the assistant
+    is worth keeping: what is it being asked that we have published nothing about,
+    and are coordinators actually sending its drafts.
+
+    **The question text is stored; nothing about the traveller is.** No lead id, no
+    phone number, no conversation. Doc 08 requires "restricted access to sensitive
+    traveller data" and the cheapest way to honour that is for this table never to
+    receive any — a coordinator pastes a question, not a person.
+
+    `was_used` is the only quality measure that means anything. A draft nobody sends
+    is a bad draft however good it looks in review.
+    """
+
+    __tablename__ = "assist_queries"
+    __table_args__ = (
+        CheckConstraint("length(trim(question)) > 0", name="assist_question_present"),
+        Index("ix_assist_queries_created", "created_at"),
+        Index("ix_assist_queries_refusal", "refusal"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    asked_by: Mapped[str | None] = mapped_column(String(120))
+    locale: Mapped[str] = mapped_column(
+        String(8), nullable=False, default="en", server_default=text("'en'")
+    )
+
+    #: Null when answered. Otherwise the reason, which is the most useful column here:
+    #: a run of `no_grounding` rows is a content backlog, written by real questions.
+    refusal: Mapped[str | None] = mapped_column(String(40))
+    #: Source refs actually cited, so an answer can be re-checked against what it saw.
+    citations: Mapped[list[str] | None] = mapped_column(JSONB)
+    passage_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    quoted_status: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=text("false")
+    )
+
+    answer: Mapped[str | None] = mapped_column(Text)
+    #: Which model wrote it, or null for a retrieval-only response. Comparing answer
+    #: quality across a model change is impossible without this.
+    model: Mapped[str | None] = mapped_column(String(120))
+    contract_version: Mapped[str | None] = mapped_column(String(40))
+
+    #: Set when a coordinator says they sent it. The only quality signal that counts.
+    was_used: Mapped[bool | None] = mapped_column(Boolean)

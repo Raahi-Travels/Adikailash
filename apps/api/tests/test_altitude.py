@@ -212,3 +212,13 @@ def test_the_guidance_range_is_a_range_not_a_single_number():
     number as settled would be exactly the false precision this codebase avoids."""
     assert NIGHTLY_GAIN_GUIDANCE_M == (300, 500)
     assert GUIDANCE_APPLIES_ABOVE_M == 3000
+
+
+def test_public_attribution_strips_the_email_from_a_verifier():
+    from api.domain.status import public_attribution
+
+    assert public_attribution("Field Coordinator <ops@example.invalid>") == "Field Coordinator"
+    assert public_attribution("ops@example.invalid") == "ops"
+    assert public_attribution("Meera Bisht") == "Meera Bisht"
+    assert public_attribution(None) is None
+    assert public_attribution("") is None

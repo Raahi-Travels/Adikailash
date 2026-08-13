@@ -43,6 +43,7 @@ const NAV = [
   { href: "/admin/journeys", label: "Journeys" },
   { href: "/admin/departures", label: "Departures" },
   { href: "/admin/incidents", label: "Incidents" },
+  { href: "/admin/assist", label: "Assistant" },
 ];
 
 export default async function AdminLayout({ children }: LayoutProps<"/[locale]/admin">) {

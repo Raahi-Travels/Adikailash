@@ -12,6 +12,8 @@ fails must not be able to leave a stale status looking fresh.
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -201,3 +203,26 @@ def blocks_sale(status: StatusUpdate, *, now: datetime | None = None) -> bool:
         return True
     # An unverified or stale route is not a green light either.
     return not status.is_publicly_trustworthy(now=now)
+
+
+def public_attribution(verified_by: str | None) -> str | None:
+    """A verifier's name, with any email address removed.
+
+    Attribution is stored as "Name <email>" because an internal audit trail wants an
+    identifier that is unambiguous between two people called Suresh. A public status
+    feed wants neither: doc 02 asks for a *named* verifier so the claim is somebody's
+    responsibility, and a name does that. An email address does nothing extra except
+    put a staff inbox on an unauthenticated endpoint for anyone to scrape.
+
+    Found the way these things usually are — the assistant quoted a status sentence
+    to a coordinator and there was an email in the middle of it, which meant the
+    public `/status` endpoint had been returning one all along.
+    """
+    if not verified_by:
+        return None
+    name = re.sub(r"\s*<[^>]*>", "", verified_by).strip()
+    # A bare email with no name in front of it: keep the local part only, so
+    # attribution survives without publishing the address.
+    if "@" in name:
+        name = name.split("@")[0].strip()
+    return name or None

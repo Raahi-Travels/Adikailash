@@ -19,7 +19,13 @@ from api.models.catalogue import (
     Stay,
     StayKind,
 )
-from api.models.content import Article, ArticleCluster, ArticleFaq, ArticleState
+from api.models.content import (
+    Article,
+    ArticleCluster,
+    ArticleFaq,
+    ArticleState,
+    AssistQuery,
+)
 from api.models.documents import (
     DocumentAccessLog,
     DocumentRequirement,
@@ -112,6 +118,7 @@ __all__ = [
     "ArticleCluster",
     "ArticleFaq",
     "ArticleState",
+    "AssistQuery",
     "CONTENT_ROLES",
     "ConsentChannel",
     "ConsentPurpose",

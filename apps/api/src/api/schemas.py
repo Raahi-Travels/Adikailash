@@ -1583,3 +1583,49 @@ class VendorAssessmentOut(BaseModel):
     cost_outstanding: Decimal = Decimal("0")
     cost_settled: bool = False
     is_rateable: bool = False
+
+
+# ------------------------------------------------------------------- assistant
+
+
+class AssistIn(BaseModel):
+    question: str = Field(min_length=3, max_length=2000)
+    locale: str = "en"
+
+
+class AssistUsedIn(BaseModel):
+    was_used: bool
+
+
+class AssistPassageOut(BaseModel):
+    """One approved passage the answer was allowed to draw on.
+
+    Returned even when a draft was generated, so a reviewer can check the answer
+    against its evidence without leaving the screen. Doc 08: "source or record
+    reference for operational answers."
+    """
+
+    kind: str
+    title: str
+    text: str
+    source_ref: str
+    url_path: str | None = None
+    score: float = 0.0
+
+
+class AssistOut(BaseModel):
+    #: Empty when refused, or when no model is configured. The passages below are
+    #: still returned and are the useful half.
+    answer: str = ""
+    citations: list[str] = Field(default_factory=list)
+    #: medical | commercial | promise | complaint | status_stale | no_grounding
+    refusal: str | None = None
+    #: What the coordinator should do instead. Never shown to a traveller as-is.
+    staff_guidance: str | None = None
+    needs_human: bool = False
+    model: str | None = None
+    contract_version: str | None = None
+    #: The verified status sentence, with its timestamp and verifier already welded
+    #: on so neither can be dropped in the interest of a smoother reply.
+    quoted_status: str | None = None
+    passages: list[AssistPassageOut] = Field(default_factory=list)

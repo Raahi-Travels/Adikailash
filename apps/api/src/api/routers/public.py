@@ -25,6 +25,7 @@ from api.models.catalogue import (
     ServiceTier,
 )
 from api.models.documents import DocumentRequirement
+from api.domain.status import public_attribution
 from api.domain.altitude import (
     GUIDANCE_SOURCE,
     Night,
@@ -364,7 +365,8 @@ async def live_status(session: SessionDep, locale: LocaleDep):
                 label=latest.public_label(now=now),
                 freshness=freshness.value,
                 source=latest.source.value,
-                verified_by=latest.verified_by,
+                # Name only. The stored value carries an email for internal audit.
+                verified_by=public_attribution(latest.verified_by),
                 verified_at=latest.verified_at,
                 next_verification_due=latest.next_verification_due,
                 summary=resolve(latest.summary, locale),
