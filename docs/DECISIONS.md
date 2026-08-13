@@ -132,7 +132,7 @@ departures, leads and traveller data are not world-readable.
 | O9 | WhatsApp **provider** (Business Platform or authorised BSP) | Tech + sales | Messaging adapter. **Half closed by D24: the human number is set, the sending path is not.** Everything upstream of sending is built and running — subscribe, confirm, unsubscribe, and every route change producing the exact rows that would go out at `GET /admin/alert-queue`. `sending_enabled` stays hard false. See D24 for why the site number must not be the API number |
 | O7 (note) | Domain | Brand founder | Additionally blocks the unsubscribe link: until `PUBLIC_SITE_ORIGIN` is set, queued message bodies carry a visible `[SITE ORIGIN NOT CONFIGURED]` placeholder instead of a silently relative link |
 | O10 | Support hours, escalation and emergency ownership | Operations founder | Response-time claims on the site |
-| O11 | Languages at launch (English / Hindi) | Growth + operations | Content model, typography |
+
 
 ---
 
