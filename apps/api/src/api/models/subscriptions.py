@@ -37,6 +37,7 @@ from sqlalchemy import (
     UniqueConstraint,
     text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.db import Base, TimestampMixin, pg_enum
@@ -200,6 +201,21 @@ class OutboundMessage(Base, TimestampMixin):
     urgency: Mapped[str] = mapped_column(
         String(20), nullable=False, default="notable", server_default=text("'notable'")
     )
+
+    # --- Pre-approved template, for channels that require one ---
+    #
+    # WhatsApp refuses free-form business-initiated messages outside a 24-hour reply
+    # window, and India's TRAI DLT regime imposes the same rule on SMS. Both need the
+    # template's registered *name* and an ordered array of values, not prose — so both
+    # are stored, rather than leaving a future sender to re-derive them from `body`
+    # by reversing the wording. Null for email, which has no such gatekeeping.
+    #
+    # `body` still holds the rendered text so the admin queue keeps showing the
+    # message a person would receive rather than a row of placeholders.
+    template_name: Mapped[str | None] = mapped_column(String(80))
+    #: Positional, filling {{1}}, {{2}} … in the approved body. A JSON array rather
+    #: than a delimited string because a coordinator's note contains commas.
+    template_parameters: Mapped[list[str] | None] = mapped_column(JSONB)
     #: Computed at queue time from quiet hours. A sender picks up rows due now.
     send_after: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False

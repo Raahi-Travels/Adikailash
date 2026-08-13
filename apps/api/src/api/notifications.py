@@ -31,6 +31,7 @@ from api.domain.subscriptions import (
     urgency_of,
     within_send_budget,
 )
+from api.domain.templates import channel_needs_template, template_for
 from api.localization import resolve
 from api.models.operations import RouteSegment, StatusUpdate
 from api.models.subscriptions import (
@@ -131,6 +132,10 @@ async def queue_status_alerts(
         subject, body = message_for(change)
         urgency = urgency_of(change).value
 
+        # Built once per publish rather than per subscriber: the template and its
+        # parameters describe the *change*, not the recipient.
+        templated = template_for(change)
+
         # Subscribers to this segment, plus those who asked about the whole route.
         subscribers = list(
             await session.scalars(
@@ -147,16 +152,33 @@ async def queue_status_alerts(
             over_budget = not within_send_budget(
                 await _sent_today(session, subscriber.id)
             )
+            # WhatsApp and SMS can only carry words agreed in advance; email can
+            # carry prose. Same change, same facts, two shapes — and the template
+            # path keeps the caveats as fixed reviewed text rather than as a
+            # convention somebody maintains.
+            needs_template = channel_needs_template(subscriber.channel.value)
+            if needs_template:
+                # The opt-out is the template's own fixed footer ("Reply STOP…"),
+                # which is why no link is appended here: a URL inside a template
+                # parameter is both a rejection risk and a phishing pattern.
+                rendered_body = templated.rendered
+            else:
+                # Doc 03 rules out dark patterns, and the unsubscribe link is the one
+                # that matters most. In every email, never behind a login.
+                rendered_body = (
+                    f"{body}\n\nStop these alerts: "
+                    f"{_unsubscribe_url(subscriber.unsubscribe_token)}"
+                )
+
             message = OutboundMessage(
                 subscription_id=subscriber.id,
                 status_update_id=update.id,
                 channel=subscriber.channel,
                 destination=subscriber.destination,
                 subject=subject,
-                # The unsubscribe link is in every message, not in a preference
-                # centre behind a login. Doc 03 rules out dark patterns and this is
-                # the one that matters most.
-                body=f"{body}\n\nStop these alerts: {_unsubscribe_url(subscriber.unsubscribe_token)}",
+                body=rendered_body,
+                template_name=templated.name if needs_template else None,
+                template_parameters=list(templated.parameters) if needs_template else None,
                 urgency=urgency,
                 send_after=due,
             )

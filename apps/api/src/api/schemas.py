@@ -1071,6 +1071,11 @@ class OutboundMessageOut(ORMModel):
     send_after: datetime
     sent_at: datetime | None = None
     suppressed_reason: str | None = None
+    #: Set for WhatsApp and SMS, which can only carry pre-approved wording. Null for
+    #: email. Shown in the admin so it is obvious at a glance which messages depend
+    #: on a template being approved before they can go anywhere.
+    template_name: str | None = None
+    template_parameters: list[str] | None = None
     created_at: datetime
 
 
