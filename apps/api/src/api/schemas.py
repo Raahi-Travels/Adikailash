@@ -1365,3 +1365,89 @@ class CompanionOut(BaseModel):
     #: When the server built this. The page shows it when serving from cache, so
     #: "last saved 9 hours ago" is visible rather than implied to be live.
     generated_at: datetime
+
+
+# ------------------------------------------------------- contribution by source
+
+
+class SpendIn(BaseModel):
+    channel: str = Field(min_length=1, max_length=120)
+    campaign: str | None = Field(default=None, max_length=160)
+    period_start: date
+    period_end: date
+    amount: Decimal = Field(ge=0)
+    note: str | None = Field(default=None, max_length=2000)
+
+
+class SpendOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    channel: str
+    campaign: str
+    period_start: date
+    period_end: date
+    amount: Decimal
+    currency: str
+    note: str | None = None
+    recorded_by: str | None = None
+
+
+class SourcePerformanceOut(BaseModel):
+    """One acquisition source, reduced to what it actually contributed.
+
+    Note what is *not* here: no "revenue" field. Doc 07 forbids reporting on gross
+    booking value where supplier costs and refunds matter, and the surest way to stop
+    somebody quoting gross is not to return it under a name that invites it.
+    `gross_agreed` is present and named so that it cannot be mistaken for the answer.
+    """
+
+    source: str
+    leads: int = 0
+    reservations: int = 0
+    earning_reservations: int = 0
+    conditional_reservations: int = 0
+    travellers: int = 0
+
+    gross_agreed: Decimal = Decimal("0")
+    supplier_cost: Decimal = Decimal("0")
+    refunded: Decimal = Decimal("0")
+    received: Decimal = Decimal("0")
+    contribution: Decimal = Decimal("0")
+    #: Indian lakh grouping. Two screens showing 1,50,000 and 150,000 for the same
+    #: figure is a small thing that costs real trust in a finance number.
+    contribution_display: str = ""
+    contribution_margin_percent: Decimal | None = None
+    #: Proposed and held reservations. Reported beside contribution, never inside it.
+    conditional_value: Decimal = Decimal("0")
+
+    lead_to_reservation_percent: Decimal | None = None
+    contribution_per_lead: Decimal | None = None
+
+    #: None means no spend was recorded, which is not the same as zero.
+    spend: Decimal | None = None
+    cost_per_qualified_lead: Decimal | None = None
+    acquisition_share_of_contribution: Decimal | None = None
+
+    is_low_confidence: bool = False
+    #: Text, so the warning survives being copied out of this screen into a message.
+    caveats: list[str] = Field(default_factory=list)
+
+
+class ContributionReportOut(BaseModel):
+    #: Named in the payload so nobody reads these as settled truth. First-touch
+    #: flatters whatever people find first and undercredits what convinced them.
+    attribution_model: str = "first-touch"
+    sources: list[SourcePerformanceOut] = Field(default_factory=list)
+    total_contribution: Decimal = Decimal("0")
+    total_contribution_display: str = ""
+    total_conditional_value: Decimal = Decimal("0")
+    #: Two shares, because they diverge and the divergence is the signal. A walk-in
+    #: booked over the phone has no lead row, so it can be a large slice of
+    #: contribution while the lead-based figure reports zero — which is exactly what
+    #: the first real run of this report did.
+    unattributed_lead_share_percent: Decimal | None = None
+    unattributed_contribution_share_percent: Decimal | None = None
+    #: Spend recorded against a channel no lead ever came from — almost always a typo
+    #: in the channel name, and silently ignoring it flatters every other channel.
+    unmatched_spend_channels: list[str] = Field(default_factory=list)

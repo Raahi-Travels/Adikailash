@@ -27,6 +27,7 @@ from api.models.documents import (
     DocumentSubmission,
     TravellerCategory,
 )
+from api.models.attribution import AcquisitionSpend
 from api.models.advocacy import (
     FeedbackComplaint,
     Referral,
@@ -105,6 +106,7 @@ from api.models.weather import (
 )
 
 __all__ = [
+    "AcquisitionSpend",
     "Article",
     "ArticleCluster",
     "ArticleFaq",

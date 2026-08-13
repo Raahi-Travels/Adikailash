@@ -20,6 +20,7 @@ from api.domain.departures import (
 )
 from api.routers import (
     advocacy,
+    attribution,
     admin,
     content,
     manifest,
@@ -82,6 +83,7 @@ app.include_router(manifest.router)
 app.include_router(operations.router)
 app.include_router(traveller.router)
 app.include_router(advocacy.router)
+app.include_router(attribution.router)
 app.include_router(sharing.router)
 
 
