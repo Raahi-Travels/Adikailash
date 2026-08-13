@@ -91,8 +91,16 @@ export const brand = {
   },
 
   contact: {
-    /** E.164, no spaces. Feeds wa.me links. */
-    whatsappNumber: undecided("O9", FOUNDER_OPS, ""),
+    /**
+     * E.164, no spaces. Feeds wa.me links.
+     *
+     * This settles only the *human* half of O9: a number a traveller can message,
+     * which a person answers. It is deliberately NOT evidence that the WhatsApp
+     * Business Platform is wired up — that is a separate decision with a separate
+     * consequence (see `docs/DECISIONS.md`, O9), and `sending_enabled` on the API
+     * side stays false until a provider and token actually exist.
+     */
+    whatsappNumber: settled("+918340858764"),
     whatsappDisplayName: settled("The Sacred North"),
     phone: undecided("O10", FOUNDER_OPS, ""),
     supportEmail: undecided("O7", FOUNDER_BRAND, ""),
