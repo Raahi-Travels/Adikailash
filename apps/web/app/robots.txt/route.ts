@@ -10,8 +10,8 @@ import { siteOrigin } from "@/lib/site-url";
  *
  * Three things are load-bearing.
  *
- * **The private paths.** `/admin`, `/booking` and `/documents` are reached by a staff
- * session or a private token. Disallowing them is not access control, and nothing
+ * **The private paths.** `/admin`, `/booking`, `/documents`, `/trip`, `/family`,
+ * `/feedback` and `/unsubscribe` are reached by a staff session or a private token. Disallowing them is not access control, and nothing
  * here is relied on for that: the API checks every request. This exists so a token in
  * a shared link never becomes an indexed page carrying a family's payment trail.
  *
@@ -44,7 +44,21 @@ const AI_CRAWLERS = [
   "CCBot",
 ];
 
-const DISALLOW = ["/admin", "/booking", "/documents", "/api/", "/lab"];
+//: Every path reached by a staff session or a capability token. This is NOT access
+//: control — the API checks every request and each page also sends `noindex`. It
+//: exists so a token pasted into a WhatsApp group never becomes an indexed page
+//: carrying a family's itinerary or a traveller's private feedback.
+const DISALLOW = [
+  "/admin",
+  "/booking",
+  "/documents",
+  "/trip",
+  "/family",
+  "/feedback",
+  "/unsubscribe",
+  "/api/",
+  "/lab",
+];
 
 export function GET() {
   const { origin, isProvisional } = siteOrigin();

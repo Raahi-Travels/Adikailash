@@ -69,6 +69,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized("/departures", { changeFrequency: "daily", priority: 0.8 }),
     ...localized("/plan", { changeFrequency: "monthly", priority: 0.8 }),
     ...localized("/enquire", { changeFrequency: "monthly", priority: 0.7 }),
+    /*
+      Both are public acquisition pages behind the footer rather than the header, so
+      nothing on the site links to them prominently — which makes listing them here
+      the main way they get found at all. Doc 07 puts international acquisition on
+      "carefully served private enquiries", and doc 01 rates ground handling P1
+      revenue; neither earns anything if search engines are never told they exist.
+    */
+    ...localized("/private", { changeFrequency: "monthly", priority: 0.7 }),
+    ...localized("/partners", { changeFrequency: "monthly", priority: 0.5 }),
     ...localized("/policies", { changeFrequency: "monthly", priority: 0.4 }),
     ...POLICY_ORDER.flatMap((slug) =>
       localized(`/policies/${slug}`, {

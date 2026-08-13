@@ -9,6 +9,24 @@ import { currentStaff } from "@/lib/admin-api";
 export const dynamic = "force-dynamic";
 
 /**
+ * `noindex` on the whole admin tree, inherited by every page under it.
+ *
+ * robots.txt already disallows `/admin`, and that is *not* sufficient on its own:
+ * Disallow stops a crawler fetching a URL, but Google will still index a disallowed
+ * URL it finds linked elsewhere, showing the bare address with no description. The
+ * two directives do different jobs — Disallow controls crawling, `noindex` controls
+ * indexing — and for a page that must never appear in a result at all, this is the
+ * one that actually says so.
+ *
+ * Neither is access control. That is `currentStaff()` below and the role checks on
+ * every API endpoint behind it; these two only keep an operations screen out of
+ * search results.
+ */
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
+/**
  * Admin shell.
  *
  * Doc 02: the internal system "prioritises density, status, ownership and exceptions
