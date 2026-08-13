@@ -16,7 +16,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import desc, select
 
-from api.deps import SessionDep, StaffDep, require_roles
+from api.deps import LocaleDep, SessionDep, StaffDep, require_roles
 from api.domain.departures import (
     DepartureState,
     IllegalTransition,
@@ -50,6 +50,8 @@ from api.models.staff import (
 )
 from api.models.weather import WeatherCondition, WeatherSnapshot, WeatherSource
 from api.schemas import (
+    DestinationAltitudeIn,
+    DestinationOut,
     DepartureTransitionIn,
     LeadListItemOut,
     LeadQueueOut,
@@ -797,4 +799,45 @@ async def update_lead(
         first_touch_source=lead.first_touch_source,
         campaign=lead.campaign,
         created_at=lead.created_at,
+    )
+
+
+@router.patch("/destinations/{slug}/altitude", response_model=DestinationOut)
+async def set_destination_altitude(
+    slug: str,
+    payload: DestinationAltitudeIn,
+    session: SessionDep,
+    staff: ContentStaff,
+    locale: LocaleDep,
+):
+    """Record a verified altitude for a place.
+
+    Entered by a person, never derived. Doc 03 calls altitude an "approved factual
+    value", and the reason is what the number is used for: somebody at 62 deciding
+    whether they can do this, and the acclimatisation profile that gets drawn from it.
+    A figure interpolated from neighbouring villages or scraped from an unattributed
+    source would look identical on the chart to one somebody checked.
+
+    `source` is required for the same reason. In two years nobody will remember where
+    4,150m for Nabhidhang came from, and a number with no provenance is one nobody can
+    correct with confidence.
+    """
+    destination = await session.scalar(
+        select(Destination).where(Destination.slug == slug)
+    )
+    if destination is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Destination not found.")
+
+    destination.altitude_m = payload.altitude_m
+    destination.altitude_source = payload.source.strip()
+    destination.altitude_recorded_by = staff.name or staff.email or staff.id
+    destination.altitude_verified = payload.verified
+    await session.commit()
+    await session.refresh(destination)
+
+    return DestinationOut(
+        id=destination.id,
+        slug=destination.slug,
+        name=resolve(destination.name, locale) or destination.slug,
+        altitude_m=destination.altitude_m,
     )

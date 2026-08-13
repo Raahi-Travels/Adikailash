@@ -6,6 +6,7 @@ import { BreadcrumbLd, JourneyLd } from "@/components/structured-data";
 import { Link } from "@/i18n/navigation";
 import { api, type Locale, type Stay } from "@/lib/api";
 import { journeyScene } from "@/lib/imagery";
+import { AltitudeProfile } from "@/components/altitude-profile";
 import { whatsappLink } from "@/lib/brand";
 
 /**
@@ -239,6 +240,14 @@ export default async function JourneyDetailPage({
               publish it only once the route, timings and accommodation have been
               walked and confirmed, rather than adapting someone else&rsquo;s brochure.
             </p>
+          </div>
+        </section>
+      )}
+
+      {journey.altitude && (
+        <section className="border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
+          <div className="mx-auto max-w-6xl">
+            <AltitudeProfile data={journey.altitude} />
           </div>
         </section>
       )}

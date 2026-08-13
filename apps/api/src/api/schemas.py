@@ -88,12 +88,65 @@ class JourneySummaryOut(ORMModel):
     is_published: bool
 
 
+class DestinationAltitudeIn(BaseModel):
+    #: Metres. Bounded generously but not absurdly: the highest point on earth is
+    #: 8,849m, and a typo of 41500 for 4150 would otherwise redraw the whole profile
+    #: and make every other night look like sea level.
+    altitude_m: int = Field(ge=0, le=9000)
+    #: Required. See `Destination.altitude_source`.
+    source: str = Field(min_length=3, max_length=300)
+    #: Defaults to false, which is the safe direction. Only a person who has checked
+    #: the figure against the source they named should pass true — until then the
+    #: number is stored but never plotted publicly.
+    verified: bool = False
+
+
+class AltitudePointOut(BaseModel):
+    day: int
+    place: str
+    altitude_m: int
+    #: Pre-computed SVG coordinates. Server-side so the chart is in the HTML: it
+    #: renders with no JavaScript on a mid-range Android on mobile data, and an
+    #: answer engine can read it. A canvas chart is invisible to both.
+    x: float
+    y: float
+    is_rest_day: bool = False
+
+
+class AltitudeProfileOut(BaseModel):
+    """Sleeping altitude across the itinerary.
+
+    Note the absence of any score, rating or verdict. One of the standing constraints
+    is "no medical clearance, diagnosis or fitness certification, by human or AI", so
+    every field here describes the *itinerary*. Nothing describes the reader, and a
+    green tick on a page like this is the thing that talks somebody out of seeing a
+    doctor.
+    """
+
+    points: list[AltitudePointOut] = Field(default_factory=list)
+    highest_sleeping_altitude_m: int | None = None
+    total_gain_above_threshold_m: int = 0
+    rest_nights_above_threshold: int = 0
+    #: Sentences about the schedule, measured against published general guidance.
+    guidance_notes: list[str] = Field(default_factory=list)
+    #: Attribution. The guidance is general mountaineering advice, not our medical
+    #: opinion, and the page has to say so.
+    guidance_source: str = ""
+    #: Named rather than hidden. A chart with three of nine points plotted reads as
+    #: the whole journey, and the missing ones are the high ones people care about.
+    unknown_places: list[str] = Field(default_factory=list)
+    is_complete: bool = False
+
+
 class JourneyDetailOut(JourneySummaryOut):
     tiers: list[ServiceTierOut] = Field(default_factory=list)
     stages: list[ItineraryStageOut] = Field(default_factory=list)
     last_reviewed_at: str | None = None
     #: True when this locale has real translations rather than English fallback.
     is_fully_translated: bool = True
+    #: None when the itinerary has fewer than two nights with a published altitude —
+    #: there is no profile to draw, and an empty chart is worse than none.
+    altitude: AltitudeProfileOut | None = None
 
 
 # ----------------------------------------------------------------------------- status

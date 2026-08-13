@@ -25,6 +25,13 @@ from api.models.catalogue import (
     ServiceTier,
 )
 from api.models.documents import DocumentRequirement
+from api.domain.altitude import (
+    GUIDANCE_SOURCE,
+    Night,
+    Profile,
+    chart_points,
+    guidance_notes,
+)
 from api.models.leads import (
     ConsentChannel,
     ConsentPurpose,
@@ -37,6 +44,8 @@ from api.routers.advocacy import attribute_referral
 from api.models.operations import Departure, RouteSegment, StatusUpdate
 from api.models.weather import WeatherSnapshot
 from api.schemas import (
+    AltitudePointOut,
+    AltitudeProfileOut,
     DepartureOut,
     DestinationOut,
     DocumentRequirementOut,
@@ -117,6 +126,91 @@ async def list_journeys(session: SessionDep, locale: LocaleDep):
     ]
 
 
+async def _altitude_profile(
+    session, version, locale: str
+) -> AltitudeProfileOut | None:
+    """Sleeping altitude night by night, from where each stage actually stays.
+
+    **Sleeping altitude, not the day's highest point.** You can walk to 4,500m and
+    sleep at 3,200m and be following the guidance perfectly; the published advice is
+    about where you spend the night, and using the day's peak would flag a
+    well-designed itinerary as reckless.
+
+    Returns None below two known points. An altitude chart with one dot is not a
+    profile, and an empty axis suggests we lost the data rather than never having
+    published it.
+    """
+    if version is None:
+        return None
+
+    from api.models.catalogue import Destination, Stay
+
+    stages = list(
+        await session.scalars(
+            select(ItineraryStage)
+            .where(ItineraryStage.itinerary_version_id == version.id)
+            .order_by(ItineraryStage.day_number)
+        )
+    )
+
+    nights: list[Night] = []
+    previous_place: str | None = None
+    for stage in stages:
+        place, altitude = None, None
+
+        # Where they sleep is the stay's destination; fall back to the stage's
+        # arrival when no stay is attached yet.
+        destination_id = None
+        if stage.stay_id is not None:
+            stay = await session.get(Stay, stage.stay_id)
+            if stay is not None:
+                destination_id = stay.destination_id
+                place = stay.village
+        destination_id = destination_id or stage.arrival_destination_id
+        if destination_id is not None:
+            destination = await session.get(Destination, destination_id)
+            if destination is not None:
+                place = resolve(destination.name, locale) or place
+                # Verified only. An unverified figure is stored for operations to
+                # work on and is deliberately treated here exactly like a missing
+                # one — the profile shows the gap and names the place, rather than
+                # publishing a number nobody has checked to a page where somebody is
+                # deciding whether they can physically do this.
+                if destination.altitude_verified:
+                    altitude = destination.altitude_m
+        if place is None:
+            continue
+
+        nights.append(
+            Night(
+                day=stage.day_number,
+                place=place,
+                altitude_m=altitude,
+                # A rest night is sleeping in the same place two nights running,
+                # which is exactly what acclimatisation means. Derived rather than
+                # flagged, so it cannot drift from the itinerary it describes.
+                is_rest_day=place == previous_place,
+            )
+        )
+        previous_place = place
+
+    profile = Profile(nights=nights)
+    points = chart_points(profile)
+    if len(points) < 2:
+        return None
+
+    return AltitudeProfileOut(
+        points=[AltitudePointOut(**p) for p in points],
+        highest_sleeping_altitude_m=profile.highest_sleeping_altitude_m,
+        total_gain_above_threshold_m=profile.total_gain_above_threshold_m,
+        rest_nights_above_threshold=profile.rest_nights_above_threshold,
+        guidance_notes=guidance_notes(profile),
+        guidance_source=GUIDANCE_SOURCE,
+        unknown_places=profile.unknown_places,
+        is_complete=profile.is_complete,
+    )
+
+
 @router.get("/journeys/{slug}", response_model=JourneyDetailOut)
 async def get_journey(slug: str, session: SessionDep, locale: LocaleDep):
     journey = await session.scalar(
@@ -185,6 +279,7 @@ async def get_journey(slug: str, session: SessionDep, locale: LocaleDep):
     )
 
     return JourneyDetailOut(
+        altitude=await _altitude_profile(session, version, locale),
         id=journey.id,
         slug=journey.slug,
         name=resolve(journey.name, locale) or journey.slug,

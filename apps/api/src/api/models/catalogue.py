@@ -86,6 +86,20 @@ class Destination(Base, TimestampMixin):
     #: Approved factual value. Doc 03 lists altitude under "at-a-glance"; it must be
     #: a reviewed number, not scraped trivia. Null until operations approves it.
     altitude_m: Mapped[int | None] = mapped_column(Integer)
+    #: Where the figure came from. Required alongside the number, because in two
+    #: years nobody will remember where 4,150m for Nabhidhang came from, and a
+    #: number with no provenance is one nobody can correct with confidence. This one
+    #: gets used by somebody deciding whether they can physically do this.
+    altitude_source: Mapped[str | None] = mapped_column(String(300))
+    altitude_recorded_by: Mapped[str | None] = mapped_column(String(120))
+    #: False until a person has checked the figure against the source they named.
+    #: **The public altitude profile plots verified points only**, so a seeded or
+    #: half-remembered number never reaches a page where somebody is judging whether
+    #: they can physically do this. Same shape as `Stay.last_verified_by` and the
+    #: route-status provenance: recorded is not the same as verified.
+    altitude_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=text("false")
+    )
     is_published: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("false"), nullable=False
     )

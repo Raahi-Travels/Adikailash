@@ -61,11 +61,31 @@ export type ItineraryStage = {
   stay: Stay | null;
 };
 
+export type AltitudeProfileData = {
+  points: {
+    day: number;
+    place: string;
+    altitude_m: number;
+    x: number;
+    y: number;
+    is_rest_day: boolean;
+  }[];
+  highest_sleeping_altitude_m: number | null;
+  total_gain_above_threshold_m: number;
+  rest_nights_above_threshold: number;
+  guidance_notes: string[];
+  guidance_source: string;
+  unknown_places: string[];
+  is_complete: boolean;
+};
+
 export type JourneyDetail = JourneySummary & {
   tiers: ServiceTier[];
   stages: ItineraryStage[];
   last_reviewed_at: string | null;
   is_fully_translated: boolean;
+  /** Null when fewer than two nights have a published altitude. */
+  altitude: AltitudeProfileData | null;
 };
 
 export type RouteStatus = {
