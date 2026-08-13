@@ -78,6 +78,7 @@ from api.models.subscriptions import (
 )
 from api.models.supply import (
     Incident,
+    SupplierReview,
     RoomingAssignment,
     Supplier,
     SupplierBooking,
@@ -177,6 +178,7 @@ __all__ = [
     "Supplier",
     "SupplierBooking",
     "SupplierPayment",
+    "SupplierReview",
     "TravellerAccessToken",
     "TravellerCategory",
     "TravellerRole",

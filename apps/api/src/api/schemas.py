@@ -1451,3 +1451,82 @@ class ContributionReportOut(BaseModel):
     #: Spend recorded against a channel no lead ever came from — almost always a typo
     #: in the channel name, and silently ignoring it flatters every other channel.
     unmatched_spend_channels: list[str] = Field(default_factory=list)
+
+
+# ------------------------------------------------------------ vendor performance
+
+
+class SupplierReviewIn(BaseModel):
+    """Doc 06's post-departure vendor assessment.
+
+    Every rating is optional and `None` means unanswered. A coordinator who did not
+    see the rooms should not be made to guess, and a forced guess is worse data than
+    a gap.
+    """
+
+    departure_id: int
+
+    confirmation_reliability: int | None = Field(default=None, ge=1, le=5)
+    punctuality: int | None = Field(default=None, ge=1, le=5)
+    accuracy_against_promise: int | None = Field(default=None, ge=1, le=5)
+    cleanliness_and_condition: int | None = Field(default=None, ge=1, le=5)
+    staff_behaviour: int | None = Field(default=None, ge=1, le=5)
+    communication: int | None = Field(default=None, ge=1, le=5)
+    issue_resolution: int | None = Field(default=None, ge=1, le=5)
+
+    #: None means undecided, which is deliberately not the same as False. Collapsing
+    #: the two turns "I am not sure" into "no".
+    would_use_again: bool | None = None
+    note: str | None = Field(default=None, max_length=4000)
+
+
+class SupplierReviewOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    supplier_id: int
+    departure_id: int
+    would_use_again: bool | None = None
+    note: str | None = None
+    reviewed_by: str | None = None
+
+
+class VendorHoldIn(BaseModel):
+    #: Null lifts the hold. A non-empty string sets it, and the string is the point.
+    reason: str | None = Field(default=None, max_length=2000)
+
+
+class VendorAssessmentOut(BaseModel):
+    """What is known about a vendor, and what to do about it.
+
+    Note the absence of an overall score. Doc 06: "A future vendor score may assist
+    planning, but serious incidents and manual judgement must remain visible rather
+    than hidden in an average." The reliable way to honour that is not to emit a
+    single number that could carry the whole answer on a screen.
+    """
+
+    supplier_id: int
+    name: str
+    #: use_again | too_early_to_say | review_before_rebooking | do_not_use
+    recommendation: str
+    #: A sentence, meant to be read rather than sorted on.
+    headline: str
+    #: Must be read before rebooking. Never empty for the two negative outcomes.
+    blocking_concerns: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    #: Per dimension, and `None` where too few departures have been reviewed to say
+    #: anything — withheld rather than shown with a caveat, because a number on a
+    #: screen is remembered and the caveat beside it is not.
+    ratings: dict[str, Decimal | None] = Field(default_factory=dict)
+    #: From the private traveller form, kept separate from the coordinator's ratings
+    #: above. The travellers have no stake in the booking decision.
+    traveller_average: Decimal | None = None
+    traveller_count: int = 0
+    review_count: int = 0
+    incident_count: int = 0
+    #: Zero until the booking is settled. An unpaid supplier is not a saving, and a
+    #: negative variance on a screen reads exactly like one.
+    cost_variance: Decimal = Decimal("0")
+    cost_outstanding: Decimal = Decimal("0")
+    cost_settled: bool = False
+    is_rateable: bool = False

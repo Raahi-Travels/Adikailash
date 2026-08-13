@@ -23,6 +23,7 @@ from sqlalchemy import (
     Index,
     Integer,
     Numeric,
+    SmallInteger,
     String,
     Text,
     UniqueConstraint,
@@ -70,6 +71,12 @@ class Supplier(Base, TimestampMixin):
     #: Doc 06 wants supplier reliability tracked. A free-text note rather than a score
     #: for now: with two departures run, a numeric rating would be false precision.
     reliability_note: Mapped[str | None] = mapped_column(Text)
+    #: A person deciding not to use this vendor again, and why. Doc 06: "serious
+    #: incidents and manual judgement must remain visible rather than hidden in an
+    #: average." This overrides every computed figure in the vendor assessment, and
+    #: the reason is required — a hold with no explanation cannot be reviewed or
+    #: lifted by whoever inherits it.
+    hold_reason: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default=text("true")
     )
@@ -274,3 +281,75 @@ class Incident(Base, TimestampMixin):
     travellers_informed: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default=text("false")
     )
+
+
+class SupplierReview(Base, TimestampMixin):
+    """One coordinator's assessment of one vendor after one departure (doc 06).
+
+    **Deliberately per departure rather than a running score on `Supplier`.** Doc 06
+    asks to record performance "after each departure", and a single mutable rating
+    column would lose the thing that matters most: that a vendor was fine in May and
+    poor in June is a completely different fact from an average of the two, and it is
+    the one that tells you whether to book them for next May.
+
+    `would_use_again` is nullable and that is load-bearing. `False` is a judgement
+    somebody made; `NULL` is a reviewer who would not commit either way. Collapsing
+    them would turn "I am not sure" into "no", which is both unfair to the vendor and
+    a worse record.
+
+    Kept separate from `Supplier.reliability_note`, which stays as the free-text
+    standing judgement. Doc 06: "manual judgement must remain visible rather than
+    hidden in an average."
+    """
+
+    __tablename__ = "supplier_reviews"
+    __table_args__ = (
+        # One review per vendor per departure. A second is either a duplicate or a
+        # disagreement; both should be a conversation, not two silently averaged rows.
+        UniqueConstraint(
+            "supplier_id", "departure_id", name="one_review_per_supplier_departure"
+        ),
+        *[
+            CheckConstraint(
+                f"{col} is null or {col} between 1 and 5", name=f"{col}_range"
+            )
+            for col in (
+                "confirmation_reliability",
+                "punctuality",
+                "accuracy_against_promise",
+                "cleanliness_and_condition",
+                "staff_behaviour",
+                "communication",
+                "issue_resolution",
+            )
+        ],
+        # Saying "no" requires saying why. The whole value of this row to whoever
+        # reads it next season is the reason, not the boolean.
+        CheckConstraint(
+            "would_use_again is not false or length(trim(coalesce(note,''))) > 0",
+            name="refusing_a_vendor_needs_a_reason",
+        ),
+        Index("ix_supplier_reviews_supplier", "supplier_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    supplier_id: Mapped[int] = mapped_column(
+        ForeignKey("suppliers.id", ondelete="CASCADE"), nullable=False
+    )
+    departure_id: Mapped[int] = mapped_column(
+        ForeignKey("departures.id", ondelete="CASCADE"), nullable=False
+    )
+
+    # --- Doc 06's dimensions. Nullable: unanswered is not a 1. ---
+    confirmation_reliability: Mapped[int | None] = mapped_column(SmallInteger)
+    punctuality: Mapped[int | None] = mapped_column(SmallInteger)
+    accuracy_against_promise: Mapped[int | None] = mapped_column(SmallInteger)
+    cleanliness_and_condition: Mapped[int | None] = mapped_column(SmallInteger)
+    staff_behaviour: Mapped[int | None] = mapped_column(SmallInteger)
+    communication: Mapped[int | None] = mapped_column(SmallInteger)
+    issue_resolution: Mapped[int | None] = mapped_column(SmallInteger)
+
+    #: NULL means undecided, which is not the same as False. See the class docstring.
+    would_use_again: Mapped[bool | None] = mapped_column(Boolean)
+    note: Mapped[str | None] = mapped_column(Text)
+    reviewed_by: Mapped[str | None] = mapped_column(String(120))

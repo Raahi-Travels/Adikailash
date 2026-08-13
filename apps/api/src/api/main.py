@@ -30,6 +30,7 @@ from api.routers import (
     sharing,
     subscriptions,
     traveller,
+    vendors,
 )
 from api.storage import is_storage_configured
 
@@ -82,6 +83,7 @@ app.include_router(reservations.router)
 app.include_router(manifest.router)
 app.include_router(operations.router)
 app.include_router(traveller.router)
+app.include_router(vendors.router)
 app.include_router(advocacy.router)
 app.include_router(attribution.router)
 app.include_router(sharing.router)
