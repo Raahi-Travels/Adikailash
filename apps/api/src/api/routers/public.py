@@ -25,7 +25,8 @@ from api.models.catalogue import (
     ServiceTier,
 )
 from api.models.documents import DocumentRequirement
-from api.domain.status import public_attribution
+from api.domain.status import Access, public_attribution
+from api.domain.route_history import Observation, build_pattern, week_starting
 from api.domain.altitude import (
     GUIDANCE_SOURCE,
     Night,
@@ -46,6 +47,8 @@ from api.models.operations import Departure, RouteSegment, StatusUpdate
 from api.models.weather import WeatherSnapshot
 from api.schemas import (
     AltitudePointOut,
+    RoutePatternOut,
+    RouteWeekOut,
     AltitudeProfileOut,
     DepartureOut,
     DestinationOut,
@@ -623,3 +626,67 @@ async def create_lead(payload: LeadIn, request: Request, session: SessionDep):
 
     await session.commit()
     return LeadOut(id=lead.id, stage=lead.stage.value)
+
+
+@router.get("/route-history/{slug}", response_model=RoutePatternOut)
+async def route_history(slug: str, session: SessionDep, locale: LocaleDep):
+    """What this segment has actually done, week by week.
+
+    Public because it is the honest answer to "when should I go", and doc 07 wants
+    original local information that is worth citing. Nobody else publishes this for
+    the Vyas valley — it exists only because our own coordinators recorded it.
+
+    Returns the pattern with `is_reportable` false rather than 404 when there is too
+    little history: a page that says "we have watched this for one season and will
+    not draw a pattern from it yet" is itself informative, and is honest about a gap
+    that will close on its own.
+    """
+    segment = await session.scalar(
+        select(RouteSegment).where(RouteSegment.slug == slug)
+    )
+    if segment is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Route segment not found.")
+
+    rows = await session.scalars(
+        select(StatusUpdate)
+        .where(
+            StatusUpdate.route_segment_id == segment.id,
+            # Only what was actually published. A draft is somebody's working note.
+            StatusUpdate.stage == "published",
+        )
+        .order_by(StatusUpdate.verified_at)
+    )
+    observations = [
+        Observation(verified_at=r.verified_at, access=Access(r.access)) for r in rows
+    ]
+
+    pattern = build_pattern(
+        segment.slug, resolve(segment.name, locale) or segment.slug, observations
+    )
+
+    return RoutePatternOut(
+        segment_slug=pattern.segment_slug,
+        segment_name=pattern.segment_name,
+        total_observations=pattern.total_observations,
+        seasons_observed=pattern.seasons_observed,
+        first_observed=pattern.first_observed,
+        last_observed=pattern.last_observed,
+        is_reportable=pattern.is_reportable,
+        caveats=pattern.caveats,
+        weeks=[
+            RouteWeekOut(
+                iso_week=w.iso_week,
+                starts_on=week_starting(w.iso_week, pattern.last_observed.year)
+                if pattern.last_observed
+                else None,
+                observations=w.observations,
+                open_share=round(w.open_share, 3) if w.open_share is not None else None,
+                blocked_share=round(w.blocked_share, 3)
+                if w.blocked_share is not None
+                else None,
+                verdict=w.verdict,
+                description=w.description,
+            )
+            for w in pattern.weeks
+        ],
+    )

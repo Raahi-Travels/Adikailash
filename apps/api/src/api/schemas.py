@@ -1629,3 +1629,39 @@ class AssistOut(BaseModel):
     #: on so neither can be dropped in the interest of a smoother reply.
     quoted_status: str | None = None
     passages: list[AssistPassageOut] = Field(default_factory=list)
+
+
+# ------------------------------------------------------------- route history
+
+
+class RouteWeekOut(BaseModel):
+    """One week of the year, as recorded rather than as predicted."""
+
+    iso_week: int
+    #: The Monday, so a week number can be shown as dates. "Week 21" means nothing to
+    #: somebody choosing when to travel; "19–25 May" does.
+    starts_on: date | None = None
+    observations: int = 0
+    open_share: float | None = None
+    blocked_share: float | None = None
+    #: None when there are too few observations to say anything. Deliberately null
+    #: rather than the string "unknown", so a caller that forgets it renders an empty
+    #: cell instead of a confident-looking word.
+    verdict: str | None = None
+    description: str = ""
+
+
+class RoutePatternOut(BaseModel):
+    segment_slug: str
+    segment_name: str
+    total_observations: int = 0
+    seasons_observed: int = 0
+    first_observed: date | None = None
+    last_observed: date | None = None
+    #: False when the segment has not been watched long enough to summarise. The
+    #: response is still returned — "we will not draw a pattern from this yet" is
+    #: itself informative and honest about a gap that closes on its own.
+    is_reportable: bool = False
+    #: Text, so the warning survives a screenshot.
+    caveats: list[str] = Field(default_factory=list)
+    weeks: list[RouteWeekOut] = Field(default_factory=list)
