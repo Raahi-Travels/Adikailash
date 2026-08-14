@@ -131,6 +131,10 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 ## 3. Before the first public deploy
 
 - [ ] Replace the placeholder imagery: `bun run --cwd apps/web check:imagery` must pass
+- [ ] Brand portability holds: `bun run --cwd apps/web check:brand` must pass. D3 makes
+      the working name provisional and D4 exists so replacing it is a config edit;
+      this is the check that the claim is still true. Its first run found the brand
+      name hardcoded in the API.
 - [ ] Purge demo data: `uv run --project apps/api python -m api.seed_demo --purge`
 - [ ] Delete every test staff account (`ops@example.invalid`, `ops.test@example.invalid`).
       This database is shared with Raahi's production and the API is publicly

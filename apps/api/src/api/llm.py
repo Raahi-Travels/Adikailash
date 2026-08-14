@@ -69,11 +69,14 @@ async def complete(system: str, user: str, *, temperature: float = 0.2) -> str |
         "Authorization": f"Bearer {settings.openrouter_api_key}",
         "Content-Type": "application/json",
     }
-    # OpenRouter asks for these for attribution. Sent when a public origin exists;
-    # omitted rather than faked while decision O7 is open.
+    # OpenRouter asks for these for attribution. Each is sent only when configured
+    # and omitted rather than faked otherwise — the origin waits on decision O7, and
+    # the name comes from the environment because D4 forbids a brand string in source.
+    # This file is where the first run of `bun run check:brand` found one.
     if settings.public_site_origin:
         headers["HTTP-Referer"] = settings.public_site_origin
-        headers["X-Title"] = "The Sacred North"
+    if settings.public_brand_name:
+        headers["X-Title"] = settings.public_brand_name
 
     try:
         async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS) as client:

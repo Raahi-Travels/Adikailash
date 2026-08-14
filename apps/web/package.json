@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:imagery": "bun run scripts/check-imagery.ts"
+    "check:imagery": "bun run scripts/check-imagery.ts",
+    "check:brand": "bun run scripts/check-brand.ts"
   },
   "dependencies": {
     "better-auth": "^1.6.26",

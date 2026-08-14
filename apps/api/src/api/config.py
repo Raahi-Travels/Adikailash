@@ -74,6 +74,13 @@ class Settings(BaseSettings):
     #: rather than a constant: catalogues change faster than deploys, and a slug
     #: baked into source is a silent failure the day it is renamed.
     openrouter_model: str = Field(default="", alias="OPENROUTER_MODEL")
+
+    #: Public brand name, for the handful of places the API needs one — currently
+    #: only OpenRouter's attribution header. Decision D4 forbids a brand string in
+    #: any source file, and the API has no access to the web app's brand config, so
+    #: it comes through the environment. Empty means the header is omitted rather
+    #: than faked, the same way HTTP-Referer is while O7 is open.
+    public_brand_name: str = Field(default="", alias="PUBLIC_BRAND_NAME")
     #: Any opaque string, 8 to 128 hex-ish characters. Must also be served at
     #: `<origin>/<key>.txt` or IndexNow refuses every submission with a 403.
     indexnow_key: str = Field(default="", alias="INDEXNOW_KEY")
