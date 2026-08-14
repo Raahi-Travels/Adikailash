@@ -257,6 +257,22 @@ async def contribution_by_source(
     )
 
 
+@router.get("/acquisition-spend", response_model=list[SpendOut])
+async def list_spend(session: SessionDep, staff: FinanceStaff, limit: int = 100):
+    """Every spend row, newest period first.
+
+    Needed to see what has already been entered before adding more — the unique
+    constraint catches a duplicate, but only after somebody has typed it, and a
+    finance screen that cannot show its own inputs is one people stop trusting.
+    """
+    rows = await session.scalars(
+        select(AcquisitionSpend)
+        .order_by(AcquisitionSpend.period_start.desc(), AcquisitionSpend.channel)
+        .limit(limit)
+    )
+    return [SpendOut.model_validate(r) for r in rows]
+
+
 @router.post("/acquisition-spend", response_model=SpendOut, status_code=201)
 async def record_spend(payload: SpendIn, session: SessionDep, staff: FinanceStaff):
     """Record what was spent on a channel over a period.

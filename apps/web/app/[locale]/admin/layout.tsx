@@ -47,6 +47,8 @@ const NAV = [
   { href: "/admin/feedback", label: "Feedback" },
   { href: "/admin/alerts", label: "Alerts" },
   { href: "/admin/attribution", label: "Contribution" },
+  { href: "/admin/spend", label: "Spend" },
+  { href: "/admin/guides", label: "Guides" },
   { href: "/admin/assist", label: "Assistant" },
 ];
 
