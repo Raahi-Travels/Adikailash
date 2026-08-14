@@ -180,6 +180,9 @@ def _out(assessment) -> VendorAssessmentOut:
         cost_outstanding=assessment.cost_outstanding,
         cost_settled=assessment.cost_settled,
         is_rateable=assessment.is_rateable,
+        reliability_score=assessment.reliability_score,
+        score_explanation=assessment.score_explanation,
+        is_score_capped=assessment.is_score_capped,
     )
 
 
@@ -200,7 +203,16 @@ async def vendor_performance(session: SessionDep, staff: OpsStaff):
         "use_again": 2,
         "too_early_to_say": 3,
     }
-    assessments.sort(key=lambda a: (order[a.recommendation.value], a.name))
+    # Sorted by recommendation first and score second — never by score alone. A
+    # score-ordered list would put a capped 40 above an unrated newcomer and read as
+    # a league table, which is the framing doc 06 is guarding against.
+    assessments.sort(
+        key=lambda a: (
+            order[a.recommendation.value],
+            -(a.reliability_score or -1),
+            a.name,
+        )
+    )
     return [_out(a) for a in assessments]
 
 

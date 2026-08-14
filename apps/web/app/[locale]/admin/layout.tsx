@@ -43,6 +43,10 @@ const NAV = [
   { href: "/admin/journeys", label: "Journeys" },
   { href: "/admin/departures", label: "Departures" },
   { href: "/admin/incidents", label: "Incidents" },
+  { href: "/admin/vendors", label: "Vendors" },
+  { href: "/admin/feedback", label: "Feedback" },
+  { href: "/admin/alerts", label: "Alerts" },
+  { href: "/admin/attribution", label: "Contribution" },
   { href: "/admin/assist", label: "Assistant" },
 ];
 

@@ -17,6 +17,7 @@ import pytest
 from api.domain.incidents import IncidentSeverity
 from api.domain.vendors import (
     DIMENSIONS,
+    SCORE_CEILING_WITH_CONCERN,
     MIN_REVIEWS_FOR_RATING,
     CostVariance,
     IncidentSummary,
@@ -278,3 +279,96 @@ def test_variance_is_judged_only_once_the_booking_is_settled():
     assert cost.is_settled
     assert cost.outstanding == Decimal("0")
     assert cost.is_concerning
+
+
+# ------------------------------------------------------------------- the score
+
+
+def test_a_serious_incident_caps_the_score_however_good_the_reviews():
+    """Doc 06 permits a score "to assist planning" on the condition that serious
+    incidents stay visible rather than hidden in an average. Printing the incident
+    beside a 100 and hoping somebody reads it does not meet that condition — the
+    number is what gets sorted on and remembered. So the cap is arithmetic."""
+    r = record(
+        reviews=[good_review(i) for i in range(10)],
+        incidents=[
+            IncidentSummary(
+                incident_id=1,
+                severity=IncidentSeverity.SERIOUS,
+                observed="Party arrived to no rooms; slept in the vehicle.",
+                outcome="Moved to another house next morning.",
+                is_resolved=True,
+            )
+        ],
+    )
+    result = assess(r)
+    assert result.reliability_score == SCORE_CEILING_WITH_CONCERN
+    assert result.is_score_capped
+    assert any("Capped at" in e for e in result.score_explanation)
+
+
+def test_more_good_reviews_do_not_lift_the_cap():
+    """The cap lifts when the concern is settled, not when the average improves."""
+    with_concern = record(
+        reviews=[good_review(i) for i in range(30)],
+        manual_hold_reason="Owner asked our travellers for money directly.",
+    )
+    assert assess(with_concern).reliability_score == SCORE_CEILING_WITH_CONCERN
+
+
+def test_resolving_the_concern_lifts_the_cap():
+    clean = record(reviews=[good_review(i) for i in range(10)])
+    assert assess(clean).reliability_score == 100
+    assert not assess(clean).is_score_capped
+
+
+def test_a_perfect_vendor_scores_100_and_a_poor_one_scores_low():
+    perfect = record(reviews=[good_review(i) for i in range(4)])
+    assert assess(perfect).reliability_score == 100
+
+    poor = record(
+        reviews=[
+            Review(
+                departure_id=i,
+                ratings={key: 1 for key, _ in DIMENSIONS},
+                would_use_again=None,
+            )
+            for i in range(4)
+        ]
+    )
+    assert assess(poor).reliability_score == 0
+
+
+def test_no_score_below_the_review_threshold():
+    """Same discipline as the ratings. A number computed from two departures is the
+    anecdote this module refuses everywhere else."""
+    result = assess(record(reviews=[good_review(1), good_review(2)]))
+    assert result.reliability_score is None
+    assert any("No score until" in e for e in result.score_explanation)
+
+
+def test_an_unrated_dimension_is_dropped_rather_than_scored_zero():
+    """A vendor nobody rated on cleanliness has not scored badly on cleanliness."""
+    partial = record(
+        reviews=[
+            Review(departure_id=i, ratings={"punctuality": 5}, would_use_again=True)
+            for i in range(4)
+        ]
+    )
+    assert assess(partial).reliability_score == 100
+
+
+def test_the_score_never_travels_without_its_concerns():
+    """Fields of the same object, which is as close as the type system gets to
+    insisting they are read together."""
+    from api.domain.vendors import VendorAssessment
+
+    assert "reliability_score" in VendorAssessment.__dataclass_fields__
+    assert "blocking_concerns" in VendorAssessment.__dataclass_fields__
+
+
+def test_the_score_is_explained():
+    result = assess(record(reviews=[good_review(i) for i in range(4)]))
+    joined = " ".join(result.score_explanation)
+    assert "coordinator ratings average" in joined
+    assert "would use them again" in joined

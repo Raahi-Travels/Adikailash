@@ -1584,6 +1584,16 @@ class VendorAssessmentOut(BaseModel):
     cost_settled: bool = False
     is_rateable: bool = False
 
+    #: 0-100, or null with too little evidence. Doc 06 permits a score "to assist
+    #: planning" on the condition that serious incidents and manual judgement stay
+    #: visible — met in the arithmetic rather than the layout: a blocking concern
+    #: caps this, so it cannot read as fine over the top of an open incident.
+    reliability_score: int | None = None
+    #: Why it is what it is, including the cap when it applied. An unexplained number
+    #: is the thing doc 06 warns about.
+    score_explanation: list[str] = Field(default_factory=list)
+    is_score_capped: bool = False
+
 
 # ------------------------------------------------------------------- assistant
 
