@@ -37,7 +37,13 @@ from api.domain.supply import (
 )
 from api.localization import resolve
 from api.models.catalogue import Stay
-from api.models.operations import Departure, DepartureCheckIn
+from api.models.access import generate_token, hash_token
+from api.models.operations import (
+    Departure,
+    DepartureCheckIn,
+    OperatingPartner,
+    PartnerAccessToken,
+)
 from api.models.reservations import (
     PaymentDirection,
     PaymentMethod,
@@ -59,6 +65,8 @@ from api.models.supply import (
 )
 from api.schemas import (
     CheckInIn,
+    PartnerTokenIn,
+    PartnerTokenOut,
     EconomicsOut,
     IncidentIn,
     IncidentOut,
@@ -701,3 +709,38 @@ async def post_check_in(
     await session.refresh(row)
 
     return SharedCheckInOut(at=row.occurred_at, note=row.note, posted_by=row.posted_by)
+
+
+@router.post("/partner-tokens", response_model=PartnerTokenOut, status_code=201)
+async def issue_partner_token(
+    payload: PartnerTokenIn, session: SessionDep, staff: OpsStaff
+):
+    """Issue a read-only key to an operating partner.
+
+    Returned once and never again — it is stored hashed, like the traveller tokens.
+    Unlike those, this one goes to another company and lives in their systems, which
+    is why it expires by default rather than on request.
+    """
+    partner = await session.get(OperatingPartner, payload.operating_partner_id)
+    if partner is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Operating partner not found.")
+
+    token = generate_token()
+    row = PartnerAccessToken(
+        operating_partner_id=partner.id,
+        token_hash=hash_token(token),
+        label=payload.label.strip(),
+        issued_by=staff.name or staff.email or staff.id,
+        expires_at=(
+            datetime.now(UTC) + timedelta(days=payload.expires_in_days)
+            if payload.expires_in_days
+            else None
+        ),
+    )
+    session.add(row)
+    await session.commit()
+    await session.refresh(row)
+
+    return PartnerTokenOut(
+        id=row.id, label=row.label, token=token, expires_at=row.expires_at
+    )

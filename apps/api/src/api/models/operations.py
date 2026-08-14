@@ -288,3 +288,56 @@ class DepartureCheckIn(Base, TimestampMixin):
     is_shareable: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default=text("true")
     )
+
+
+class PartnerAccessToken(Base, TimestampMixin):
+    """A read-only key scoped to exactly one operating partner (doc 09, Phase 5).
+
+    **The scope is the whole feature.** A partner sees their own departures and the
+    public route status, and there is no path from this token to another partner's
+    anything. Every query is filtered by `partner_id` taken from the token rather
+    than from the URL, which is what makes changing an id in the address bar useless
+    — the same shape as the traveller tokens, for the same reason.
+
+    Read-only by construction. A partner cannot publish a status, change a departure
+    or see a traveller: doc 06 keeps departure lifecycle and status publishing behind
+    named staff roles, and doc 08 restricts access to traveller data. What they get is
+    the operational picture for the groups they are legally responsible for.
+
+    Hashed, unlike the traveller and family tokens. Those are capability URLs a
+    customer keeps; this is closer to an API credential — it goes to another company,
+    lives in their systems, and may outlive whoever pasted it there.
+    """
+
+    __tablename__ = "partner_access_tokens"
+    __table_args__ = (
+        CheckConstraint("length(trim(label)) > 0", name="partner_token_label_present"),
+        CheckConstraint(
+            "revoked_at is null or revoked_reason is not null",
+            name="partner_revocation_needs_a_reason",
+        ),
+        Index("ix_partner_tokens_partner", "operating_partner_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    operating_partner_id: Mapped[int] = mapped_column(
+        ForeignKey("operating_partners.id", ondelete="CASCADE"), nullable=False
+    )
+
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    #: Who at the partner this was issued to, so revoking the right one is possible.
+    label: Mapped[str] = mapped_column(String(160), nullable=False)
+    issued_by: Mapped[str | None] = mapped_column(String(120))
+
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_reason: Mapped[str | None] = mapped_column(Text)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    use_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+
+    def is_valid(self, *, now: datetime) -> bool:
+        if self.revoked_at is not None:
+            return False
+        return self.expires_at is None or self.expires_at > now

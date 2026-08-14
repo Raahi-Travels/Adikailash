@@ -26,6 +26,7 @@ from api.routers import (
     content,
     manifest,
     operations,
+    partners,
     public,
     reservations,
     sharing,
@@ -83,6 +84,7 @@ app.include_router(admin.router)
 app.include_router(reservations.router)
 app.include_router(manifest.router)
 app.include_router(operations.router)
+app.include_router(partners.router)
 app.include_router(traveller.router)
 app.include_router(vendors.router)
 app.include_router(advocacy.router)

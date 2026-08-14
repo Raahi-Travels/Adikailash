@@ -54,6 +54,7 @@ from api.models.leads import (
 )
 from api.models.operations import (
     Departure,
+    PartnerAccessToken,
     DepartureCheckIn,
     DepartureStateChange,
     OperatingPartner,
@@ -152,6 +153,7 @@ __all__ = [
     "OperatingPartner",
     "OutboundMessage",
     "OutboundState",
+    "PartnerAccessToken",
     "PaymentDirection",
     "PaymentMethod",
     "PaymentRecord",

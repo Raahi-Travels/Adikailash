@@ -1665,3 +1665,49 @@ class RoutePatternOut(BaseModel):
     #: Text, so the warning survives a screenshot.
     caveats: list[str] = Field(default_factory=list)
     weeks: list[RouteWeekOut] = Field(default_factory=list)
+
+
+# ------------------------------------------------------------- partner portal
+
+
+class PartnerDepartureOut(BaseModel):
+    """One departure this partner is operating.
+
+    Note what is absent: no traveller names, no documents, no payments. A partner is
+    a different company, and doc 08 restricts access to sensitive traveller data —
+    what they need is beds and seats, which `travellers_expected` gives them.
+    """
+
+    id: int
+    journey_name: str
+    start_date: date
+    end_date: date
+    state: str
+    gateway: str | None = None
+    capacity: int = 0
+    #: A head count, never the manifest.
+    travellers_expected: int = 0
+
+
+class PartnerViewOut(BaseModel):
+    partner_name: str
+    departures: list[PartnerDepartureOut] = Field(default_factory=list)
+    #: The same public route record anybody can read, with its age — a partner
+    #: repeating "the road is open" to their own travellers is doing so on our word.
+    route_notices: list[str] = Field(default_factory=list)
+    generated_at: datetime
+
+
+class PartnerTokenIn(BaseModel):
+    operating_partner_id: int
+    #: Who at the partner this is for, so the right one can be revoked later.
+    label: str = Field(min_length=1, max_length=160)
+    expires_in_days: int | None = Field(default=365, ge=1, le=1095)
+
+
+class PartnerTokenOut(BaseModel):
+    id: int
+    label: str
+    #: Shown once. There is no endpoint that can return it again.
+    token: str | None = None
+    expires_at: datetime | None = None
