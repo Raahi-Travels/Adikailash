@@ -39,6 +39,8 @@ from datetime import UTC, datetime
 
 import httpx
 
+from api.live.india import get as india_get
+
 logger = logging.getLogger(__name__)
 
 REGISTER = "https://mis.pwduk.in/pwd/roadClosure"
@@ -181,7 +183,8 @@ async def fetch(*, client: httpx.AsyncClient | None = None) -> RegisterState:
         timeout=45, headers={"User-Agent": "adikailash-status/1"}
     )
     try:
-        response = await http.get(REGISTER)
+        # Through Mumbai when configured: this register 403s our own host.
+        response = await india_get(REGISTER, client=http, timeout=45)
         response.raise_for_status()
         return RegisterState(
             closures=parse(response.text), checked_at=now, reachable=True

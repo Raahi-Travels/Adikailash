@@ -36,6 +36,8 @@ from datetime import UTC, datetime
 
 import httpx
 
+from api.live.india import get as india_get
+
 logger = logging.getLogger(__name__)
 
 PORTAL = "https://ilppithoragarh.uk.gov.in"
@@ -103,7 +105,7 @@ async def fetch(*, client: httpx.AsyncClient | None = None) -> PortalState:
 
     try:
         try:
-            home = await http.get(f"{PORTAL}/")
+            home = await india_get(f"{PORTAL}/", client=http)
             home.raise_for_status()
             text = _text(home.text)
             match = _NOTICE.search(text)
@@ -114,7 +116,7 @@ async def fetch(*, client: httpx.AsyncClient | None = None) -> PortalState:
             logger.warning("ILP portal homepage unreachable: %s", exc)
 
         try:
-            register = await http.get(f"{PORTAL}/registeruser")
+            register = await india_get(f"{PORTAL}/registeruser", client=http)
             # A redirect away from the registration form, or an explicit refusal in
             # the body, both mean the same thing to a traveller: they cannot start.
             if register.status_code in (301, 302, 303, 307, 308):
