@@ -220,3 +220,37 @@ Migrations run as the pre-deployment command. **Read the generated migration bef
 every deploy** and confirm `upgrade()` contains no `op.drop_table`. The database is
 shared with Raahi's production; `docs/DECISIONS.md` explains how autogenerate once
 produced 44 `DROP TABLE` statements against their schema.
+
+
+## 3d. Verifying a deploy actually happened
+
+The workflow used to poll until the API served at least seventy paths. The old image
+already served seventy-seven, so a run could go green having verified nothing. It now
+fingerprints what is serving *before* triggering, and waits for that to change.
+
+The fingerprint is `revision:openapi-hash`.
+
+- `revision` comes from `/health` and is stamped into the image from the `GIT_SHA` or
+  `SOURCE_COMMIT` build argument.
+- **Coolify does not currently pass either**, so it reports `unknown` and the OpenAPI
+  hash does the work. That is why the fingerprint has two halves: a build that stamps
+  its commit and one that does not are both detected.
+- To make the first half work, set a build argument on the application in Coolify.
+  Nothing depends on it; it turns a change-detector into a positive identification.
+
+An unreachable API yields `?:?`, which differs from the previous value and would
+otherwise read as a successful deploy at the exact moment the service is down. The
+wait step requires both halves to be real. That case is unit-tested.
+
+## 3e. The hourly refresh
+
+`/root/refresh-adikailash-live.sh` on the VPS, at :17 past each hour, logging to
+`/var/log/adikailash-live.log`. It `docker exec`s into the running API container and
+resolves it by name prefix, because the deployment suffix changes every deploy.
+
+It does **not** run in GitHub Actions, and that is deliberate: scheduling it there
+means putting `DIRECT_DATABASE_URL` into a public repository's secrets, and that URL
+reaches the Supabase instance shared with Raahi production (decision D6).
+
+See `docs/DATA-SOURCES.md` for what it fetches and for the two bugs that only appeared
+once it ran on the server rather than on a laptop.
