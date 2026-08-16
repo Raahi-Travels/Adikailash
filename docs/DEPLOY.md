@@ -148,6 +148,44 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 - [ ] Confirm `payments_enabled: false` (it should be, until O2 to O4)
 - [ ] Check the footer still names the real legal entity, or an honest gap, not a guess
 
+## 3b. Triggering the API deploy — there is no webhook
+
+**Pushing to `main` does not deploy the API.** Confirmed on 13 Aug 2026: the
+repository has no webhooks (`gh api repos/Raahi-Travels/Adikailash/hooks` returns
+`[]`), and eight minutes after a 22-commit push the live API was still serving 24
+paths against a local 64. Vercel deploys itself through its GitHub App; Coolify does
+not, and the difference is easy to miss because the web half updates and the API half
+silently does not.
+
+Trigger it from the VPS, where the token lives:
+
+```sh
+ssh root@72.62.241.119
+TOKEN=$(cat /root/.coolify_ak_token)
+# Find the application uuid once, then keep it:
+curl -s -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/v1/applications \
+  | python3 -c "import sys,json;[print(a['uuid'], a['name']) for a in json.load(sys.stdin)]"
+# Deploy:
+curl -s -X GET -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8000/api/v1/deploy?uuid=<APP_UUID>&force=false"
+```
+
+Then confirm the new code is actually live rather than assuming:
+
+```sh
+curl -s https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io/openapi.json \
+  | python3 -c "import sys,json;print(len(json.load(sys.stdin)['paths']),'paths')"
+```
+
+A path count well short of local means the build did not take. **Migrations already
+ran** — dev and the live API share one Supabase database, so schema changes are live
+the moment they are applied locally, long before the code that uses them. That is
+survivable because every migration here is additive, and it is the reason to read
+each one for `op.drop_*` before applying it locally at all.
+
+Better: add the webhook so this stops being a manual step. Coolify → the application
+→ Webhooks → copy the deploy URL → GitHub → Settings → Webhooks → add it for `push`.
+
 ## 4. Ongoing
 
 Migrations run as the pre-deployment command. **Read the generated migration before
