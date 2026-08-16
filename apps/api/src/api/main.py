@@ -8,6 +8,8 @@ operator, deposit and refund rules are not approved.
 
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -101,6 +103,14 @@ def health() -> dict[str, object]:
         # Surfaced so a deploy cannot quietly run with document uploads misconfigured.
         "document_storage_configured": is_storage_configured(),
         "payments_enabled": False,
+        # The commit this image was built from.
+        #
+        # Exists because the deploy workflow could not tell a finished deploy from an
+        # unfinished one. It polled until the API served at least seventy paths, and
+        # the old container already served seventy-seven, so the check passed against
+        # code that had not changed. A path count answers "is something up"; this
+        # answers "is *this* up", which is the question a deploy is asking.
+        "revision": os.environ.get("GIT_SHA", "unknown"),
     }
 
 

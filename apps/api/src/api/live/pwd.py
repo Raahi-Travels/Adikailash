@@ -18,6 +18,15 @@ means silence, not safety.
 There is no API and no stated licence. The page is a server-rendered table at
 `mis.pwduk.in/pwd/roadClosure`, unauthenticated, about five megabytes, and it holds
 roughly two thousand rows statewide with about two hundred naming Pithoragarh.
+
+**It refuses our production host.** The register answers 200 from a domestic
+connection and **403 from the Hostinger datacentre range**, with a browser User-Agent
+and with ours alike, so the block is on the address rather than on how we ask. Nothing
+in this module can fix that. It degrades to reporting nothing rather than to reporting
+an empty road register, which would read as "no closures" on a page about closures:
+see the first-fetch handling in `live/ingest.py`. Getting these rows in production
+needs a fetch from an address the register will talk to, which is a deployment
+decision rather than a code one.
 """
 
 from __future__ import annotations

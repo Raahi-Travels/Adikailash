@@ -50,6 +50,16 @@ COPY --from=builder --chown=app:app /app/alembic /app/alembic
 COPY --from=builder --chown=app:app /app/alembic.ini /app/alembic.ini
 COPY --chown=app:app docker-entrypoint.sh /app/docker-entrypoint.sh
 
+# Stamped by the build so /health can report which commit is serving. Coolify
+# supplies it as a build argument; an unstamped build reports "unknown" rather than
+# lying about a revision.
+# `SOURCE_COMMIT` is Coolify's own name for this; `GIT_SHA` is here so a plain
+# `docker build --build-arg GIT_SHA=$(git rev-parse HEAD)` works too. Neither is
+# required: an unstamped build reports "unknown" rather than inventing a revision.
+ARG SOURCE_COMMIT=""
+ARG GIT_SHA=""
+ENV GIT_SHA=${GIT_SHA:-${SOURCE_COMMIT:-unknown}}
+
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

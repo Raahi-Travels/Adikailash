@@ -182,3 +182,42 @@ def test_impossible_counts_are_discarded_not_published() -> None:
 def test_jyolingkong_really_is_that_small() -> None:
     """Fifteen beds is the fact worth publishing; a regression here loses the point."""
     assert any(slug == "jyolingkong" for _, _, slug in kmvn.PROPERTIES)
+
+
+# ---------------------------------------------------------------------------
+# The date bug that only appeared in production
+# ---------------------------------------------------------------------------
+
+
+def test_today_is_the_date_in_india_not_on_the_host() -> None:
+    """The refresh wrote zero weather readings in production and passed locally.
+
+    Forecasts are requested with `timezone=Asia/Kolkata`, so their dates are IST
+    dates. "Today" was being taken from the host's local date, which is IST on a
+    developer's machine in India and UTC inside the container. Between 18:30 and
+    24:00 UTC those are different days, so every forecast date failed to match and
+    the job silently stored nothing while reporting success.
+
+    Asserted on the boundary rather than on `today()`, so it cannot pass by accident
+    depending on when the suite runs.
+    """
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    from api.live.ingest import IST
+
+    # 19:52 UTC on 16 Aug, which is what the failing production run saw.
+    moment = datetime(2026, 8, 16, 19, 52, tzinfo=ZoneInfo("UTC"))
+
+    assert moment.astimezone(IST).date() == date(2026, 8, 17)
+    assert moment.date() == date(2026, 8, 16)
+    # The two genuinely differ at that hour, which is the whole bug.
+    assert moment.astimezone(IST).date() != moment.date()
+
+
+def test_ist_is_the_timezone_forecasts_are_requested_in() -> None:
+    """If these two ever drift apart the comparison silently stops matching again."""
+    from api.live import open_meteo
+    from api.live.ingest import IST
+
+    assert str(IST) == open_meteo.TIMEZONE

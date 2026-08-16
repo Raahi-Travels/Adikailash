@@ -79,6 +79,18 @@ and which nobody else publishes.
 
 ### PWD register
 
+**It refuses the production host.** 200 from a domestic connection, **403 from the
+Hostinger datacentre range**, with a browser User-Agent and with ours alike, so the
+block is on the address. The road register therefore has no rows in production. It
+degrades to reporting nothing rather than to an empty list, which on a closures page
+would read as "no closures"; a source that has never been read successfully is
+omitted entirely rather than shown as freshly fetched and empty.
+
+Fixing it needs a fetch from an address the register will talk to. The cheapest
+option that does not move database credentials is a small scheduled job elsewhere
+that parses the page and posts the result to a scoped admin endpoint, so the only
+secret leaving the box is a token that can write one live source.
+
 Filtering on road name alone returned 21 rows where 197 concern this district, so
 rows are kept district-wide and flagged `on_corridor` separately.
 
@@ -119,6 +131,28 @@ belongs as a significant-event alert rather than a live panel. Not yet built.
 
 **DGRE avalanche bulletin.** Pithoragarh is a named district with a danger level, as a
 daily PDF, roughly 15 November to early June. Seasonal, so out of scope until autumn.
+
+## Scheduling
+
+The refresh runs on the VPS, hourly at :17, as `/root/refresh-adikailash-live.sh`.
+It `docker exec`s into the running API container so it uses the environment Coolify
+already gave it, and resolves the container by name prefix because the deployment
+suffix changes on every deploy.
+
+**It deliberately does not run in GitHub Actions.** That would mean putting
+`DIRECT_DATABASE_URL` into a public repository's secrets, and that URL reaches a
+Supabase instance shared with Raahi production (decision D6). The VPS already holds
+those credentials; copying them somewhere else to give a scheduler a place to read
+them is a much larger exposure than an hourly cron is worth.
+
+Two things were only discovered by running it where it actually runs:
+
+- **The weather job wrote nothing.** "Today" was taken from the host's local date,
+  which is IST on a machine in India and UTC in the container. After 18:30 UTC those
+  are different days, so no forecast date matched and the job reported success having
+  stored zero readings. Now compared in `Asia/Kolkata`, with a regression test pinned
+  to the boundary rather than to `today()`.
+- **The PWD register 403s from this host.** See below.
 
 ## Traps
 

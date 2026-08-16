@@ -39,6 +39,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Fingerprint what is currently serving
+        run: |
+          # Captured *before* anything is queued, so the wait step below can tell a
+          # finished deploy from a queued one by watching this value change.
+          API="https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io"
+          rev=$(curl -fsS --max-time 10 "$API/health" 2>/dev/null \
+                | python3 -c "import sys,json;print(json.load(sys.stdin).get('revision','?'))" 2>/dev/null || echo "?")
+          api=$(curl -fsS --max-time 15 "$API/openapi.json" 2>/dev/null | shasum | cut -c1-12 || echo "?")
+          echo "$rev:$api" | tee fingerprint.before
+
       - name: Trigger the Coolify deployment
         env:
           KEY: ${{ secrets.VPS_DEPLOY_KEY }}
@@ -59,13 +69,41 @@ jobs:
           # Confirming rather than assuming. A queued deploy is not a finished one,
           # and the failure this repo actually hit was a build that aborted while the
           # old container kept happily serving stale code and a healthy /health.
+          #
+          # The earlier version of this step polled until the API served at least
+          # seventy paths. That passed instantly against the *old* image, which
+          # already served seventy-seven, so a run could go green having verified
+          # nothing. A path count answers "is something up". What a deploy needs to
+          # know is "is *this* up".
+          #
+          # So the fingerprint is captured before the deploy is triggered and we wait
+          # for it to change. It combines the reported revision with a hash of the
+          # OpenAPI document, which covers both cases: a build that stamps its commit,
+          # and one that does not but changes the surface. The `before` value was
+          # written by the first step, ahead of anything being queued.
           API="https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io"
+          BEFORE=$(cat fingerprint.before)
+          echo "before: $BEFORE"
+
+          fingerprint() {
+            rev=$(curl -fsS --max-time 10 "$API/health" 2>/dev/null \
+                  | python3 -c "import sys,json;print(json.load(sys.stdin).get('revision','?'))" 2>/dev/null || echo "?")
+            api=$(curl -fsS --max-time 15 "$API/openapi.json" 2>/dev/null | shasum | cut -c1-12 || echo "?")
+            echo "$rev:$api"
+          }
+
           for i in $(seq 1 30); do
-            n=$(curl -fsS --max-time 10 "$API/openapi.json" 2>/dev/null \
-                | python3 -c "import sys,json;print(len(json.load(sys.stdin)['paths']))" 2>/dev/null || echo 0)
-            echo "attempt $i: $n paths live"
-            if [ "$n" -ge 70 ]; then echo "deployed"; exit 0; fi
+            NOW=$(fingerprint)
+            echo "attempt $i: $NOW"
+            # Both halves must be real. An unreachable API yields "?:?", which
+            # differs from the previous value and would otherwise be read as a
+            # successful deploy at the exact moment the service is down.
+            hash_part=${NOW##*:}
+            if [ "$NOW" != "$BEFORE" ] && [ "$hash_part" != "?" ]; then
+              echo "new code is serving"
+              exit 0
+            fi
             sleep 20
           done
-          echo "::error::API did not come up with the expected surface. Check Coolify's deployment logs."
+          echo "::error::The API is still serving the previous build. Check Coolify's deployment logs."
           exit 1

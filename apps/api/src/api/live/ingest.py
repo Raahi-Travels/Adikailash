@@ -19,6 +19,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,6 +34,15 @@ from api.models.weather import WeatherCondition, WeatherSnapshot, WeatherSource
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger("ingest")
+
+#: The route's own timezone, and the one forecasts are requested in.
+#:
+#: Load-bearing rather than tidy. "Today" was previously taken from the server's
+#: local date, which is UTC in the container and IST on a developer's machine. After
+#: 18:30 UTC those are different days, so the nightly refresh matched no forecast at
+#: all and silently wrote zero readings, while the same code passed every local test.
+#: A place has one date, and it is the one people standing there would give you.
+IST = ZoneInfo("Asia/Kolkata")
 
 #: How long a model forecast stays presentable. Six hours is roughly how often the
 #: global models publish, so a reading older than this has been superseded upstream
@@ -118,7 +128,9 @@ async def ingest_weather(session: AsyncSession) -> int:
         # the snapshot table is for "what are conditions", not "what might they be".
         # Publishing day three as a current reading is exactly the quiet falsehood
         # the model's docstring warns about.
-        if point_forecast.on_date != now.astimezone().date():
+        #
+        # "Today" is the date in Gunji, not on whatever host this runs on. See `IST`.
+        if point_forecast.on_date != now.astimezone(IST).date():
             continue
 
         advisory = advisory_for(
@@ -196,6 +208,15 @@ async def _store(
     row = await session.scalar(select(LiveReading).where(LiveReading.source == source))
 
     if row is None:
+        # A first attempt that failed stores nothing at all. Creating the row anyway
+        # would stamp `fetched_at` with now and an empty payload, so an unreachable
+        # source would render as freshly fetched and reporting nothing, which reads
+        # on a road-closure page as "no closures". `/live` returns null for a missing
+        # source and the UI omits the block, which is the honest shape of "we have
+        # never managed to read this".
+        if error is not None:
+            logger.warning("%s: first fetch failed (%s), nothing stored", source, error)
+            return
         row = LiveReading(source=source, payload=payload, fetched_at=now)
         session.add(row)
     elif error is None:
