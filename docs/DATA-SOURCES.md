@@ -154,6 +154,58 @@ Two things were only discovered by running it where it actually runs:
   to the boundary rather than to `today()`.
 - **The PWD register 403s from this host.** See below.
 
+## The Mumbai relay
+
+Two sources refuse the production host for being outside India. Measured, not
+assumed:
+
+| Host | from Kuala Lumpur (the VPS) | from Mumbai (Vercel `bom1`) |
+|---|---|---|
+| `mis.pwduk.in` | **403** | **200** |
+| `ilppithoragarh.uk.gov.in` | no connection | **200** |
+
+So it is geography, not a general block on datacentres, and pinning a function to
+Mumbai fixes it. `apps/web/app/api/india-fetch/route.ts` fetches an allowlisted URL
+from `bom1` and returns the bytes; `apps/api/src/api/live/india.py` routes the two
+affected clients through it when configured and goes direct otherwise.
+
+The permit portal also needed `SSL_OP_LEGACY_SERVER_CONNECT` on the Node side, the
+same legacy renegotiation that made Python fail. Certificate and hostname
+verification stay on in both.
+
+**It is not an open relay:** an allowlist of two hosts, a shared secret, no redirects
+followed, a 12 MB cap, and it fails closed when the secret is unset. There is also an
+unauthenticated `?probe=1` that fetches those two homepages and returns two status
+codes with no body, which is how the table above was measured.
+
+### Turning it on
+
+It is deployed and inert until both sides hold the same secret. Nothing breaks while
+it is off; the two sources simply report nothing in production, which is what they
+already do.
+
+1. **Vercel** project settings, environment variables, all environments:
+
+   ```
+   INDIA_FETCH_SECRET = 7e055472c6a620392ed9fcebe245f733ea794adcaf7a3d214faec873cb4a55b4
+   ```
+
+2. **Coolify**, application `adikailash-api`, environment variables:
+
+   ```
+   INDIA_FETCH_URL    = https://adikailash-ten.vercel.app/api/india-fetch
+   INDIA_FETCH_SECRET = 7e055472c6a620392ed9fcebe245f733ea794adcaf7a3d214faec873cb4a55b4
+   ```
+
+3. Redeploy the API, then check that the two sources stop reporting errors:
+
+   ```
+   curl -s https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io/live | jq '.road_register.last_error, .permit_portal.last_error'
+   ```
+
+Replace the secret with your own if you would rather not use one that has been
+written into a repository. It only needs to match on both sides.
+
 ## Traps
 
 - `uttarakhandtourism.gov.in` returns **HTTP 200 for every path**, a 73 KB soft-404
