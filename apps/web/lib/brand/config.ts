@@ -63,6 +63,24 @@ export const brand = {
         "Some journeys begin with a plan. Others begin with a calling.",
         "कुछ यात्राएँ योजना से शुरू होती हैं। कुछ बुलावे से।",
       ),
+      /**
+       * The same headline, split at the sentence break for display.
+       *
+       * Set as one block it runs to four lines in the hero at any size worth using,
+       * and a four-line hero headline is a font-size error rather than a copy
+       * problem. The rhetoric is already two-part: the first sentence sets up, the
+       * second turns. Typography follows that, quiet lead into full-size turn, so
+       * the line fits the fold without a word being cut. Both languages break at the
+       * same place because both were written as two sentences.
+       */
+      headlineLead: localized(
+        "Some journeys begin with a plan.",
+        "कुछ यात्राएँ योजना से शुरू होती हैं।",
+      ),
+      headlineTurn: localized(
+        "Others begin with a calling.",
+        "कुछ बुलावे से।",
+      ),
       support: localized(
         "Answer the call of Adi Kailash through a carefully guided journey rooted in the Himalaya.",
         "हिमालय में बसी, सावधानी से संचालित यात्रा के साथ आदि कैलाश के बुलावे का उत्तर दें।",

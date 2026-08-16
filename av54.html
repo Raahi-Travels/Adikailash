@@ -1,0 +1,573 @@
+<style>
+    .left {
+        float: left;
+    }
+
+    .clr {
+        clear: both;
+    }
+
+    .dropdwn {
+    }
+
+    select.hotlnm {
+        background: #d8d8ff;
+        border: none;
+        padding: 5px 104px;
+        font-size: 13px;
+        border-radius: 8px;
+        text-align: left;
+    }
+
+    .dtpckr {
+    }
+
+    .dtpckr input {
+        background: #eee;
+        border: navajowhite;
+        font-size: 13px;
+        padding: 5px 10px;
+        border-radius: 8px;
+    }
+
+    .ctabtn {
+    }
+
+    .ctabtn a {
+        background: blue;
+        color: #fff;
+        display: block;
+        padding: 5px 10px;
+        border-radius: 100px;
+    }
+
+    .lmarg {
+        margin-left: 20px;
+    }
+
+    .rmarg {
+        margin-right: 15px;
+    }
+
+    .title {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 12px;
+    }
+    .title2 {
+        display: flex;
+        justify-content: center;
+        padding: 5px 12px;
+    }
+
+    .hotel-name {
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .close {
+        opacity: 0.5;
+        padding: 2px 2px;
+    }
+
+    .close:hover {
+        opacity: 1;
+    }
+
+    .close img {
+        height: 20px;
+        width: 20px;
+    }
+
+    .table_div {
+        height: 90vh;
+        overflow: auto;
+        margin-top: 1vh;
+    }
+
+    .table_div table {
+        padding: 10px 10px;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-bottom: 35px;
+    }
+
+    table,
+    th,
+    td {
+        border-collapse: collapse;
+        border: 1px solid rgb(221, 221, 221);
+        text-align: left;
+        cursor: move;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    th,
+    td {
+        padding: 15px;
+    }
+
+    td a {
+        text-decoration: none;
+        color: #000;
+        display: block;
+        width: 100%;
+    }
+
+    /* tr:hover{
+    background-color: #eafff7 !important;
+} */
+    tr:hover:not(:first-child) {
+        background-color: #e7ecf5 !important;
+    }
+
+    #first_row:hover {
+        background-color: #dae2f0 !important;
+    }
+
+    #first_row:hover {
+        background-color: #eafff7
+    }
+
+    thead {
+        background-color: #38507E;
+        color: #fff;
+        /*! font-weight: 500; */
+        position: sticky;
+        top: 0;
+        /*! width: 100%; */
+        /*! display: inline-block; */
+        z-index: 999;
+    }
+
+    /* .table_div table{
+    ! display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+} */
+    /* .table_div thead th{
+    position: sticky;
+    top: 0;
+} */
+    /* tr:first-child{
+    font-size: 14px;
+    font-weight: 600;
+} */
+    tr:nth-child(even) {
+        background-color: #eee;
+    }
+
+    /* td:nth-child(2n+1){
+    width: 80%;
+} */
+
+    .navbar {
+        position: relative;
+    }
+
+    .navbar ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar li {
+        display: inline-block;
+    }
+
+    .navbar li a {
+        color: white;
+        display: block;
+        padding: 10px 20px;
+        text-decoration: none;
+    }
+
+    /* Style the dropdown menu */
+    .navbar ul ul {
+        position: absolute;
+        top: 0;
+        display: none;
+        right: 40px;
+        /*! z-index: -1; */
+    }
+
+    .option-color li a {
+        color: #000;
+    }
+
+    .option-color li a:hover {
+        color: #fff;
+    }
+
+    .navbar ul ul li {
+        display: block;
+        /*! padding: 5px 5px; */
+        background: #fff;
+        /*! position: fixed; */
+        z-index: -1;
+    }
+
+    .navbar li:hover ul {
+        display: block;
+    }
+
+    /* Change the background color of dropdown links on hover */
+    .navbar ul ul li a:hover {
+        background-color: #555;
+    }
+
+    .td_pd {
+        padding: 0px;
+    }
+
+    .a_pd {
+        padding: 15px;
+        font-weight: 600;
+        text-decoration: 1.5px underline #036645;
+        color: #099bf9;
+        /*! font-size: 16px; */
+    }
+
+    .sec_box {
+        display: flex;
+        /* gap: 2px; */
+        margin-bottom: 15px;
+        margin-left: 12px;
+        /* margin-top: 5px;*/
+        float: left;
+        /*width: 60%;*/
+        margin-top: 20px;
+        padding: 2px;
+        /* background: #38507E; */
+    }
+
+    .active-t {
+        border-bottom: none;
+        color: #38507e;
+        background-color: #fff;
+    }
+
+    .active-dt {
+        border-bottom: none;
+        color: #0e44d5;
+        background-color: #fff;
+    }
+    .left{
+        float:left;
+    }
+
+    .sec_box a {
+        text-decoration: none;
+        padding: 5px 15px;
+        font-size: 16px;
+        background-color: #38507E;
+        color: #fff;
+        font-weight: 600;
+        border-right: 2px solid #fff;
+        border-top: 2px solid #38507e;
+        border-left: 2px solid #38507e;
+        border-bottom: 2px solid #38507e;
+    }
+
+    .chips {
+        margin-left: 10px;
+        overflow: auto;
+        max-height: 115px;
+    }
+
+    .dates {
+        background-color: teal;
+        padding: 5px 10px;
+        border-radius: 20px;
+        float: left;
+        margin: 4px;
+        color: #fff;
+        font-size: 11px;
+    }
+
+    .clr {
+        clear: both;
+    }
+
+    .popup-overlay {
+        background: rgba(0, 0, 0, 0.6);
+        position: fixed;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+    }
+
+    .popup-wrap {
+        width: 450px;
+        background: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        position: absolute;
+        z-index: 100;
+    }
+
+    /*width: 475px;
+        top: calc(1vh - (0px / 2));
+        left: calc(50vw - (475px / 2));*/
+    .pp-small-x {
+        width: 99vw;
+        top: calc(1vh - (0px / 2));
+        left: calc(43vw - (1250px / 2));
+        height: 98vh;
+    }
+
+    .pp-small-y {
+        height: 285px;
+    }
+
+    .pp-medium-x {
+        width: 750px;
+        top: calc(1vh - (0px / 2));
+        left: calc(50vw - (750px / 2));
+    }
+
+    .pp-medium-y {
+        height: 350px;
+        overflow-x: auto;
+    }
+
+    .pp-large-x {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .pp-large-y {
+        height: 68vh;
+        overflow-x: auto;
+    }
+
+    #popup {
+        left: 0;
+        display: none;
+        z-index: 1150;
+        top: 0px;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        background: 0 0;
+        position: fixed;
+    }
+</style>
+<div class="popup-overlay">
+
+    <div class="popup-wrap pp-large-x">
+
+        <div class="title">
+            <div class="left">
+                <a style="cursor:pointer;" class="cancel_popup" title="Close"><strong style="color:red;"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</strong></a>
+            </div>
+            <div class="hotel-name left" id="hotel_name">
+                Checking Availability of
+                Gunji Camp            </div>
+            <div class="clr"></div>
+        </div>
+        <div class="title2">
+            <div class="left dropdown lmarg rmarg">
+                <select class="hotlnm" name="hotel" id="hotel">
+                                            <option hname=" Gyan Vriksh TRH Kakrighat" value="46" >
+                             Gyan Vriksh TRH Kakrighat                        </option>
+                                            <option hname="Budhi Camp" value="57" >
+                            Budhi Camp                        </option>
+                                            <option hname="Gunji Camp" value="54" selected>
+                            Gunji Camp                        </option>
+                                            <option hname="Holiday Home Almora" value="8" >
+                            Holiday Home Almora                        </option>
+                                            <option hname="Holiday Home Dhikuli" value="52" >
+                            Holiday Home Dhikuli                        </option>
+                                            <option hname="Jungle camp Sigri  (Tent sharing accommodation)" value="37" >
+                            Jungle camp Sigri  (Tent sharing accommodation)                        </option>
+                                            <option hname="Jyolingkong Camp" value="56" >
+                            Jyolingkong Camp                        </option>
+                                            <option hname="Mahaashay TRH Dudhauli" value="30" >
+                            Mahaashay TRH Dudhauli                        </option>
+                                            <option hname="Nabhidang Camp" value="55" >
+                            Nabhidang Camp                        </option>
+                                            <option hname="Nine corner Retreat TRH Naukuchiyatal" value="14" >
+                            Nine corner Retreat TRH Naukuchiyatal                        </option>
+                                            <option hname="Parichay Resort (Naukuchiyatal)" value="16" >
+                            Parichay Resort (Naukuchiyatal)                        </option>
+                                            <option hname="Sarovar Bliss TRH Bhimtal" value="12" >
+                            Sarovar Bliss TRH Bhimtal                        </option>
+                                            <option hname="TRH Abbott Mount (Gold Creast Eco log huts)" value="11" >
+                            TRH Abbott Mount (Gold Creast Eco log huts)                        </option>
+                                            <option hname="TRH Baijnath" value="42" >
+                            TRH Baijnath                        </option>
+                                            <option hname="TRH Bhikiyasen" value="59" >
+                            TRH Bhikiyasen                        </option>
+                                            <option hname="TRH Bhowali" value="7" >
+                            TRH Bhowali                        </option>
+                                            <option hname="TRH Binsar (Nanda Devi TRH Binsar)" value="44" >
+                            TRH Binsar (Nanda Devi TRH Binsar)                        </option>
+                                            <option hname="TRH Birthi" value="28" >
+                            TRH Birthi                        </option>
+                                            <option hname="TRH Champawat" value="60" >
+                            TRH Champawat                        </option>
+                                            <option hname="TRH Chaukori" value="25" >
+                            TRH Chaukori                        </option>
+                                            <option hname="TRH Chilianaula Ranikhet (Himadri)" value="48" >
+                            TRH Chilianaula Ranikhet (Himadri)                        </option>
+                                            <option hname="TRH Deenapani" value="19" >
+                            TRH Deenapani                        </option>
+                                            <option hname="TRH Dharchula" value="31" >
+                            TRH Dharchula                        </option>
+                                            <option hname="TRH Didihat" value="21" >
+                            TRH Didihat                        </option>
+                                            <option hname="TRH Gangolihat" value="32" >
+                            TRH Gangolihat                        </option>
+                                            <option hname="TRH Jageshwar" value="34" >
+                            TRH Jageshwar                        </option>
+                                            <option hname="TRH Jaspur" value="43" >
+                            TRH Jaspur                        </option>
+                                            <option hname="TRH Katarmal" value="53" >
+                            TRH Katarmal                        </option>
+                                            <option hname="TRH Kausani (Trishul)" value="39" >
+                            TRH Kausani (Trishul)                        </option>
+                                            <option hname="TRH Khairna" value="35" >
+                            TRH Khairna                        </option>
+                                            <option hname="TRH Lohaghat" value="15" >
+                            TRH Lohaghat                        </option>
+                                            <option hname="TRH Mohaan" value="36" >
+                            TRH Mohaan                        </option>
+                                            <option hname="TRH Monal (Ranikhet)" value="45" >
+                            TRH Monal (Ranikhet)                        </option>
+                                            <option hname="TRH Mukteshwar" value="23" >
+                            TRH Mukteshwar                        </option>
+                                            <option hname="TRH Munsyari" value="24" >
+                            TRH Munsyari                        </option>
+                                            <option hname="TRH Nanakmatta" value="41" >
+                            TRH Nanakmatta                        </option>
+                                            <option hname="TRH Narayan Ashram" value="50" >
+                            TRH Narayan Ashram                        </option>
+                                            <option hname="TRH Padampuri" value="29" >
+                            TRH Padampuri                        </option>
+                                            <option hname="TRH Patal Bhuvneshwar" value="33" >
+                            TRH Patal Bhuvneshwar                        </option>
+                                            <option hname="TRH Pithoragarh" value="49" >
+                            TRH Pithoragarh                        </option>
+                                            <option hname="TRH Ramgarh" value="27" >
+                            TRH Ramgarh                        </option>
+                                            <option hname="TRH Ramnagar" value="20" >
+                            TRH Ramnagar                        </option>
+                                            <option hname="TRH Ranikhet (Kalika)" value="38" >
+                            TRH Ranikhet (Kalika)                        </option>
+                                            <option hname="TRH Sattal" value="26" >
+                            TRH Sattal                        </option>
+                                            <option hname="TRH Shitalakhet" value="40" >
+                            TRH Shitalakhet                        </option>
+                                            <option hname="TRH Snowview (Nainital) Snowview Heritage" value="62" >
+                            TRH Snowview (Nainital) Snowview Heritage                        </option>
+                                            <option hname="TRH Snowview (Nainital) Snowview Heritage" value="6" >
+                            TRH Snowview (Nainital) Snowview Heritage                        </option>
+                                            <option hname="TRH Sukhatal (Nainital) Mount view" value="5" >
+                            TRH Sukhatal (Nainital) Mount view                        </option>
+                                            <option hname="TRH Tallital (Nainital) Sarovar" value="9" >
+                            TRH Tallital (Nainital) Sarovar                        </option>
+                                            <option hname="TRH Tanakpur" value="17" >
+                            TRH Tanakpur                        </option>
+                                        <!-- <option>Oyo</option>
+                    <option>moye moye</option> -->
+                </select>
+            </div>
+            <div class="left dtpckr rmarg"><input type="text" class="spsdate" name="checkin" id="checkin"
+                                                  value="15/09/2026"></div>
+            <div class="left dtpckr rmarg"><input type="text" name="checkout" id="checkout" class="spedate"
+                                                  value="18/09/2026"></div>
+            <div class="ctabtn rmarg left"><a style="cursor:pointer;" id="seach_availability">Search Availability</a></div>
+            <div class="clr"></div>
+        </div>
+        <div class="chips">
+
+
+                        <!-- <div class="dates dt_slot" style="cursor:pointer;" hid="54"
+                    hit="Gunji Camp" start_date=""
+                    end_date="">
+            16-08-2026 - 16-08-2026
+                </div> -->
+            
+        </div>
+        <div class="clr"></div>
+        <div class="table_div" id="add_list">
+            <table>
+                <thead>
+                    <tr>
+                        <!-- <th>Checkin Date</th>-->
+                        <th>Date</th>
+                        <th>Room Type</th>
+                        <th>Meal<br>Plan</th>
+                                                    <th>Total<br>Beds</th>
+                            <th>Available<br>Beds</th>
+                            <th>Tariff Per Beds<br>(Included GST)</th>
+                                                <th>Extra Person<br>(Included GST)</th>
+                        <th>GST %</th>
+                        <!-- <th style="width:65px"></th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                                            <tr id="first_row">
+                            <td>
+                                15/09/2026                            </td>
+                            <td>
+                                Sharing accommodation (Per bed )                            </td>
+                            <td>
+                                EP Plan                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                ₹ 1200                            </td>
+                            <td>
+                                NA                            </td>
+                            <td>
+                                5                            </td>
+                        </tr>
+                                                <tr id="first_row">
+                            <td>
+                                16/09/2026                            </td>
+                            <td>
+                                Sharing accommodation (Per bed )                            </td>
+                            <td>
+                                EP Plan                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                ₹ 1200                            </td>
+                            <td>
+                                NA                            </td>
+                            <td>
+                                5                            </td>
+                        </tr>
+                                                <tr id="first_row">
+                            <td>
+                                17/09/2026                            </td>
+                            <td>
+                                Sharing accommodation (Per bed )                            </td>
+                            <td>
+                                EP Plan                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                40                            </td>
+                            <td>
+                                ₹ 1200                            </td>
+                            <td>
+                                NA                            </td>
+                            <td>
+                                5                            </td>
+                        </tr>
+                                        </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

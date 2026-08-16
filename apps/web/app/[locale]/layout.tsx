@@ -1,12 +1,7 @@
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import {
-  EB_Garamond,
-  Inter,
-  Noto_Sans_Devanagari,
-  Noto_Serif_Devanagari,
-} from "next/font/google";
+import { Eczar, Mukta } from "next/font/google";
 
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { StagingNotice } from "@/components/staging-notice";
@@ -16,35 +11,36 @@ import type { Locale } from "@/lib/api";
 import { brand, buildMetadata, displayLocalized } from "@/lib/brand";
 import "../globals.css";
 
-/** Editorial serif for headings — doc 02's "refined serif" direction. */
-const heading = EB_Garamond({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-/** Interface sans — legible at the sizes older travellers need. */
-const sans = Inter({
-  variable: "--font-interface",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 /**
- * Devanagari faces are loaded for BOTH locales, not just `hi`.
- * Journey and place names carry Hindi alongside English throughout the site, so an
- * English page still renders Devanagari — doc 02: "Treat Devanagari as a first-class
- * layout, not a smaller translation beneath English."
+ * Two faces, both drawn for Devanagari and Latin *together*.
+ *
+ * The previous pairing was EB Garamond and Inter with Noto Serif/Sans Devanagari
+ * bolted on as fallbacks. That is four unrelated designs, and it quietly contradicts
+ * doc 02's rule that "Devanagari is a first-class layout, not a smaller translation
+ * beneath English" — a Hindi heading rendered in a fallback face is exactly the
+ * second-class treatment the rule exists to prevent. Both scripts now sit in one
+ * superfamily each, so a Hindi page is the same design as the English one rather
+ * than a substitution for it.
+ *
+ * Eczar (Rosetta, Vaibhav Singh) is a high-contrast display face with real presence
+ * at hero size. Mukta (Ek Type) is a Devanagari-first interface face whose open
+ * apertures and tall x-height suit doc 02's other accessibility rule: body copy has
+ * to stay comfortable for older travellers reading on a phone in daylight.
+ *
+ * Both are loaded for both locales, because journey and place names carry Hindi
+ * alongside English on every page regardless of which locale is active.
  */
-const headingDevanagari = Noto_Serif_Devanagari({
-  variable: "--font-heading-hi",
-  subsets: ["devanagari"],
+const heading = Eczar({
+  variable: "--font-heading",
+  subsets: ["latin", "devanagari"],
+  weight: ["500", "600"],
   display: "swap",
 });
 
-const sansDevanagari = Noto_Sans_Devanagari({
-  variable: "--font-interface-hi",
-  subsets: ["devanagari"],
+const sans = Mukta({
+  variable: "--font-interface",
+  subsets: ["latin", "devanagari"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -78,7 +74,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${heading.variable} ${sans.variable} ${headingDevanagari.variable} ${sansDevanagari.variable} h-full`}
+      className={`${heading.variable} ${sans.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-midnight">
         <NextIntlClientProvider>

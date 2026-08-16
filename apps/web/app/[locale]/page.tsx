@@ -1,15 +1,57 @@
 import { setRequestLocale } from "next-intl/server";
 
+import { HeroStatus } from "@/components/hero-status";
 import { JourneyCard } from "@/components/journey-card";
-import { LiveStatusBar } from "@/components/live-status-bar";
+import { RouteProfile } from "@/components/route-profile";
 import { Scene, SceneBackdrop } from "@/components/scene";
+import { TerrainField } from "@/components/terrain-field";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, type Locale } from "@/lib/api";
 import { brand, displayLocalized, whatsappLink } from "@/lib/brand";
+import { HIGHEST, legStatus, STATIONS } from "@/lib/route-profile";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+/**
+ * One fact in the hinge band. No icon, no box.
+ *
+ * The mockups all put four icon-and-heading trust pillars here ("Safe & Trusted",
+ * "Family Friendly", "Responsible Travel") and every one of them is a claim any
+ * operator can make for free, which is why they persuade nobody. These four are
+ * readings instead: they change, they carry a time, and a competitor cannot copy
+ * them by editing their homepage.
+ */
+/**
+ * Hours since the newest verification, in words.
+ *
+ * Lives outside the component because `Date.now()` in a component body is a read of
+ * mutable global state, which the React compiler rejects: the same render would
+ * produce a different result on a re-run, and that is exactly what memoisation
+ * assumes cannot happen.
+ */
+function since(iso: string | null | undefined, locale: string) {
+  if (!iso) return "not yet";
+  const hours = Math.max(
+    1,
+    Math.round((Date.now() - new Date(iso).getTime()) / 3_600_000),
+  );
+  const rtf = new Intl.RelativeTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
+    numeric: "auto",
+  });
+  return hours < 48 ? rtf.format(-hours, "hour") : rtf.format(-Math.round(hours / 24), "day");
+}
+
+function Fact({ label, value, note }: { label: string; value: string; note?: string }) {
+  return (
+    <div className="border-t border-white/12 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
+      <p className="text-sm text-ink-inverse/55">{label}</p>
+      <p className="type-reading mt-1.5 text-lg text-ink-inverse">{value}</p>
+      {note && <p className="mt-1 text-sm text-ink-inverse/50">{note}</p>}
+    </div>
+  );
 }
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
@@ -17,77 +59,133 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   setRequestLocale(locale);
   const typed = locale as Locale;
 
-  const [journeys, checklist] = await Promise.all([
+  const [journeys, checklist, status] = await Promise.all([
     api.journeys(typed),
     api.permitChecklist(typed),
+    api.status(typed),
   ]);
   const wa = whatsappLink({ intent: "journey" });
+  const campaign = brand.campaign.flagship;
+
+  const legs = STATIONS.filter((s) => s.from);
+  const confirmed = status
+    ? legs.filter((s) => {
+        const leg = legStatus(status.routes, s);
+        return leg && leg.state !== "unknown";
+      }).length
+    : 0;
+  const mandatory = checklist?.requirements.filter((r) => r.is_mandatory).length ?? 0;
+  const asOf = since(status?.as_of, locale);
 
   return (
-    <main id="main" className="flex-1 bg-midnight text-ink-inverse">
-      {/* Hero. Editorial-manifesto shape: the line is the design, and the backdrop is
-          heavily scrimmed so it supports the headline rather than competing with it.
-          With no backdrop file present this degrades to the original typographic hero. */}
-      <section className="relative isolate overflow-hidden px-4 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-24 lg:pb-28 lg:pt-32">
+    <main id="main" className="flex-1">
+      {/*
+        1. Hero. Dark register.
+
+        Asymmetric split rather than the centred stack this used to be: the headline
+        holds the left, the live status panel holds the right, and the photograph
+        runs behind both. The contour field sits over the photograph and under the
+        text, which is the same visual language as the elevation profile further
+        down the page.
+      */}
+      <section className="register-dark relative isolate overflow-hidden">
         <SceneBackdrop name="hero" />
-        <div className="mx-auto max-w-6xl">
-          {/* Measure tuned so the line breaks after "plan." rather than mid-clause.
-              Descender clearance matters here: "journeys" and "beginning" both drop
-              below the baseline at this size, so leading stays above 1.05. */}
-          <h1 className="max-w-[26ch] font-serif text-[2.5rem] leading-[1.1] tracking-[-0.02em] sm:text-[3.5rem] lg:text-[4rem]">
-            {displayLocalized(brand.campaign.flagship.headline, locale)}
-          </h1>
-          <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-ink-inverse/70">
-            {displayLocalized(brand.campaign.flagship.support, locale)}
-          </p>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link
-              href="/journeys"
-              className="rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:scale-[0.98]"
-            >
-              {displayLocalized(brand.campaign.flagship.primaryCta, locale)}
-            </Link>
-            {wa ? (
-              <a
-                href={wa}
-                className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
-              >
-                {displayLocalized(brand.campaign.flagship.secondaryCta, locale)}
-              </a>
-            ) : (
+        <TerrainField />
+        {/* Scrim. Reads the headline side down hard and leaves the right of the
+            frame open, so the photograph is visible where nothing sits on it. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight via-midnight/85 to-midnight/35"
+        />
+
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
+          <div>
+            <p className="max-w-[24ch] font-serif text-[1.375rem] leading-snug text-ink-inverse/60 sm:text-2xl">
+              {displayLocalized(campaign.headlineLead, locale)}
+            </p>
+            <h1 className="type-display mt-3 max-w-[15ch] text-ink-inverse">
+              {displayLocalized(campaign.headlineTurn, locale)}
+            </h1>
+            <p className="mt-7 max-w-[44ch] text-lg leading-relaxed text-ink-inverse/70">
+              {displayLocalized(campaign.support, locale)}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
-                href="/enquire"
-                className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                href="/journeys"
+                className="rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:translate-y-px"
               >
-                {displayLocalized(brand.campaign.flagship.secondaryCta, locale)}
+                {displayLocalized(campaign.primaryCta, locale)}
               </Link>
-            )}
+              {wa ? (
+                <a
+                  href={wa}
+                  className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                >
+                  {displayLocalized(campaign.secondaryCta, locale)}
+                </a>
+              ) : (
+                <Link
+                  href="/enquire"
+                  className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                >
+                  {displayLocalized(campaign.secondaryCta, locale)}
+                </Link>
+              )}
+            </div>
           </div>
+
+          <HeroStatus data={status} locale={typed} />
         </div>
       </section>
 
-      {/* The trust device, placed where a metrics strip would normally go. */}
-      <div className="px-4 sm:px-6">
-        <LiveStatusBar locale={typed} />
+      {/*
+        2. The hinge. Navy, overlapping the light section below it.
+
+        This is where the page changes register, and the band is the transition and
+        the argument at the same time: four readings, each one a thing we checked
+        rather than a thing we say about ourselves.
+      */}
+      <div className="register-light relative px-4 sm:px-6">
+        <div className="mx-auto -mt-px max-w-6xl rounded-2xl bg-midnight px-6 py-7 text-ink-inverse sm:px-8">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <p className="text-sm text-ink-inverse/55">Highest ground</p>
+              <p className="type-reading mt-1.5 text-lg text-ink-inverse">
+                about {HIGHEST.altitudeM.toLocaleString("en-IN")} m
+              </p>
+              <p className="mt-1 text-sm text-ink-inverse/50">{HIGHEST.name}</p>
+            </div>
+            <Fact
+              label="Documents required"
+              value={mandatory > 0 ? String(mandatory) : "Being confirmed"}
+              note={mandatory > 0 ? "Inner-line permit area" : undefined}
+            />
+            <Fact
+              label="Legs confirmed"
+              value={`${confirmed} of ${legs.length}`}
+              note="Anything else is unknown to us"
+            />
+            <Fact label="Last checked" value={asOf} note="By a coordinator, on the ground" />
+          </div>
+        </div>
       </div>
 
-      {/* Journeys. Rules and rhythm rather than three identical cards. */}
-      <section className="px-4 py-20 sm:px-6 sm:py-28">
+      {/*
+        3. Journeys. Light register: this is what we are offering, not what we have
+        verified.
+      */}
+      <section className="register-light px-4 pb-24 pt-20 sm:px-6 sm:pb-28 sm:pt-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="max-w-[20ch] font-serif text-3xl leading-tight sm:text-4xl">
-            Three ways into the sacred Kumaon
-          </h2>
+          <h2 className="type-section max-w-[20ch]">Three ways into the sacred Kumaon</h2>
 
           {journeys && journeys.length > 0 ? (
-            <div className="mt-12 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-14 grid gap-14 md:grid-cols-2 lg:grid-cols-3">
               {journeys.map((journey) => (
-                <div key={journey.id} className="relative">
-                  <JourneyCard journey={journey} />
-                </div>
+                <JourneyCard key={journey.id} journey={journey} />
               ))}
             </div>
           ) : (
-            <p className="mt-8 max-w-[60ch] text-ink-inverse/60">
+            <p className="mt-8 max-w-[62ch] text-tone-body">
               Journeys are still being prepared. Nothing is published until the
               itinerary, altitudes and accommodation have been confirmed by our
               operations team.
@@ -96,15 +194,14 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* Homestay. The differentiator gets a split composition of its own, not a
-          card in a grid. Decision D5. */}
-      <section className="border-t border-white/10 px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+      {/* 4. Homestay. Light register, split composition. Decision D5. */}
+      <section className="register-light border-t border-tone-line px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h2 className="max-w-[18ch] font-serif text-3xl leading-tight sm:text-4xl">
+            <h2 className="type-section max-w-[18ch]">
               The room is the point, not the compromise
             </h2>
-            <div className="mt-6 max-w-[54ch] space-y-4 text-[15px] leading-relaxed text-ink-inverse/70">
+            <div className="mt-6 max-w-[62ch] space-y-4 leading-relaxed text-tone-body">
               <p>
                 Most operators apologise for the accommodation above Dharchula. There
                 are no luxury hotels on this road, and anyone who tells you otherwise
@@ -124,7 +221,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             </div>
             <Link
               href="/journeys/homestay-immersion"
-              className="mt-8 inline-flex items-center gap-2 text-sm text-gold"
+              // Gold is unreadable as text on the light register: #c89a4e against
+              // snow is about 2.3:1, well under the 4.5:1 body minimum. Rather than
+              // introducing a second accent, the link keeps full-contrast ink and
+              // carries gold as the underline, so the accent is still doing the
+              // pointing and the words are still legible.
+              className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-tone-strong underline decoration-gold decoration-2 underline-offset-4 transition-colors hover:decoration-saffron"
             >
               See the homestay journey
               <svg viewBox="0 0 16 16" className="size-4" aria-hidden="true" fill="none">
@@ -142,92 +244,62 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* Permits. Real configured data, with the caveat the API ships alongside it. */}
-      <section className="border-t border-white/10 bg-himalayan/40 px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.1fr]">
-          <div>
-            <h2 className="max-w-[18ch] font-serif text-3xl leading-tight sm:text-4xl">
-              What you will need to carry
+      {/*
+        5. The route, as elevation. Back to the dark register, because everything in
+        this section is a verified reading with a time on it.
+
+        This is the section the redesign exists for. Altitude is the risk on this
+        road and a four-cell table of badges never said so.
+      */}
+      <section className="register-dark px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-[52ch]">
+            <h2 className="type-section text-ink-inverse">
+              From 910 metres to four and a half thousand
             </h2>
-            <p className="mt-6 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
-              Adi Kailash sits inside an inner-line area. The paperwork is real, and
-              missing one document at Dharchula ends the trip there. We handle the
-              submission; you bring the originals.
+            <p className="mt-5 leading-relaxed text-ink-inverse/70">
+              The drive drops into the Kali gorge before it climbs, and above Gunji it
+              forks: one arm to Jyolingkong below Adi Kailash, the other to Nabhidhang
+              for Om Parvat. This is what your body is being asked to do.
             </p>
-            <Link
-              href="/plan"
-              className="mt-8 inline-flex items-center gap-2 text-sm text-gold"
-            >
-              Full preparation guide
-              <svg viewBox="0 0 16 16" className="size-4" aria-hidden="true" fill="none">
-                <path
-                  d="M3 8h9m0 0-3.2-3.2M12 8l-3.2 3.2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
           </div>
 
-          {checklist && checklist.requirements.length > 0 ? (
-            <ul className="space-y-4">
-              {checklist.requirements.map((req) => (
-                <li key={req.id} className="flex gap-3.5">
-                  <svg
-                    viewBox="0 0 16 16"
-                    className="mt-0.5 size-4 shrink-0 text-gold"
-                    aria-hidden="true"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.5 8.4l3 3 6-6.8"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <div>
-                    <p className="text-[15px] text-ink-inverse">
-                      {req.label}
-                      {!req.is_mandatory && (
-                        <span className="ml-2 text-sm text-ink-inverse/50">
-                          recommended
-                        </span>
-                      )}
-                    </p>
-                    {req.description && (
-                      <p className="mt-1 max-w-[52ch] text-sm leading-relaxed text-ink-inverse/60">
-                        {req.description}
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-ink-inverse/60">
-              The document list is being confirmed with the permit authority.
-            </p>
-          )}
+          <div className="mt-12">
+            <RouteProfile routes={status?.routes ?? []} locale={locale} />
+          </div>
+
+          <Link
+            href="/status"
+            className="mt-10 inline-flex items-center gap-2 text-sm text-gold underline-offset-4 hover:underline"
+          >
+            Every segment, with who checked it
+            <svg viewBox="0 0 16 16" className="size-4" aria-hidden="true" fill="none">
+              <path
+                d="M3 8h9m0 0-3.2-3.2M12 8l-3.2 3.2"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
         </div>
       </section>
 
-      <section className="border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
+      {/* 6. Close. */}
+      <section className="register-dark border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-serif text-2xl leading-snug sm:text-3xl">
+          <p className="font-serif text-2xl leading-snug text-ink-inverse sm:text-3xl">
             {displayLocalized(brand.identity.promise, locale)}
           </p>
-          <p className="mt-5 text-[15px] text-ink-inverse/65">
+          <p className="mt-5 text-ink-inverse/65">
             Talk to someone who lives in Pithoragarh and has driven this road.
           </p>
           <Link
             href="/enquire"
-            className="mt-8 inline-block rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:scale-[0.98]"
+            className="mt-8 inline-block rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:translate-y-px"
           >
-            {displayLocalized(brand.campaign.flagship.secondaryCta, locale)}
+            {displayLocalized(campaign.secondaryCta, locale)}
           </Link>
         </div>
       </section>

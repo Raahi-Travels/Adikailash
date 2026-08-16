@@ -1,0 +1,3327 @@
+{
+    "message": "Resource lists",
+    "version": "2.2.0",
+    "status": "ok",
+    "total": 200,
+    "count": 60,
+    "limit": "60",
+    "offset": "0",
+    "records": [
+        {
+            "index_name": "hiesk6qgvwloc99hyv04mh8fq2k46sdm",
+            "title": "Tourist",
+            "desc": "Tourist",
+            "timestamp": 1617979918,
+            "created": 1617979918,
+            "updated": 1617979918,
+            "created_date": "2021-04-09T20:21:58Z",
+            "updated_date": "2021-04-09T20:21:58Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "184315881",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year_arrivals_distribution_of_ftas_by_ports___mumbai_airport_distribution_of_ftas_by_ports___kolkata_airport_distribution_of_ftas_by_ports___chennai_airport_distribution_of_ftas_by_ports___delhi_airport_distribution_of_ftas_by_ports___bengaluru_airport_distribution_of_ftas_by_ports___cochin_airport_distribution_of_ftas_by_ports___haridaspur_land_checkpost_distribution_of_ftas_by_ports___hyderabad_airport_distribution_of_ftas_by_ports___others",
+                    "name": "Year\tArrivals\t% distribution of FTAs by ports - Mumbai Airport\t% distribution of FTAs by ports - Kolkata Airport\t% distribution of FTAs by ports - Chennai Airport\t% distribution of FTAs by ports - Delhi Airport\t% distribution of FTAs by ports - Bengaluru Airport\t% distribution of FTAs by ports - Cochin Airport\t% distribution of FTAs by ports - Haridaspur Land Checkpost\t% distribution of FTAs by ports - Hyderabad Airport\t% distribution of FTAs by ports - Others",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "fm5n5shio4mmt0p3whaaqtjvirsvofxc",
+            "title": "tourist",
+            "desc": "tourist",
+            "timestamp": 1576494243,
+            "created": 1576494243,
+            "updated": 1576494243,
+            "created_date": "2019-12-16T16:34:03Z",
+            "updated_date": "2019-12-16T16:34:03Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109809881",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___domestic",
+                    "name": "2016 - Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___foreign",
+                    "name": "2016 - Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___domestic",
+                    "name": "2017 - Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___foreign",
+                    "name": "2017 - Foreign",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "y932wp0q44iveg273luhsc5x3kg2398n",
+            "title": "tourist",
+            "desc": "tourist",
+            "timestamp": 1576495239,
+            "created": 1576495239,
+            "updated": 1576495239,
+            "created_date": "2019-12-16T16:50:39Z",
+            "updated_date": "2019-12-16T16:50:39Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109809881",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___foreign",
+                    "name": "2016 - Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___foreign",
+                    "name": "2017 - Foreign",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "4jz25x7z9utirmgqa3o7gbmi1sub2wze",
+            "title": "tourist",
+            "desc": "tourist",
+            "timestamp": 1576496076,
+            "created": 1576496076,
+            "updated": 1576496076,
+            "created_date": "2019-12-16T17:04:36Z",
+            "updated_date": "2019-12-16T17:04:36Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109809881",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___foreign",
+                    "name": "2016 - Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___foreign",
+                    "name": "2017 - Foreign",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "7pp7722e9s7atl9xf5zw2ntfnfg22wsp",
+            "title": "tourist",
+            "desc": "tourist",
+            "timestamp": 1576496487,
+            "created": 1576496487,
+            "updated": 1576496487,
+            "created_date": "2019-12-16T17:11:27Z",
+            "updated_date": "2019-12-16T17:11:27Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109809881",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___foreign",
+                    "name": "2016 - Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___foreign",
+                    "name": "2017 - Foreign",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "xk9as535lgijbjg7l0vgpvtne83n80oo",
+            "title": "Tourist Arrivals",
+            "desc": "Tourist Arrivals",
+            "timestamp": 1603860981,
+            "created": 1603860981,
+            "updated": 1603860981,
+            "created_date": "2020-10-28T10:26:21Z",
+            "updated_date": "2020-10-28T10:26:21Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "tourist_arrival",
+                    "name": "Tourist Arrival",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "gn2iad65ecas3q5ztrq34khz7exodk9y",
+            "title": "Tourist Arrivals",
+            "desc": "Tourist Arrivals",
+            "timestamp": 1603532861,
+            "created": 1603532861,
+            "updated": 1603532861,
+            "created_date": "2020-10-24T15:17:41Z",
+            "updated_date": "2020-10-24T15:17:41Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "tourist_arrival",
+                    "name": "Tourist Arrival",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "gpe47nwrawiwdls5awvxa88ylpxqxwzy",
+            "title": "Tourist Arrivals",
+            "desc": "Tourist Arrivals",
+            "timestamp": 1603777360,
+            "created": 1603777360,
+            "updated": 1603777360,
+            "created_date": "2020-10-27T11:12:40Z",
+            "updated_date": "2020-10-27T11:12:40Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "u_s_a",
+                    "name": "U.S.A",
+                    "type": "keyword"
+                },
+                {
+                    "id": "canada",
+                    "name": "Canada",
+                    "type": "keyword"
+                },
+                {
+                    "id": "france",
+                    "name": "France",
+                    "type": "keyword"
+                },
+                {
+                    "id": "germany",
+                    "name": "Germany",
+                    "type": "keyword"
+                },
+                {
+                    "id": "italy",
+                    "name": "Italy",
+                    "type": "keyword"
+                },
+                {
+                    "id": "u_k",
+                    "name": "U.K",
+                    "type": "keyword"
+                },
+                {
+                    "id": "sri_lanka",
+                    "name": "Sri Lanka",
+                    "type": "keyword"
+                },
+                {
+                    "id": "malaysia",
+                    "name": "Malaysia",
+                    "type": "keyword"
+                },
+                {
+                    "id": "singapore",
+                    "name": "Singapore",
+                    "type": "keyword"
+                },
+                {
+                    "id": "japan",
+                    "name": "Japan",
+                    "type": "keyword"
+                },
+                {
+                    "id": "australia",
+                    "name": "Australia",
+                    "type": "keyword"
+                },
+                {
+                    "id": "others",
+                    "name": "Others",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "acazoeknc0s8ojvm4tjny85cqlz3yf59",
+            "title": "Tourist arrivals in tamilnadu",
+            "desc": "",
+            "timestamp": 1554896447,
+            "created": 1554896447,
+            "updated": 1554896447,
+            "created_date": "2019-04-10T17:10:47Z",
+            "updated_date": "2019-04-10T17:10:47Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_in_nos_",
+                    "name": "Domestic(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_in_nos_",
+                    "name": "Foreign(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total_in_nos_",
+                    "name": "Total(in Nos.)",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "d7z4y5w3ozfg7klvomkqkp0l46szg7l9",
+            "title": "Number of Tourist 2019",
+            "desc": "Number of Tourist 2019",
+            "timestamp": 1604480939,
+            "created": 1604480939,
+            "updated": 1604480939,
+            "created_date": "2020-11-04T14:38:59Z",
+            "updated_date": "2020-11-04T14:38:59Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_domestic_tourist",
+                    "name": "Number of Domestic Tourist",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_foreign_tourist",
+                    "name": "Number of Foreign Tourist",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "y7ftn3vjrxo209hhc5924ozsg7mss29u",
+            "title": "Tourist arrivals in tamilnadu 2013",
+            "desc": "",
+            "timestamp": 1554963910,
+            "created": 1554963910,
+            "updated": 1554963910,
+            "created_date": "2019-04-11T11:55:10Z",
+            "updated_date": "2019-04-11T11:55:10Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_in_nos_",
+                    "name": "Domestic(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_in_nos_",
+                    "name": "Foreign(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total_in_nos_",
+                    "name": "Total(in Nos.)",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "2so99gpdn5achrh6lym4dllnlvgjwjq3",
+            "title": "Tourist Arrivals in Tamilnadu - 2018",
+            "desc": "Tourist Arrivals in Tamilnadu - 2018",
+            "timestamp": 1567063827,
+            "created": 1567063827,
+            "updated": 1567063827,
+            "created_date": "2019-08-29T13:00:27Z",
+            "updated_date": "2019-08-29T13:00:27Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_tourist_in_lakhs_",
+                    "name": "Domestic Tourist (in lakhs)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_tourist_in_lakhs_",
+                    "name": "Foreign Tourist (in lakhs)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "5015c014-507e-4ddf-8051-2c92dd426d38",
+            "title": "Inbound Tourism Foreign Tourist Arrivals, Arrivals of Non-Resident Indians and International Tourist Arrivals 1981-2020",
+            "desc": "Inbound Tourism Foreign Tourist Arrivals, Arrivals of Non-Resident Indians and International Tourist Arrivals 1981-2020",
+            "timestamp": 1658921322,
+            "created": "1658921301361",
+            "updated": 1658921713,
+            "created_date": "2022-07-27T16:58:42Z",
+            "updated_date": "2022-07-27T17:05:13Z",
+            "active": "1",
+            "visualizable": "1",
+            "catalog_uuid": "36404b64-1498-46a9-b695-1a7553dd6306",
+            "source": "data.gov.in",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "ftas_in_india_in_million_",
+                    "name": "FTAs in India (in Million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change_over_previous_year",
+                    "name": "Percentage (%) change over previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "nris_arrivals_in_india_in_million_",
+                    "name": "NRIs arrivals in India (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "ercentage_change_over_the_previous_year",
+                    "name": "ercentage (%) change over the previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "international_tourist_arrivals_in_india_in_million_",
+                    "name": "International Tourist Arrivals in India  (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change_over_the_previous_year",
+                    "name": "Percentage (%) change over the previous year",
+                    "type": "double"
+                }
+            ],
+            "target_bucket": {
+                "index": "api",
+                "type": "36404b64-1498-46a9-b695-1a7553dd6306",
+                "field": "5015c014-507e-4ddf-8051-2c92dd426d38"
+            }
+        },
+        {
+            "index_name": "z2vk2lm86qik5if8705j0kdo3ch5tx4w",
+            "title": "Tourist Arrival in Tamil Nadu",
+            "desc": "Tourist Arrival in Tamil Nadu",
+            "timestamp": 1568282503,
+            "created": 1568282503,
+            "updated": 1568282503,
+            "created_date": "2019-09-12T15:31:43Z",
+            "updated_date": "2019-09-12T15:31:43Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "183129",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "18ec200b-fb1a-4d19-bc57-15d5c2f115c3",
+            "title": "State-wise Domestic Tourist Visits and Foreign Tourist Visits during 2018 (From: Ministry of Tourism)",
+            "desc": "State-wise Domestic Tourist Visits and Foreign Tourist Visits during 2018 (From: Ministry of Tourism)",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1614686212,
+            "updated": 1614925604,
+            "created_date": "2021-03-02T11:56:52Z",
+            "updated_date": "2021-03-05T11:56:44Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+                "field": "18ec200b-fb1a-4d19-bc57-15d5c2f115c3"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "_sr_no_",
+                    "name": "Sr.No.",
+                    "type": "double"
+                },
+                {
+                    "id": "states",
+                    "name": "States",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2018___domestic_tourist_visits",
+                    "name": "2018 - Domestic Tourist Visits",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018___foreign_tourist_visits",
+                    "name": "2018 - Foreign Tourist Visits",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "33d26q3dssaf1oboezd2p5qqh5wrvho0",
+            "title": "Tourist arrivals in tamilnadu 2013",
+            "desc": "Tourist arrivals in tamilnadu 2013",
+            "timestamp": 1554896879,
+            "created": 1554896879,
+            "updated": 1554896879,
+            "created_date": "2019-04-10T17:17:59Z",
+            "updated_date": "2019-04-10T17:17:59Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_in_nos_",
+                    "name": "Domestic(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_in_nos_",
+                    "name": "Foreign(in Nos.)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total_in_nos_",
+                    "name": "Total(in Nos.)",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "hbjns671kivoptxrairvhll1k6czpil0",
+            "title": "Nationality-Wise Foreign Tourist Arrivals",
+            "desc": "Nationality-Wise Foreign Tourist Arrivals",
+            "timestamp": 1576480061,
+            "created": 1576480061,
+            "updated": 1576480061,
+            "created_date": "2019-12-16T12:37:41Z",
+            "updated_date": "2019-12-16T12:37:41Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109439111",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl_no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "ftas",
+                    "name": "FTAs",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "38e073e6-404c-45df-8c7f-18bad688d8df",
+            "title": "State\/UTs-wise Domestic Tourist Vistis (DTVs) and Foreign Tourist Vistis (FTVs) from 2018 to 2020",
+            "desc": "State\/UTs-wise Domestic Tourist Vistis (DTVs) and Foreign Tourist Vistis (FTVs) from 2018 to 2020",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "4367dc29-493d-4076-9521-a6dec4ecc3a7",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1663216668,
+            "updated": 1663225624,
+            "created_date": "2022-09-15T06:37:48Z",
+            "updated_date": "2022-09-15T12:37:04Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "4367dc29-493d-4076-9521-a6dec4ecc3a7",
+                "field": "38e073e6-404c-45df-8c7f-18bad688d8df"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl__no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "states_ut",
+                    "name": "States\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2018___dtvs",
+                    "name": "2018 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018___ftvs",
+                    "name": "2018 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2019___dtvs",
+                    "name": "2019 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2019___ftvs",
+                    "name": "2019 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2020___dtvs",
+                    "name": "2020 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2020___ftvs",
+                    "name": "2020 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "wmc1j1p6f3fa3kv7pioi9symkt210oj3",
+            "title": "Tourist arrivals in tamil Nadu",
+            "desc": "Tourist arrivals in tamil Nadu",
+            "timestamp": 1567138578,
+            "created": 1567138578,
+            "updated": 1567138578,
+            "created_date": "2019-08-30T09:46:18Z",
+            "updated_date": "2019-08-30T09:46:18Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "9c41624a-94f4-4cb3-a0fc-24aa963bc82c",
+            "title": "Tourist  Places in Kohima : 2021",
+            "desc": "Tourist  Places in Kohima : 2021",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Housing and Urban Affairs",
+                "Smart Cities Mission",
+                "Nagaland",
+                "Kohima"
+            ],
+            "sector": [
+                "Places",
+                "Travel and Tourism"
+            ],
+            "source": "smartcities.data.gov.in",
+            "catalog_uuid": "fa556201-a99e-4d84-a542-d713be1a11c1",
+            "visualizable": "0",
+            "active": "1",
+            "created": 1757953565,
+            "updated": 1757953565,
+            "created_date": "2025-09-15T18:26:05Z",
+            "updated_date": "2025-09-15T18:26:05Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "fa556201-a99e-4d84-a542-d713be1a11c1",
+                "field": "9c41624a-94f4-4cb3-a0fc-24aa963bc82c"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "city_name",
+                    "name": "City Name",
+                    "type": "keyword"
+                },
+                {
+                    "id": "place",
+                    "name": "Place",
+                    "type": "keyword"
+                },
+                {
+                    "id": "category_",
+                    "name": "Category ",
+                    "type": "keyword"
+                },
+                {
+                    "id": "department_",
+                    "name": "Department",
+                    "type": "keyword"
+                },
+                {
+                    "id": "access",
+                    "name": "Access",
+                    "type": "keyword"
+                },
+                {
+                    "id": "entry_fee",
+                    "name": "Entry Fee",
+                    "type": "keyword"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "be45f80d-344b-4a5f-a7df-400df5297dba",
+            "title": "State\/UTs-wise Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) from 2019 to 2021",
+            "desc": "State\/UTs-wise Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) from 2019 to 2021",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "d1045b41-4c31-4225-8afa-390b454c2498",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1677742877,
+            "updated": 1677746173,
+            "created_date": "2023-03-02T13:11:17Z",
+            "updated_date": "2023-03-02T14:06:13Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "d1045b41-4c31-4225-8afa-390b454c2498",
+                "field": "be45f80d-344b-4a5f-a7df-400df5297dba"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl__no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "state__ut",
+                    "name": "State\/ UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2019___dtvs",
+                    "name": "2019 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2019___ftvs",
+                    "name": "2019 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2020___dtvs",
+                    "name": "2020 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2020___ftvs",
+                    "name": "2020 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2021___dtvs",
+                    "name": "2021 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2021___ftvs",
+                    "name": "2021 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "oux1b8qwtxjb00s4mitdboz4dkomcv97",
+            "title": "Tourist Arrivals in Tamilnadu 2018",
+            "desc": "Tourist Arrivals in Tamilnadu 2018",
+            "timestamp": 1566989172,
+            "created": 1566989172,
+            "updated": 1566989172,
+            "created_date": "2019-08-28T16:16:12Z",
+            "updated_date": "2019-08-28T16:16:12Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "s5a3jvvnucj2u7ajddll7qfl6nj9ln2f",
+            "title": "Tourist Arrivals in Tamilnadu -2018",
+            "desc": "Tourist Arrivals in Tamilnadu -2018",
+            "timestamp": 1567064085,
+            "created": 1567064085,
+            "updated": 1567064085,
+            "created_date": "2019-08-29T13:04:45Z",
+            "updated_date": "2019-08-29T13:04:45Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_tourist_in_crores_",
+                    "name": "Domestic Tourist (in Crores)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_tourist_in_lakhs_",
+                    "name": "Foreign Tourist (in lakhs)",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "k7bnnzi81ixwj83snuethq48xl2lqv4t",
+            "title": "Tourist arrivals in tamil Nadu ",
+            "desc": "Tourist arrivals in tamil Nadu ",
+            "timestamp": 1567138726,
+            "created": 1567138726,
+            "updated": 1567138726,
+            "created_date": "2019-08-30T09:48:46Z",
+            "updated_date": "2019-08-30T09:48:46Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "98epg404std5v11tuelr1k0o3ogjukv7",
+            "title": "Nationality-Wise Foreign Tourist Arrivals",
+            "desc": "Nationality-Wise Foreign Tourist Arrivals",
+            "timestamp": 1576479725,
+            "created": 1576479725,
+            "updated": 1576479725,
+            "created_date": "2019-12-16T12:32:05Z",
+            "updated_date": "2019-12-16T12:32:05Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109439111",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl_no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "ftas",
+                    "name": "FTAs",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "4hl24m0nluktiyw0i5yq3eh8gg8kp0sb",
+            "title": "Tourist Arrival in 2016 and 2017",
+            "desc": "Tourist Arrival in 2016 and 2017",
+            "timestamp": 1603861938,
+            "created": 1603861938,
+            "updated": 1603861938,
+            "created_date": "2020-10-28T10:42:18Z",
+            "updated_date": "2020-10-28T10:42:18Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country",
+                    "name": "Country",
+                    "type": "keyword"
+                },
+                {
+                    "id": "tourist_arrival_in_2016",
+                    "name": "Tourist Arrival in 2016",
+                    "type": "keyword"
+                },
+                {
+                    "id": "tourist_arrival_in_2017",
+                    "name": "Tourist Arrival in 2017",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "6eb34641-057b-4013-9aa3-0c16bacf356f",
+            "title": "Tourist arrivals in Tamil Nadu : SHB 2020",
+            "desc": "Tourist arrivals in Tamil Nadu : SHB 2020",
+            "timestamp": 1628677700,
+            "created": 1628677700,
+            "updated": 1628677725,
+            "created_date": "2021-08-11T15:58:20Z",
+            "updated_date": "2021-08-11T15:58:45Z",
+            "active": "1",
+            "visualizable": "1",
+            "catalog_uuid": "37f4114f-ab5e-4dcc-afd9-dd96f28118a8",
+            "source": "tn.data.gov.in",
+            "org_type": "State",
+            "org": [
+                "Tamil Nadu",
+                "Planning, Development and Special Initiatives Department",
+                "Department of Economics and Statistics"
+            ],
+            "sector": [
+                "Statistics"
+            ],
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no_",
+                    "name": "S.No",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_domestic_tourist_arrivals_in_tamil_nadu",
+                    "name": "Number of Domestic Tourist Arrivals in Tamil Nadu",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_foreign_tourist_arrivals_in_tamil_nadu",
+                    "name": "Number of Foreign Tourist Arrivals in Tamil Nadu",
+                    "type": "double"
+                },
+                {
+                    "id": "total_number_of_tourist_arrivals_in_tamil_nadu",
+                    "name": "Total Number of Tourist Arrivals in Tamil Nadu",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ],
+            "target_bucket": {
+                "index": "tn_api",
+                "type": "37f4114f-ab5e-4dcc-afd9-dd96f28118a8",
+                "field": "6eb34641-057b-4013-9aa3-0c16bacf356f"
+            }
+        },
+        {
+            "index_name": "sxpm8n33g63h9d7r4ey28hkt5wyrn6m0",
+            "title": "Foreign Tourist arrivals in Tamil Nadu ",
+            "desc": "Foreign Tourist arrivals in Tamil Nadu ",
+            "timestamp": 1567140904,
+            "created": 1567140904,
+            "updated": 1567140904,
+            "created_date": "2019-08-30T10:25:04Z",
+            "updated_date": "2019-08-30T10:25:04Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "1jglm3mr772pu5yyfy1knprhwnj1i5h0",
+            "title": "Foreign Tourist Arrivals based on Airport Arrivals",
+            "desc": "Foreign Tourist Arrivals based on Airport Arrivals",
+            "timestamp": 1576997982,
+            "created": 1576997982,
+            "updated": 1576997982,
+            "created_date": "2019-12-22T12:29:42Z",
+            "updated_date": "2019-12-22T12:29:42Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109766101",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "choice_of_airport",
+                    "name": "Choice of Airport",
+                    "type": "keyword"
+                },
+                {
+                    "id": "percentage_share",
+                    "name": "Percentage share",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "8eeae5b7-c160-4b88-984d-0025dc515732",
+            "title": "Tourist Arrivals in Tamil Nadu : SHB 2018",
+            "desc": "Tourist Arrivals in Tamil Nadu : SHB 2018",
+            "timestamp": 1568886845,
+            "created": 1568886845,
+            "updated": 1568886921,
+            "created_date": "2019-09-19T15:24:05Z",
+            "updated_date": "2019-09-19T15:25:21Z",
+            "active": "1",
+            "visualizable": "1",
+            "catalog_uuid": "19925ca2-a88b-4f6c-aabd-4f8f1babd4a5",
+            "source": "tn.data.gov.in",
+            "org_type": "State",
+            "org": [
+                "Tamil Nadu",
+                "Planning, Development and Special Initiatives Department",
+                "Department of Economics and Statistics"
+            ],
+            "sector": [
+                "Statistics"
+            ],
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "double"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "double"
+                },
+                {
+                    "id": "_total",
+                    "name": "Total",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ],
+            "target_bucket": {
+                "index": "tn_api",
+                "type": "19925ca2-a88b-4f6c-aabd-4f8f1babd4a5",
+                "field": "8eeae5b7-c160-4b88-984d-0025dc515732"
+            },
+            "external_ws_url": "",
+            "external_ws": "0"
+        },
+        {
+            "index_name": "ah31scpy2vgfugggsirlaec3xoi0x5me",
+            "title": "International Tourist Arrivals in World and India",
+            "desc": "International Tourist Arrivals in World and India",
+            "timestamp": 1611995654,
+            "created": 1611995654,
+            "updated": 1611995654,
+            "created_date": "2021-01-30T14:04:14Z",
+            "updated_date": "2021-01-30T14:04:14Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "164085351",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year_tourist_visits___domestic_tourist_visits___foreign_annual_growth_rate___domestic_annual_growth_rate___foreign",
+                    "name": "Year\tTourist Visits - Domestic\tTourist Visits - Foreign\tAnnual Growth Rate - Domestic\tAnnual Growth Rate - Foreign",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "e5qxicroixy26au29569c8l7b3av3j3k",
+            "title": "Number of Tourist Visits over the Years",
+            "desc": "Number of Tourist Visits over the Years",
+            "timestamp": 1688376202,
+            "created": 1688376202,
+            "updated": 1688376202,
+            "created_date": "2023-07-03T14:53:22Z",
+            "updated_date": "2023-07-03T14:53:22Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "329882281",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic_",
+                    "name": "Domestic ",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_foreign",
+                    "name": " Foreign",
+                    "type": "keyword"
+                }
+            ],
+            "target_bucket": {
+                "index": "viz21",
+                "type": "viz21",
+                "field": "e5qxicroixy26au29569c8l7b3av3j3k"
+            }
+        },
+        {
+            "index_name": "47ecgabk7yxwup1kke84afmuklx504s9",
+            "title": "Foreign Tourist arrivals in Tamil Nadu ",
+            "desc": "Foreign Tourist arrivals in Tamil Nadu ",
+            "timestamp": 1567139365,
+            "created": 1567139365,
+            "updated": 1567139365,
+            "created_date": "2019-08-30T09:59:25Z",
+            "updated_date": "2019-08-30T09:59:25Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "7x1at7ozbmjoin630mxyaa1e8h7s748f",
+            "title": "Foreign Tourist arrivals in Tamil Nadu ",
+            "desc": "Foreign Tourist arrivals in Tamil Nadu ",
+            "timestamp": 1567140901,
+            "created": 1567140901,
+            "updated": 1567140901,
+            "created_date": "2019-08-30T10:25:01Z",
+            "updated_date": "2019-08-30T10:25:01Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "7a4f1790-dc4f-4126-b77b-c5e09e101c78",
+            "title": "State\/UT-wise Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) from 2016 to 2018 (From: Ministry of Tourism)",
+            "desc": "State\/UT-wise Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) from 2016 to 2018 (From: Ministry of Tourism)",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1614662092,
+            "updated": 1614919192,
+            "created_date": "2021-03-02T05:14:52Z",
+            "updated_date": "2021-03-05T10:09:52Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+                "field": "7a4f1790-dc4f-4126-b77b-c5e09e101c78"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "_sl__no_",
+                    "name": "Sl. No.",
+                    "type": "double"
+                },
+                {
+                    "id": "states_uts",
+                    "name": "States\/UTs",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___dtv",
+                    "name": "2016 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2016___ftv",
+                    "name": "2016 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2017___dtv",
+                    "name": "2017 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2017___ftv",
+                    "name": "2017 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018__revised____dtv",
+                    "name": "2018 (Revised) - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018__revised____ftv",
+                    "name": "2018 (Revised) - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "277cccd1-ddfc-4439-af6b-af9c2f21fcfd",
+            "title": "Foreign Tourist Arrivals (FTAs), arrivals of Non-Resident Indians (NRIs) and International Tourist Arrivals (ITAs) from 1981 to 2019",
+            "desc": "Foreign Tourist Arrivals (FTAs), arrivals of Non-Resident Indians (NRIs) and International Tourist Arrivals (ITAs) from 1981 to 2019",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1624522561,
+            "updated": 1624866761,
+            "created_date": "2021-06-24T08:16:01Z",
+            "updated_date": "2021-06-28T13:22:41Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "mohfw",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "277cccd1-ddfc-4439-af6b-af9c2f21fcfd"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "ftas_in_india__in_million_",
+                    "name": "FTAs in India (in Million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_previous_year",
+                    "name": "Percentage (%) change over previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "nris_arrivals_in_india__in_million_",
+                    "name": "NRIs arrivals in India (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_the_previous_year",
+                    "name": "Percentage (%) change over the previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "international_tourist_arrivals_in_india___in_million_",
+                    "name": "International Tourist Arrivals in India  (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_the_previous_year",
+                    "name": "Percentage (%) change over the previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "c54f6a44-06f5-4529-b554-83e438c887b4",
+            "title": "Year-wise Data of Domestic Tourist Visits (DTVs) & Foreign Tourist Visits (FTVs) in Uttrakhand from 2020 to 2022 ",
+            "desc": "Year-wise Data of Domestic Tourist Visits (DTVs) & Foreign Tourist Visits (FTVs) in Uttrakhand from 2020 to 2022 ",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "ee69ffd5-5bab-4b16-8f55-30ec0b3e4918",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1711111742,
+            "updated": 1711521295,
+            "created_date": "2024-03-22T13:49:02Z",
+            "updated_date": "2024-03-27T12:04:55Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "ee69ffd5-5bab-4b16-8f55-30ec0b3e4918",
+                "field": "c54f6a44-06f5-4529-b554-83e438c887b4"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "_sl__no_",
+                    "name": "Sl. No.",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "dtv",
+                    "name": "DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "ftv",
+                    "name": "FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "df09bf75-06db-49c8-95a6-df1819db4a8f",
+            "title": "Year-wise Details of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) of Karnataka from 2019 to 2022",
+            "desc": "Year-wise Details of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) of Karnataka from 2019 to 2022",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "646eeed7-710f-4e3f-bf09-6b410bbc7d19",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1745506722,
+            "updated": 1745506722,
+            "created_date": "2025-04-24T16:58:42Z",
+            "updated_date": "2025-04-24T16:58:42Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "646eeed7-710f-4e3f-bf09-6b410bbc7d19",
+                "field": "df09bf75-06db-49c8-95a6-df1819db4a8f"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "dtvs",
+                    "name": "DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "ftvs",
+                    "name": "FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "7c35d689-cb0f-4bb0-bbd9-9e528b33e8f5",
+            "title": "Foreign Tourist Arrivals (FTAs), Arrivals of Non-Resident indians (NRIs) and international Tourist Arrivals (ITAs) from 1981 to 2018",
+            "desc": "Foreign Tourist Arrivals (FTAs), Arrivals of Non-Resident indians (NRIs) and international Tourist Arrivals (ITAs) from 1981 to 2018",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1624522641,
+            "updated": 1624862941,
+            "created_date": "2021-06-24T08:17:21Z",
+            "updated_date": "2021-06-28T12:19:01Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "mohfw",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "7c35d689-cb0f-4bb0-bbd9-9e528b33e8f5"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "ftas_in_india__in_million_",
+                    "name": "FTAs in india (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_previous_year",
+                    "name": "Percentage (%) change over previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "nris_arrivals_in_india__in_million_",
+                    "name": "NRIs arrivals in india (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_the_previous_year",
+                    "name": "Percentage (%) change over the previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "international_tourist_arrivals_in_india__in_million_",
+                    "name": "International Tourist Arrivals in india (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_____change_over_the_previous_year",
+                    "name": "Percentage (%) change over the previous year",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "c22bb73d-d8de-455f-ab09-70c9263edd68",
+            "title": "State\/UT-wise Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) during 2017 (From : Ministry of Tourism)",
+            "desc": "State\/UT-wise Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) during 2017 (From : Ministry of Tourism)",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "1d4fe423-bb29-4720-a35b-553e0128e125",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1701805193,
+            "updated": 1701837157,
+            "created_date": "2023-12-05T20:39:53Z",
+            "updated_date": "2023-12-06T10:02:37Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "1d4fe423-bb29-4720-a35b-553e0128e125",
+                "field": "c22bb73d-d8de-455f-ab09-70c9263edd68"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "_s__no_",
+                    "name": "S. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "states_uts",
+                    "name": "States\/UTs",
+                    "type": "keyword"
+                },
+                {
+                    "id": "dtv_2017__p_",
+                    "name": "DTV 2017 (P)",
+                    "type": "double"
+                },
+                {
+                    "id": "ftv_2017__p_",
+                    "name": "FTV 2017 (P)",
+                    "type": "double"
+                },
+                {
+                    "id": "rank___dtv_2017",
+                    "name": "Rank - DTV 2017",
+                    "type": "double"
+                },
+                {
+                    "id": "rank___ftv_2017",
+                    "name": "Rank - FTV 2017",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "51b5fc1c-9a4b-4c36-bcba-a90e55dc9fc8",
+            "title": "Year-wise Details of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) to Goa from 2021 to 2023",
+            "desc": "Year-wise Details of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) to Goa from 2021 to 2023",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "78889f83-0f96-484b-9fbc-5be92454446f",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1747899912,
+            "updated": 1747899912,
+            "created_date": "2025-05-22T09:45:12Z",
+            "updated_date": "2025-05-22T09:45:12Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "78889f83-0f96-484b-9fbc-5be92454446f",
+                "field": "51b5fc1c-9a4b-4c36-bcba-a90e55dc9fc8"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "dtvs__in_lakh_",
+                    "name": "DTVs (in Lakh)",
+                    "type": "double"
+                },
+                {
+                    "id": "ftvs__in_lakh_",
+                    "name": "FTVs (in Lakh)",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "b3wgpceufomsznq1j8eyisgtvfc7g107",
+            "title": "Foreign Tourist Arrivala based on Airport - 2014",
+            "desc": "Foreign Tourist Arrivala based on Airport - 2014",
+            "timestamp": 1576998521,
+            "created": 1576998521,
+            "updated": 1576998521,
+            "created_date": "2019-12-22T12:38:41Z",
+            "updated_date": "2019-12-22T12:38:41Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109766101",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "choice_of_airport",
+                    "name": "Choice of Airport",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_percentage_share",
+                    "name": " Percentage share",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "dde8a917-6e31-4a40-ad98-ef363cb42adc",
+            "title": "Tourist Arrivals in Tamil Nadu 2001-2014",
+            "desc": "Tourist Arrivals in Tamil Nadu 2001-2014",
+            "org_type": "State",
+            "org": [
+                "Tamil Nadu",
+                "Planning, Development and Special Initiatives Department, Tamil Nadu",
+                "Department of Economics and Statistics"
+            ],
+            "sector": [
+                "Statistics"
+            ],
+            "source": "tn.data.gov.in",
+            "catalog_uuid": "a77cb831-1a1b-4b0f-beaf-a03d5e08615d",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1538569663,
+            "updated": 1543529275,
+            "created_date": "2018-10-03T17:57:43Z",
+            "updated_date": "2018-11-30T03:37:55Z",
+            "target_bucket": {
+                "index": "tn_api",
+                "type": "a77cb831-1a1b-4b0f-beaf-a03d5e08615d",
+                "field": "dde8a917-6e31-4a40-ad98-ef363cb42adc"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "double"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "double"
+                },
+                {
+                    "id": "_total",
+                    "name": "Total",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ],
+            "external_ws_url": "",
+            "external_ws": "0"
+        },
+        {
+            "index_name": "1d118b7d-e870-4666-b77b-9ff823382494",
+            "title": "Details of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) during 2016-2018 (From: Ministry of Tourism)",
+            "desc": "Details of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTV) during 2016-2018 (From: Ministry of Tourism)",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1702488630,
+            "updated": 1702530642,
+            "created_date": "2023-12-13T18:30:30Z",
+            "updated_date": "2023-12-14T10:40:42Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "573512d4-36eb-4cba-b16a-36cdc7789a76",
+                "field": "1d118b7d-e870-4666-b77b-9ff823382494"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "states",
+                    "name": "States",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___dtv",
+                    "name": "2016 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2016___ftv",
+                    "name": "2016 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2017___dtv",
+                    "name": "2017 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2017___ftv",
+                    "name": "2017 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018__revised____dtv",
+                    "name": "2018 (Revised) - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2018__revised____ftv",
+                    "name": "2018 (Revised) - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "bbcf183e-5fb4-4eb0-a9ea-055e5b3cb89d",
+            "title": "Year-wise Details of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) from 2018 to 2022",
+            "desc": "Year-wise Details of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) from 2018 to 2022",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "c87f45f9-6597-41c5-8125-28c5abf93116",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1743107694,
+            "updated": 1743107694,
+            "created_date": "2025-03-27T21:34:54Z",
+            "updated_date": "2025-03-27T21:34:54Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "c87f45f9-6597-41c5-8125-28c5abf93116",
+                "field": "bbcf183e-5fb4-4eb0-a9ea-055e5b3cb89d"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "dtv__in_lakh_",
+                    "name": "DTV (in Lakh)",
+                    "type": "double"
+                },
+                {
+                    "id": "ftv__in_lakh_",
+                    "name": "FTV (in Lakh)",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "f47a4827-9faa-43f2-9e09-acb0cab24997",
+            "title": "District-wise Number of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTVs) in Uttar Pradesh during 2022 and 2023",
+            "desc": "District-wise Number of Domestic Tourist Visits (DTV) and Foreign Tourist Visits (FTVs) in Uttar Pradesh during 2022 and 2023",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "e3b19e4d-e287-4d32-b53d-70e9617c7770",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1753007192,
+            "updated": 1753007192,
+            "created_date": "2025-07-20T12:26:32Z",
+            "updated_date": "2025-07-20T12:26:32Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "e3b19e4d-e287-4d32-b53d-70e9617c7770",
+                "field": "f47a4827-9faa-43f2-9e09-acb0cab24997"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl__no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "district",
+                    "name": "District",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2022___dtv",
+                    "name": "2022 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2022___ftv",
+                    "name": "2022 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2023___dtv",
+                    "name": "2023 - DTV",
+                    "type": "double"
+                },
+                {
+                    "id": "_2023___ftv",
+                    "name": "2023 - FTV",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "igxb68wquru5z6qf8387x1e194nz7g3t",
+            "title": "Tourist Statistics of India from 1991 to 2011",
+            "desc": "Tourist Statistics of India from 1991 to 2011",
+            "timestamp": 1537359602,
+            "created": 1537359602,
+            "updated": 1537359602,
+            "created_date": "2018-09-19T17:50:02Z",
+            "updated_date": "2018-09-19T17:50:02Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "68037731",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "year_foreign_tourist_ariivals_in_numbers_foreign_exchange_earnings_in_crores_foreign_exchange_earnings_in_usd_millions_domestic_tourist_visits_in_numbers",
+                    "name": "Year\tForeign Tourist Ariivals in Numbers\tForeign Exchange Earnings in Crores\tForeign Exchange Earnings in USD Millions\tDomestic Tourist Visits in Numbers",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "xcqfj9yjp1p5iti6ln8t2smfagm9xhxm",
+            "title": "Number of Tourist Arrivals Centre wise in Tamil Nadu 2019",
+            "desc": "Number of Tourist Arrivals Centre wise in Tamil Nadu 2019",
+            "timestamp": 1611032870,
+            "created": 1611032870,
+            "updated": 1611032870,
+            "created_date": "2021-01-19T10:37:50Z",
+            "updated_date": "2021-01-19T10:37:50Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "destination",
+                    "name": "Destination",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_domestic_tourist_arrivals_in_2017",
+                    "name": "Number of Domestic Tourist Arrivals in 2017",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_foreign_tourist_in_2017",
+                    "name": "Number of Foreign Tourist in 2017",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total_number_of_tourist_arrivals_in_2017",
+                    "name": "Total Number of Tourist Arrivals in 2017",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "2063d4c9-4372-49d1-a7cc-c009733d0c7f",
+            "title": "Month-wise Foreign Tourist Arrivals (FTAs) during 2021",
+            "desc": "Month-wise Foreign Tourist Arrivals (FTAs) during 2021",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "c985f76a-bd31-4309-a6f3-917cfa5d0d78",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1658467345,
+            "updated": 1659075235,
+            "created_date": "2022-07-22T07:22:25Z",
+            "updated_date": "2022-07-29T11:43:55Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "c985f76a-bd31-4309-a6f3-917cfa5d0d78",
+                "field": "2063d4c9-4372-49d1-a7cc-c009733d0c7f"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "month",
+                    "name": "Month",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign_tourist_arrivals_2021",
+                    "name": "Foreign Tourist Arrivals 2021",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "cfztnctanaty0hti0kqayjyv8m4xuge9",
+            "title": "state\/UT wise domestic tourist visit during 2016-2017.csv",
+            "desc": "state\/UT wise domestic tourist visit during 2016-2017.csv",
+            "timestamp": 1578291136,
+            "created": 1578291136,
+            "updated": 1578291136,
+            "created_date": "2020-01-06T11:42:16Z",
+            "updated_date": "2020-01-06T11:42:16Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "109605441",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2016___domestic",
+                    "name": "\t2016 - Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2017___domestic",
+                    "name": "\t2017 - Domestic",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "f3b4a63f-61c7-4a40-9a65-c0e924a83e59",
+            "title": "Nationality-wise Foreign Tourist Arrivals in India during 2015-2017",
+            "desc": "Nationality-wise Foreign Tourist Arrivals in India during 2015-2017",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1624522532,
+            "updated": 1624866303,
+            "created_date": "2021-06-24T08:15:32Z",
+            "updated_date": "2021-06-28T13:15:03Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "mohfw",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "f3b4a63f-61c7-4a40-9a65-c0e924a83e59"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "nationality",
+                    "name": "Nationality",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country_of_nationality",
+                    "name": "Country of Nationality",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_arrivals___2015_",
+                    "name": "Number of Arrivals - 2015 ",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals___2016",
+                    "name": "Number of Arrivals - 2016",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals___2017",
+                    "name": "Number of Arrivals - 2017",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share___2015",
+                    "name": "Percentage Share - 2015",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share___2016",
+                    "name": "Percentage Share - 2016",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share___2017",
+                    "name": "Percentage Share - 2017",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change___2016_2015",
+                    "name": "Percentage Change - 2016\/2015",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change___2017_2016",
+                    "name": "Percentage Change - 2017\/2016",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "1aa15f5d-1750-4cd5-ba17-81688bce2e7e",
+            "title": "Year-wise Foreign Tourist Arrivals (FTAs) from 2016 to 2020",
+            "desc": "Year-wise Foreign Tourist Arrivals (FTAs) from 2016 to 2020",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "c985f76a-bd31-4309-a6f3-917cfa5d0d78",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1671943016,
+            "updated": 1671970965,
+            "created_date": "2022-12-25T05:36:56Z",
+            "updated_date": "2022-12-25T17:52:45Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "c985f76a-bd31-4309-a6f3-917cfa5d0d78",
+                "field": "1aa15f5d-1750-4cd5-ba17-81688bce2e7e"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "year",
+                    "name": "Year",
+                    "type": "double"
+                },
+                {
+                    "id": "ftas_in_india__in_million_",
+                    "name": "FTAs in India (in million)",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "63rnp3i67jwrakolha78f26ckvt6dcbb",
+            "title": "Foreign and Domestic Tourist Arrival between 1991-2010",
+            "desc": "Foreign and Domestic Tourist Arrival between 1991-2010",
+            "timestamp": 1535778709,
+            "created": 1535778709,
+            "updated": 1535778709,
+            "created_date": "2018-09-01T10:41:49Z",
+            "updated_date": "2018-09-01T10:41:49Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "76602781",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "year_foreign_tourist_ariivals_in_numbers_foreign_exchange_earnings_in_crores_foreign_exchange_earnings_in_usd_millions_domestic_tourist_visits_in_numbers",
+                    "name": "Year\tForeign Tourist Ariivals in Numbers\tForeign Exchange Earnings in Crores\tForeign Exchange Earnings in USD Millions\tDomestic Tourist Visits in Numbers",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "f44873c8-9988-4468-ac1d-07b0b887ea0d",
+            "title": "No. of Tourist Arrivals (Centre wise) in Tamil Nadu 2014",
+            "desc": "No. of Tourist Arrivals (Centre wise) in Tamil Nadu 2014",
+            "org_type": "State",
+            "org": [
+                "Tamil Nadu",
+                "Planning, Development and Special Initiatives Department, Tamil Nadu",
+                "Department of Economics and Statistics"
+            ],
+            "sector": [
+                "Statistics"
+            ],
+            "source": "tn.data.gov.in",
+            "catalog_uuid": "a77cb831-1a1b-4b0f-beaf-a03d5e08615d",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1538569663,
+            "updated": 1543516812,
+            "created_date": "2018-10-03T17:57:43Z",
+            "updated_date": "2018-11-30T00:10:12Z",
+            "target_bucket": {
+                "index": "tn_api",
+                "type": "a77cb831-1a1b-4b0f-beaf-a03d5e08615d",
+                "field": "f44873c8-9988-4468-ac1d-07b0b887ea0d"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.no",
+                    "type": "keyword"
+                },
+                {
+                    "id": "destination",
+                    "name": "Destination",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "double"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "double"
+                },
+                {
+                    "id": "_total",
+                    "name": "Total",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ],
+            "external_ws_url": "",
+            "external_ws": "0"
+        },
+        {
+            "index_name": "47892710-d5ef-4881-8eb8-4265f25fa2fe",
+            "title": "State\/UT-wise Domestic and Foreign Tourist Visits, 2019-20",
+            "desc": "State\/UT-wise Domestic and Foreign Tourist Visits, 2019-20",
+            "timestamp": 1653997301,
+            "created": "1653997281553",
+            "updated": 1653997319,
+            "created_date": "2022-05-31T17:11:41Z",
+            "updated_date": "2022-05-31T17:11:59Z",
+            "active": "1",
+            "visualizable": "1",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "source": "data.gov.in",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no__",
+                    "name": "S. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "states_uts_",
+                    "name": "States\/UTs *",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic__2019",
+                    "name": "Domestic -2019",
+                    "type": "double"
+                },
+                {
+                    "id": "foreign___2019",
+                    "name": "Foreign - 2019",
+                    "type": "double"
+                },
+                {
+                    "id": "domestic__2020",
+                    "name": "Domestic -2020",
+                    "type": "double"
+                },
+                {
+                    "id": "foreign___2020",
+                    "name": "Foreign - 2020",
+                    "type": "double"
+                },
+                {
+                    "id": "growth_rate___dtv_2020_19",
+                    "name": "Growth rate - DTV  2020\/19",
+                    "type": "keyword"
+                },
+                {
+                    "id": "growth_rate___ftv_2020_19",
+                    "name": "Growth rate - FTV 2020\/19",
+                    "type": "keyword"
+                }
+            ],
+            "target_bucket": {
+                "index": "api",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "47892710-d5ef-4881-8eb8-4265f25fa2fe"
+            }
+        },
+        {
+            "index_name": "37275256-1965-4f49-a88a-26c810cbb3fd",
+            "title": "Number of Tourist Visited In Himachal Pradesh during 2021",
+            "desc": "Number of Tourist Visited In Himachal Pradesh during 2021",
+            "org_type": "State",
+            "org": [
+                "Himachal Pradesh",
+                "Economics and Statistics Department, Himachal Pradesh"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "1273b005-8277-4e1e-958d-1b19c02828bf",
+            "visualizable": "0",
+            "active": "1",
+            "created": 1757822349,
+            "updated": 1757822349,
+            "created_date": "2025-09-14T05:59:09Z",
+            "updated_date": "2025-09-14T05:59:09Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "1273b005-8277-4e1e-958d-1b19c02828bf",
+                "field": "37275256-1965-4f49-a88a-26c810cbb3fd"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "state",
+                    "name": "State",
+                    "type": "keyword"
+                },
+                {
+                    "id": "district",
+                    "name": "District",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "double"
+                },
+                {
+                    "id": "foreigner",
+                    "name": "Foreigner",
+                    "type": "double"
+                },
+                {
+                    "id": "_total",
+                    "name": "Total",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "j58tbdppfmmpu2lhdve12o07mkobybcs",
+            "title": "Number of Tourist Arrivals Centrewise in Tamilnadu 2013",
+            "desc": "Number of Tourist Arrivals Centrewise in Tamilnadu 2013",
+            "timestamp": 1566990396,
+            "created": 1566990396,
+            "updated": 1566990396,
+            "created_date": "2019-08-28T16:36:36Z",
+            "updated_date": "2019-08-28T16:36:36Z",
+            "active": "0",
+            "visualizable": "1",
+            "user_id": "63135321",
+            "is_public": "0",
+            "public_type": "1",
+            "source": "visualize.data.gov.in",
+            "org_type": "User",
+            "field": [
+                {
+                    "id": "documents_id",
+                    "name": "documents_id",
+                    "type": "double"
+                },
+                {
+                    "id": "s_no",
+                    "name": "S.No",
+                    "type": "keyword"
+                },
+                {
+                    "id": "destination",
+                    "name": "Destination",
+                    "type": "keyword"
+                },
+                {
+                    "id": "domestic",
+                    "name": "Domestic",
+                    "type": "keyword"
+                },
+                {
+                    "id": "foreign",
+                    "name": "Foreign",
+                    "type": "keyword"
+                },
+                {
+                    "id": "total",
+                    "name": "Total",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "f68b8020-2312-456f-85a9-b80e3ae7e95c",
+            "title": "International Tourist Arrivals Worldwide and by Regions, 2018-2020",
+            "desc": "International Tourist Arrivals Worldwide and by Regions, 2018-2020",
+            "timestamp": 1652442260,
+            "created": "1652442244350",
+            "updated": 1652442299,
+            "created_date": "2022-05-13T17:14:20Z",
+            "updated_date": "2022-05-13T17:14:59Z",
+            "active": "1",
+            "visualizable": "1",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "source": "data.gov.in",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "region",
+                    "name": "Region",
+                    "type": "keyword"
+                },
+                {
+                    "id": "arrivals",
+                    "name": "Arrivals",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_arrivals_in_million___2018",
+                    "name": "(Arrivals in million)   - 2018",
+                    "type": "double"
+                },
+                {
+                    "id": "_arrivals_in_million___2019",
+                    "name": "(Arrivals in million)  - 2019",
+                    "type": "double"
+                },
+                {
+                    "id": "_arrivals_in_million___2020_",
+                    "name": "(Arrivals in million)   - 2020*",
+                    "type": "double"
+                }
+            ],
+            "target_bucket": {
+                "index": "api",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "f68b8020-2312-456f-85a9-b80e3ae7e95c"
+            }
+        },
+        {
+            "index_name": "6f81905b-5c66-458f-baa3-74f870de5cd0",
+            "title": "Nationality wise Foreign Tourist Arrivals in India, 2017-2021",
+            "desc": "Nationality wise Foreign Tourist Arrivals in India, 2017-2021",
+            "org_type": "Central",
+            "org": [
+                "Ministry of Tourism"
+            ],
+            "sector": [
+                "Travel and Tourism"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+            "visualizable": "0",
+            "active": "1",
+            "created": 1770719492,
+            "updated": 1770719492,
+            "created_date": "2026-02-10T11:31:32Z",
+            "updated_date": "2026-02-10T11:31:32Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "ac273ebc-aa3b-4d3d-8e1d-b89443412f96",
+                "field": "6f81905b-5c66-458f-baa3-74f870de5cd0"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "region",
+                    "name": "Region",
+                    "type": "keyword"
+                },
+                {
+                    "id": "country_of_nationality",
+                    "name": "Country of Nationality",
+                    "type": "keyword"
+                },
+                {
+                    "id": "number_of_arrivals_2017",
+                    "name": "Number of Arrivals-2017",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals_2018",
+                    "name": "Number of Arrivals-2018",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals_2019",
+                    "name": "Number of Arrivals-2019",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals_2020",
+                    "name": "Number of Arrivals-2020",
+                    "type": "double"
+                },
+                {
+                    "id": "number_of_arrivals_2021",
+                    "name": "Number of Arrivals-2021",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share____2018_17",
+                    "name": "Percentage Share  - 2018\/17",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share____2019_18",
+                    "name": "Percentage Share  - 2019\/18",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_share____2020_19",
+                    "name": "Percentage Share  - 2020\/19",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change___2021_20",
+                    "name": "Percentage Change - 2021\/20",
+                    "type": "double"
+                },
+                {
+                    "id": "percentage_change___2021",
+                    "name": "Percentage Change - 2021",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        },
+        {
+            "index_name": "5ddc626e-1727-4c28-a754-48724975828d",
+            "title": "State\/UT-wise number of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) during 2013 and 2014 (From: Ministry of Tourism)",
+            "desc": "State\/UT-wise number of Domestic Tourist Visits (DTVs) and Foreign Tourist Visits (FTVs) during 2013 and 2014 (From: Ministry of Tourism)",
+            "org_type": "Central",
+            "org": [
+                "Rajya Sabha"
+            ],
+            "sector": [
+                "All"
+            ],
+            "source": "data.gov.in",
+            "catalog_uuid": "a9717039-f79b-4436-ba54-08f2fdc67841",
+            "visualizable": "1",
+            "active": "1",
+            "created": 1701970831,
+            "updated": 1702009022,
+            "created_date": "2023-12-07T18:40:31Z",
+            "updated_date": "2023-12-08T09:47:02Z",
+            "external_ws": 0,
+            "external_ws_url": "",
+            "target_bucket": {
+                "index": "api",
+                "type": "a9717039-f79b-4436-ba54-08f2fdc67841",
+                "field": "5ddc626e-1727-4c28-a754-48724975828d"
+            },
+            "field": [
+                {
+                    "id": "document_id",
+                    "name": "document_id",
+                    "type": "double"
+                },
+                {
+                    "id": "sl__no_",
+                    "name": "Sl. No.",
+                    "type": "keyword"
+                },
+                {
+                    "id": "state_ut",
+                    "name": "State\/UT",
+                    "type": "keyword"
+                },
+                {
+                    "id": "_2013___dtvs",
+                    "name": "2013 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2013___ftvs",
+                    "name": "2013 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2014___dtvs",
+                    "name": "2014 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "_2014___ftvs",
+                    "name": "2014 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "growth_2014_13___dtvs",
+                    "name": "Growth 2014\/13 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "growth_2014_13___ftvs",
+                    "name": "Growth 2014\/13 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "rank_2014___dtvs",
+                    "name": "Rank 2014 - DTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "rank_2014___ftvs",
+                    "name": "Rank 2014 - FTVs",
+                    "type": "double"
+                },
+                {
+                    "id": "resource_uuid",
+                    "name": "resource_uuid",
+                    "type": "keyword"
+                }
+            ]
+        }
+    ],
+    "params": {
+        "index": "data_resource",
+        "type": "resource",
+        "body": {
+            "size": "60",
+            "from": "0",
+            "query": {
+                "bool": {
+                    "must_not": [
+                        {
+                            "term": {
+                                "active": 2
+                            }
+                        },
+                        {
+                            "term": {
+                                "type": "catalog"
+                            }
+                        }
+                    ],
+                    "must": [
+                        {
+                            "match": {
+                                "title": "Tourist"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

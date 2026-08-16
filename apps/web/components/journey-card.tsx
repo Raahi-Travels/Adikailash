@@ -26,11 +26,23 @@ const FAMILY_LABEL: Record<string, string> = {
   ground_services: "Ground services",
 };
 
+/**
+ * Sentence case rather than the small uppercase tracked label this used to use.
+ * Three facts on each of three cards made nine wide-tracked micro-labels on one
+ * screen, which is the templated rhythm doc 02 warns against and which reads as
+ * scaffolding rather than information.
+ */
 function Fact({ label, value }: { label: string; value: string | null }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-[0.1em] text-ink-inverse/45">{label}</dt>
-      <dd className={value ? "mt-1 text-sm" : "mt-1 text-sm text-ink-inverse/45"}>
+      <dt className="text-sm text-tone-muted">{label}</dt>
+      <dd
+        className={
+          value
+            ? "type-reading mt-0.5 text-[15px] text-tone-strong"
+            : "mt-0.5 text-[15px] text-tone-muted"
+        }
+      >
         {value ?? "To be confirmed"}
       </dd>
     </div>
@@ -48,9 +60,14 @@ export function JourneyCard({ journey }: { journey: JourneySummary }) {
         className="mb-6 transition-transform duration-500 group-hover:scale-[1.01]"
       />
 
-      <p className="text-sm text-gold">{FAMILY_LABEL[journey.family] ?? journey.family}</p>
+      {/* Was gold. Gold sits at roughly 2.3:1 on the light register, so as text it
+          fails the body minimum; it stays on this card as the link underline, where
+          it points without having to be read. */}
+      <p className="text-sm text-tone-muted">
+        {FAMILY_LABEL[journey.family] ?? journey.family}
+      </p>
 
-      <h3 className="mt-2 font-serif text-2xl leading-snug text-ink-inverse">
+      <h3 className="mt-2 font-serif text-2xl leading-snug text-tone-strong">
         <Link
           href={`/journeys/${journey.slug}`}
           className="after:absolute after:inset-0 focus-visible:outline-none"
@@ -60,12 +77,12 @@ export function JourneyCard({ journey }: { journey: JourneySummary }) {
       </h3>
 
       {journey.essence && (
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           {journey.essence}
         </p>
       )}
 
-      <dl className="mt-6 grid grid-cols-3 gap-4 text-ink-inverse/85">
+      <dl className="mt-6 grid grid-cols-3 gap-4">
         <Fact
           label="Nights"
           value={journey.duration_nights ? String(journey.duration_nights) : null}
@@ -81,7 +98,7 @@ export function JourneyCard({ journey }: { journey: JourneySummary }) {
 
       <Link
         href={`/journeys/${journey.slug}`}
-        className="mt-6 inline-flex w-fit items-center gap-2 text-sm text-gold transition-transform group-hover:translate-x-0.5"
+        className="mt-6 inline-flex w-fit items-center gap-2 text-sm font-medium text-tone-strong underline decoration-gold decoration-2 underline-offset-4 transition-transform group-hover:translate-x-0.5"
       >
         Explore this journey
         <svg viewBox="0 0 16 16" className="size-4" aria-hidden="true" fill="none">

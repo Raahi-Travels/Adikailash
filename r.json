@@ -1,0 +1,76 @@
+{
+    "index_name": "c54f6a44-06f5-4529-b554-83e438c887b4",
+    "title": "Year-wise Data of Domestic Tourist Visits (DTVs) & Foreign Tourist Visits (FTVs) in Uttrakhand from 2020 to 2022 ",
+    "desc": "Year-wise Data of Domestic Tourist Visits (DTVs) & Foreign Tourist Visits (FTVs) in Uttrakhand from 2020 to 2022 ",
+    "org_type": "Central",
+    "org": [
+        "Rajya Sabha"
+    ],
+    "sector": [
+        "All"
+    ],
+    "source": "data.gov.in",
+    "catalog_uuid": "ee69ffd5-5bab-4b16-8f55-30ec0b3e4918",
+    "visualizable": "1",
+    "active": "1",
+    "created": 1711111742,
+    "updated": 1711521295,
+    "created_date": "2024-03-22T13:49:02Z",
+    "updated_date": "2024-03-27T12:04:55Z",
+    "external_ws": 0,
+    "external_ws_url": "",
+    "target_bucket": {
+        "index": "api",
+        "type": "ee69ffd5-5bab-4b16-8f55-30ec0b3e4918",
+        "field": "c54f6a44-06f5-4529-b554-83e438c887b4"
+    },
+    "field": [
+        {
+            "id": "_sl__no_",
+            "name": "Sl. No.",
+            "type": "double"
+        },
+        {
+            "id": "year",
+            "name": "Year",
+            "type": "double"
+        },
+        {
+            "id": "dtv",
+            "name": "DTV",
+            "type": "double"
+        },
+        {
+            "id": "ftv",
+            "name": "FTV",
+            "type": "double"
+        }
+    ],
+    "message": "Resource lists",
+    "version": "2.2.0",
+    "status": "ok",
+    "total": 3,
+    "count": 3,
+    "limit": 10,
+    "offset": "0",
+    "records": [
+        {
+            "_sl__no_": 1,
+            "year": 2020,
+            "dtv": 7005264,
+            "ftv": 41339
+        },
+        {
+            "_sl__no_": 2,
+            "year": 2021,
+            "dtv": 19434475,
+            "ftv": 8532
+        },
+        {
+            "_sl__no_": 3,
+            "year": 2022,
+            "dtv": 54642559,
+            "ftv": 61561
+        }
+    ]
+}

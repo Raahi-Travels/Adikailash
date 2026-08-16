@@ -51,10 +51,109 @@
   --color-status-done: #4a5560; /* completed */
   --color-status-unverified: #7a7466; /* unverified or stale */
 
+  /**
+   * Terrain hairlines. Gold is guidance, so the contour field has to sit well below
+   * the CTA in the visual hierarchy or it starts competing with the one thing on the
+   * page a visitor is meant to press.
+   */
+  --color-contour: oklch(0.72 0.09 76 / 0.12);
+
+  /**
+   * The warm light the light register inherits from its photography. Used for
+   * gradient scrims over dawn imagery, never as a page background: warmth on this
+   * site comes from photographs and gold, and a cream body background is the reflex
+   * that makes every premium-consumer page look like every other one.
+   */
+  --color-dawn: oklch(0.9 0.05 72);
+
   /* Typography — doc 02: high-contrast serif for editorial, clean sans for UI.
-     Devanagari is a first-class layout, not a smaller translation. */
-  --font-serif: var(--font-heading), "Noto Serif Devanagari", Georgia, serif;
-  --font-sans: var(--font-interface), "Noto Sans Devanagari", system-ui, sans-serif;
+     Both families cover Devanagari and Latin, so there is no fallback face and a
+     Hindi page is the same design rather than a substitution. */
+  --font-serif: var(--font-heading), Georgia, serif;
+  --font-sans: var(--font-interface), system-ui, sans-serif;
+
+  /**
+   * Register-relative colours. These resolve through `--tone-*`, which `.register-*`
+   * below sets, so `text-tone-body` means "body text in whichever register this
+   * section is" rather than a fixed colour. Components stop hardcoding the dark
+   * theme and can appear in either.
+   */
+  --color-tone-strong: var(--tone-strong);
+  --color-tone-body: var(--tone-body);
+  --color-tone-muted: var(--tone-muted);
+  --color-tone-line: var(--tone-line);
+}
+
+/**
+ * The two registers.
+ *
+ * **Navy carries what we have verified. Off-white carries what we are offering.**
+ *
+ * Live route state, permits, altitude and weather are dark; journeys, homestays and
+ * reading are light. This is why the home page opens dark and turns light, and why
+ * the route instrument at its foot returns to navy. It is not alternation for
+ * variety, it is the same line the API already draws between a timestamped reading
+ * and a piece of marketing copy, made visible. It also settles which page gets which
+ * treatment: `/status` and `/trip` are dark throughout, `/journeys` and `/plan` are
+ * light throughout.
+ *
+ * The muted tones are deliberately not the usual light grey. Doc 02 requires body
+ * copy to stay comfortable for older travellers, and the commonest way to fail that
+ * is a 3:1 grey that looked elegant on a designer's monitor. Both `--tone-body`
+ * values clear 4.5:1 against their own surface, and `--tone-muted` clears it too, so
+ * even the quietest text on the page is readable rather than decorative.
+ */
+@layer base {
+  .register-dark {
+    --tone-strong: var(--color-ink-inverse);
+    --tone-body: oklch(0.87 0.008 90);
+    --tone-muted: oklch(0.72 0.008 90);
+    --tone-line: oklch(1 0 0 / 0.12);
+    background-color: var(--color-midnight);
+    color: var(--tone-strong);
+  }
+
+  .register-light {
+    --tone-strong: var(--color-ink);
+    --tone-body: oklch(0.38 0.014 240);
+    --tone-muted: oklch(0.52 0.012 240);
+    --tone-line: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--tone-strong);
+  }
+}
+
+/**
+ * Type scale. One place, so a section cannot quietly invent a size.
+ *
+ * The display ceiling is 5.5rem rather than the 4rem the page used before, and the
+ * tracking floor is -0.02em. Eczar has enough stroke contrast that tighter tracking
+ * closes its counters at hero size.
+ */
+@layer components {
+  .type-display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .type-section {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(1.875rem, 3.5vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  /* Readings, altitudes and timestamps sit in columns and must not jitter. */
+  .type-reading {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 }
 
 :root {
