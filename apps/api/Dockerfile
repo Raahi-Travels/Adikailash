@@ -4,10 +4,11 @@
 # cab platform. Kept deliberately small: that box was at 82% disk when this was
 # written, so the build stage is discarded and only the virtualenv is carried over.
 #
-# Migrations are NOT run on container start. With more than one replica that races,
-# and a failed migration would take the API down with it. Run them as Coolify's
-# pre-deployment command instead:
-#     uv run alembic upgrade head
+# Migrations run at container start, via `api.migrate` under a Postgres advisory
+# lock. They used to be Coolify's pre-deployment command, which runs inside the
+# *previously running* container — an image that does not contain the migrations it
+# is being asked to apply. That deadlocked the deploy completely once the shared
+# database moved ahead of the deployed image. See `src/api/migrate.py`.
 
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 
@@ -47,6 +48,7 @@ COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --from=builder --chown=app:app /app/src /app/src
 COPY --from=builder --chown=app:app /app/alembic /app/alembic
 COPY --from=builder --chown=app:app /app/alembic.ini /app/alembic.ini
+COPY --chown=app:app docker-entrypoint.sh /app/docker-entrypoint.sh
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
@@ -63,4 +65,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
 
 # Two workers: the box is shared and the workload is IO-bound on Postgres, so more
 # workers would mostly consume Supabase connections rather than add throughput.
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
