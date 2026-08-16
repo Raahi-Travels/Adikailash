@@ -1,0 +1,71 @@
+name: Deploy API
+
+# Coolify cannot be reached from the internet: its API is on port 8000 and Hostinger's
+# cloud firewall blocks it upstream of the box (ufw is inactive and iptables ACCEPTs,
+# so the block is not on the host). That is why no application on that instance has
+# ever deployed from a webhook — every deployment record shows is_webhook = false.
+#
+# The obvious fixes were both worse. Opening 8000 needs the Hostinger panel. Giving
+# Coolify its own FQDN means regenerating proxy configuration on a box that serves
+# Raahi's production and several other products, which docs/DEPLOY.md warns against
+# in as many words.
+#
+# So the deploy comes to the VPS instead of the VPS being exposed. The SSH key used
+# here is pinned in authorized_keys to a forced command that can do exactly one thing:
+# call Coolify's deploy endpoint on localhost. It cannot open a shell, forward a port
+# or read a file — verified by trying. That matters because the private half lives in
+# a public repository's secrets.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Only when something the API image contains actually changed. A web-only commit
+      # rebuilding a 354 MB Python image wastes several minutes and disk on a box that
+      # was at 82% when this was written.
+      - "apps/api/**"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+concurrency:
+  # One deploy at a time. Two overlapping builds would both run migrations; the
+  # advisory lock in api.migrate makes that safe rather than merely unlikely, but
+  # queueing is still the right behaviour.
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Trigger the Coolify deployment
+        env:
+          KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          # StrictHostKeyChecking=no rather than a pinned fingerprint: the forced
+          # command means a hostile host could learn nothing and do nothing with this
+          # key beyond triggering a build of a public repository.
+          ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=20 "root@$HOST" | tee response.json
+          grep -q "deployment queued" response.json
+
+      - name: Wait for the new code to be live
+        run: |
+          # Confirming rather than assuming. A queued deploy is not a finished one,
+          # and the failure this repo actually hit was a build that aborted while the
+          # old container kept happily serving stale code and a healthy /health.
+          API="https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io"
+          for i in $(seq 1 30); do
+            n=$(curl -fsS --max-time 10 "$API/openapi.json" 2>/dev/null \
+                | python3 -c "import sys,json;print(len(json.load(sys.stdin)['paths']))" 2>/dev/null || echo 0)
+            echo "attempt $i: $n paths live"
+            if [ "$n" -ge 70 ]; then echo "deployed"; exit 0; fi
+            sleep 20
+          done
+          echo "::error::API did not come up with the expected surface. Check Coolify's deployment logs."
+          exit 1
