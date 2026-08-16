@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import UTC, datetime
+from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -134,6 +135,68 @@ ALTITUDES: list[tuple[str, int, bool, str]] = [
         "sourced; the peak itself is not. Withheld from the public profile",
     ),
 ]
+
+
+# ---------------------------------------------------------------------------
+# Coordinates
+# ---------------------------------------------------------------------------
+
+#: (slug, latitude, longitude, note)
+#:
+#: **These are approximate and the note says so on every row.** They are settlement
+#: centroids to roughly a kilometre, not surveyed positions, and nothing on the site
+#: presents them as a location. They exist to ask a weather model about the right
+#: valley and to test whether a disaster alert's polygon contains a place.
+#:
+#: A kilometre of horizontal error costs little here because the elevation passed
+#: alongside is what drives the temperature; landing in the wrong valley would cost a
+#: great deal, since the Kuti and Lipulekh arms are about 8 km apart and 300 m
+#: different in height. So each was checked against the Copernicus 90 m DEM through
+#: Open-Meteo's elevation endpoint on 17 Aug 2026 and compared with the altitude we
+#: hold. Every gap fell inside the correctable band, which rules out the wrong-valley
+#: failure. The two ridge sites are noted: a 90 m DEM cell on a steep hillside
+#: averages across hundreds of metres of relief, so a large gap there reflects the
+#: terrain model rather than a bad coordinate.
+COORDINATES: list[tuple[str, float, float, str]] = [
+    ("kathgodam", 29.2667, 79.5333, "Approximate settlement centroid. DEM gap +327 m"),
+    (
+        "kainchi-dham",
+        29.4167,
+        79.5500,
+        "Approximate, low confidence. DEM gap +765 m on a steep hillside",
+    ),
+    (
+        "kasar-devi",
+        29.6444,
+        79.6389,
+        "Approximate, low confidence. Ridge-top temple, DEM gap -884 m",
+    ),
+    ("jageshwar", 29.6333, 79.8500, "Approximate settlement centroid. DEM gap +64 m"),
+    ("munsiyari", 30.0667, 80.2333, "Approximate settlement centroid. DEM gap +62 m"),
+    ("pithoragarh", 29.5833, 80.2167, "Approximate town centroid. DEM gap -67 m"),
+    ("dharchula", 29.8478, 80.5333, "Approximate town centroid. DEM gap +168 m"),
+    ("gunji", 30.2167, 80.8000, "Approximate settlement centroid. DEM gap +317 m"),
+    ("nabhidhang", 30.2833, 80.9000, "Approximate. Valley floor below the viewpoint"),
+    ("adi-kailash", 30.3167, 80.7833, "Approximate. Jyolingkong, the base, not the peak"),
+    ("om-parvat", 30.3000, 80.9167, "Approximate. The massif, not a standing point"),
+]
+
+
+async def _apply_coordinates(session: AsyncSession) -> int:
+    changed = 0
+    for slug, latitude, longitude, note in COORDINATES:
+        destination = await session.scalar(
+            select(Destination).where(Destination.slug == slug)
+        )
+        if destination is None:
+            print(f"  ! no destination {slug}, skipped")
+            continue
+        destination.latitude = Decimal(str(latitude))
+        destination.longitude = Decimal(str(longitude))
+        destination.coordinate_source = note
+        print(f"  {slug:16} {latitude:>9.4f} {longitude:>9.4f}")
+        changed += 1
+    return changed
 
 
 async def _apply_altitudes(session: AsyncSession) -> int:
@@ -493,13 +556,15 @@ async def _apply_guides(session: AsyncSession) -> int:
 
 async def seed_researched() -> None:
     async with SessionLocal() as session:
-        print("Altitudes:")
+        print("Coordinates:")
+        coordinates = await _apply_coordinates(session)
+        print("\nAltitudes:")
         altitudes = await _apply_altitudes(session)
         print("\nGuides:")
         guides = await _apply_guides(session)
         await session.commit()
 
-    print(f"\n{altitudes} destination(s), {guides} guide(s).")
+    print(f"\n{coordinates} coordinate(s), {altitudes} altitude(s), {guides} guide(s).")
     print(
         "Route statuses untouched on purpose: a verification means a named person "
         "checked, and no amount of research can produce one."

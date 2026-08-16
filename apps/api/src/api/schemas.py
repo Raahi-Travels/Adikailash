@@ -1721,3 +1721,32 @@ class PartnerTokenOut(BaseModel):
     #: Shown once. There is no endpoint that can return it again.
     token: str | None = None
     expires_at: datetime | None = None
+
+
+class LiveSourceOut(BaseModel):
+    """One outside source's last answer.
+
+    `payload` is intentionally untyped. Each source answers a different question and
+    forcing them into a common shape would either lose detail or invent fields; the
+    consumer knows which source it asked for. What *is* uniform is the honesty
+    metadata, which is the part a UI must never be free to omit.
+    """
+
+    source: str
+    payload: dict[str, Any]
+    fetched_at: datetime
+    #: Derived at read time from `fetched_at`, never stored.
+    is_stale: bool
+    #: Set when the last attempt failed. The payload is then the previous answer,
+    #: which is why `is_stale` and this are both present and both matter.
+    last_error: str | None = None
+    source_url: str | None = None
+
+
+class LiveSourcesOut(BaseModel):
+    permit_portal: LiveSourceOut | None = None
+    road_register: LiveSourceOut | None = None
+    hazard_alerts: LiveSourceOut | None = None
+    bed_availability: LiveSourceOut | None = None
+    #: Travels with the data so a UI cannot render the readings without the caveat.
+    coverage_note: str

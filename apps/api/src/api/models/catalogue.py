@@ -100,6 +100,21 @@ class Destination(Base, TimestampMixin):
     altitude_verified: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default=text("false")
     )
+
+    #: WGS84 decimal degrees. Needed to ask a weather model about this place and to
+    #: test whether a disaster alert's polygon contains it.
+    #:
+    #: Six decimal places is far more precision than the source of these has, and
+    #: that is deliberate: the column stores what was given without rounding away
+    #: somebody else's significant figures, and `coordinate_source` carries how good
+    #: it actually is. On this route a kilometre of horizontal error matters much
+    #: less than it looks, because the elevation passed alongside is what drives the
+    #: temperature correction, but it matters a great deal for landing in the right
+    #: valley at all: the Kuti and Lipulekh arms are 8 km apart and 300 m different.
+    latitude: Mapped[float | None] = mapped_column(Numeric(9, 6))
+    longitude: Mapped[float | None] = mapped_column(Numeric(9, 6))
+    coordinate_source: Mapped[str | None] = mapped_column(String(300))
+
     is_published: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("false"), nullable=False
     )

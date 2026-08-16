@@ -43,6 +43,7 @@ from api.models.leads import (
     LeadConsent,
 )
 from api.routers.advocacy import attribute_referral
+from api.models.live import LiveReading, LiveSource
 from api.models.operations import Departure, RouteSegment, StatusUpdate
 from api.models.weather import WeatherSnapshot
 from api.schemas import (
@@ -64,6 +65,8 @@ from api.schemas import (
     StatusOut,
     StayOut,
     WeatherOut,
+    LiveSourceOut,
+    LiveSourcesOut,
 )
 
 router = APIRouter(tags=["public"])
@@ -689,4 +692,51 @@ async def route_history(slug: str, session: SessionDep, locale: LocaleDep):
             )
             for w in pattern.weeks
         ],
+    )
+
+
+@router.get("/live", response_model=LiveSourcesOut)
+async def live_sources(session: SessionDep):
+    """What outside sources last told us, with how old each answer is.
+
+    Separate from `/status` on purpose. That endpoint reports what *our* coordinators
+    verified; this one reports what other people publish. Merging them would put a
+    scraped government table and a person who drove the road behind the same words,
+    and doc 08 is explicit that third-party data must not be labelled authoritative
+    without defined verification.
+
+    Every entry carries `is_stale` derived at read time, and the permit portal's own
+    notice is passed through verbatim rather than paraphrased, because a paraphrase of
+    "suspended until further orders" is a liability.
+    """
+    rows = list(await session.scalars(select(LiveReading)))
+    by_source = {row.source: row for row in rows}
+
+    def entry(source: LiveSource) -> LiveSourceOut | None:
+        row = by_source.get(source)
+        if row is None:
+            return None
+        return LiveSourceOut(
+            source=source.value,
+            payload=row.payload,
+            fetched_at=row.fetched_at,
+            is_stale=row.is_stale(),
+            last_error=row.last_error,
+            source_url=row.source_url,
+        )
+
+    return LiveSourcesOut(
+        permit_portal=entry(LiveSource.PERMIT_PORTAL),
+        road_register=entry(LiveSource.ROAD_REGISTER),
+        hazard_alerts=entry(LiveSource.HAZARD_ALERTS),
+        bed_availability=entry(LiveSource.BED_AVAILABILITY),
+        # Stated on the response rather than left to each consumer to remember.
+        # This is the single most important caveat on the whole route and it is one
+        # a UI will otherwise quietly drop.
+        coverage_note=(
+            "No official source reports road status above Tawaghat, and no weather "
+            "station exists anywhere on this route. Everything here is either a "
+            "government portal's own words or a model's output, never an "
+            "observation."
+        ),
     )

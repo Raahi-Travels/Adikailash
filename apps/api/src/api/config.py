@@ -64,6 +64,21 @@ class Settings(BaseSettings):
     # until decision O7 settles a domain.
     public_site_origin: str = Field(default="", alias="PUBLIC_SITE_ORIGIN")
 
+    # --- Outside data sources ---
+    #
+    # Open-Meteo's free tier is licensed for non-commercial use only, and a paid key
+    # moves requests to a different host. Both are settings rather than constants
+    # because which one applies is a commercial decision, and because the day the
+    # business starts charging for journeys is the day the free tier stops being the
+    # right thing to be using. Empty key means the free host, which is correct for
+    # everything up to launch.
+    open_meteo_api_key: str = Field(default="", alias="OPEN_METEO_API_KEY")
+    open_meteo_host: str = Field(default="", alias="OPEN_METEO_HOST")
+
+    #: Guards every outside fetch. Set false to make the app stop calling anyone,
+    #: which is what you want if a provider starts misbehaving and you cannot deploy.
+    live_sources_enabled: bool = Field(default=True, alias="LIVE_SOURCES_ENABLED")
+
     # --- Assistant (doc 08's AI layer) ---
     #
     # Empty means the assistant runs retrieval-only: it still finds and cites approved
