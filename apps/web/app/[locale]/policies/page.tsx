@@ -36,11 +36,11 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
   return (
     <main
       id="main"
-      className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+      className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
     >
       <div className="mx-auto max-w-3xl">
         <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Policies</h1>
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
           Written to be read before you book rather than quoted back at you afterwards.
           Where something is genuinely not decided yet, it says so instead of sounding
           decided.
@@ -53,10 +53,10 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
               <Link
                 key={slug}
                 href={`/policies/${slug}`}
-                className="group block border-t border-white/12 py-7 transition-colors hover:bg-white/[0.03]"
+                className="group block border-t border-tone-line py-7 transition-colors hover:bg-ink/[0.03]"
               >
                 <div className="flex items-baseline gap-4">
-                  <h2 className="font-serif text-2xl transition-colors group-hover:text-gold">
+                  <h2 className="font-serif text-2xl transition-colors group-hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
                     {doc.title}
                   </h2>
                   {!doc.reviewed && (
@@ -64,9 +64,9 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
                       Draft
                     </span>
                   )}
-                  <ArrowRight className="ml-auto size-5 shrink-0 self-center text-ink-inverse/30 transition-all group-hover:translate-x-1 group-hover:text-gold" />
+                  <ArrowRight className="ml-auto size-5 shrink-0 self-center text-tone-strong/30 transition-all group-hover:translate-x-1 group-hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4" />
                 </div>
-                <p className="mt-3 max-w-[64ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                <p className="mt-3 max-w-[64ch] text-[15px] leading-relaxed text-tone-body">
                   {doc.inShort}
                 </p>
               </Link>
@@ -74,7 +74,7 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
           })}
         </div>
 
-        <p className="mt-14 border-t border-white/12 pt-8 text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-14 border-t border-tone-line pt-8 text-sm leading-relaxed text-tone-muted">
           If anything here is unclear, ask us before you book rather than after. A
           policy you had to interpret is a policy we wrote badly, and we would like to
           know.

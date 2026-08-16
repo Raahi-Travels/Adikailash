@@ -42,14 +42,25 @@
    * Status system — doc 02 requires a consistent set, and doc 03 requires that
    * status is never communicated by colour alone. Every badge using these MUST
    * also carry a text label, and a timestamp where the status is time-bound.
+   *
+   * **These are pointers, not values.** Each resolves through a `--status-*`
+   * variable that `.register-dark` and `.register-light` set, so `text-status-open`
+   * means "open, in whichever register this element sits" and every component gets
+   * the right one without knowing which page it is on.
+   *
+   * The indirection exists because the doc 02 values are drawn for a light
+   * background and several are unreadable on navy. Open-teal `#2d5d5f` measures
+   * 2.32:1 against `#0b1d2d`, less than half the 4.5:1 body minimum, and it was the
+   * colour of the word "Open" on the status page. The literal values live in
+   * `.register-light` below, beside the lifted variants for dark.
    */
-  --color-status-open: #2d5d5f; /* open / available */
-  --color-status-limited: #a86632; /* limited / conditional / permit pending */
-  --color-status-waitlist: #5a6770; /* waitlist */
-  --color-status-suspended: #8c2f2f; /* suspended / sold out */
-  --color-status-changed: #6b4fa8; /* rescheduled */
-  --color-status-done: #4a5560; /* completed */
-  --color-status-unverified: #7a7466; /* unverified or stale */
+  --color-status-open: var(--status-open);
+  --color-status-limited: var(--status-limited);
+  --color-status-waitlist: var(--status-waitlist);
+  --color-status-suspended: var(--status-suspended);
+  --color-status-changed: var(--status-changed);
+  --color-status-done: var(--status-done);
+  --color-status-unverified: var(--status-unverified);
 
   /**
    * Terrain hairlines. Gold is guidance, so the contour field has to sit well below
@@ -109,6 +120,29 @@
     --tone-body: oklch(0.87 0.008 90);
     --tone-muted: oklch(0.72 0.008 90);
     --tone-line: oklch(1 0 0 / 0.12);
+
+    /**
+     * Status colours, lifted for this background.
+     *
+     * The palette values are tuned for the light register and several of them are
+     * unreadable on navy: `#2d5d5f` open-teal measures **2.32:1** against
+     * `#0b1d2d`, less than half the 4.5:1 body minimum, and limited and unverified
+     * both land near 3.7:1. Every one of those was being used as the text of a
+     * status label, which is precisely the text a reader most needs.
+     *
+     * Each is the same hue at reduced chroma and raised lightness, taken to the
+     * first value clearing 4.6:1, so a segment reads as the same colour it does on
+     * a light page without being a decorative smudge on a dark one. The dot and the
+     * word therefore share a token and both stay legible.
+     */
+    --status-open: oklch(0.611 0.048 199);
+    --status-limited: oklch(0.623 0.099 56.5);
+    --status-waitlist: oklch(0.616 0.02 238);
+    --status-suspended: oklch(0.633 0.117 24);
+    --status-changed: oklch(0.63 0.127 295.5);
+    --status-done: oklch(0.619 0.021 248);
+    --status-unverified: oklch(0.615 0.02 87.6);
+
     background-color: var(--color-midnight);
     color: var(--tone-strong);
   }
@@ -118,9 +152,37 @@
     --tone-body: oklch(0.38 0.014 240);
     --tone-muted: oklch(0.52 0.012 240);
     --tone-line: var(--color-border);
+
+    /* The doc 02 values, which are drawn for exactly this background. */
+    --status-open: #2d5d5f;
+    --status-limited: #a86632;
+    --status-waitlist: #5a6770;
+    --status-suspended: #8c2f2f;
+    --status-changed: #6b4fa8;
+    --status-done: #4a5560;
+    --status-unverified: #7a7466;
+
     background-color: var(--color-surface);
     color: var(--tone-strong);
   }
+}
+
+/**
+ * Fallback for anything rendering outside a register, so a status colour is never
+ * undefined. Matches the light register, which is the page default.
+ */
+:root {
+  --tone-strong: var(--color-ink);
+  --tone-body: oklch(0.38 0.014 240);
+  --tone-muted: oklch(0.52 0.012 240);
+  --tone-line: var(--color-border);
+  --status-open: #2d5d5f;
+  --status-limited: #a86632;
+  --status-waitlist: #5a6770;
+  --status-suspended: #8c2f2f;
+  --status-changed: #6b4fa8;
+  --status-done: #4a5560;
+  --status-unverified: #7a7466;
 }
 
 /**

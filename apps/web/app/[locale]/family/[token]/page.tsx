@@ -92,7 +92,7 @@ export default async function FamilyPage({
   const currentDay = view.days.find((d) => d.on_date === today);
 
   return (
-    <main id="main" data-quiet-page className="flex-1 bg-midnight px-4 py-14 text-ink-inverse sm:px-6 sm:py-16">
+    <main id="main" data-quiet-page className="flex-1 register-dark px-4 py-14 text-ink-inverse sm:px-6 sm:py-16">
       <div className="mx-auto max-w-2xl">
         {/*
           Named, deliberately. This page is opened from a forwarded link and asks a
@@ -202,7 +202,7 @@ export default async function FamilyPage({
           </ol>
           <p className="mt-4 text-xs leading-relaxed text-ink-inverse/45">
             Days change. The road decides, and the coordinator will move things around
-            for weather or altitude without asking anybody first — that is the right
+            for weather or altitude without asking anybody first. That is the right
             call to make on the ground.
           </p>
         </section>

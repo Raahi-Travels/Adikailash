@@ -32,10 +32,16 @@ export function StagingNotice() {
       // Not marked `data-site-chrome`: the trip companion and family share pages hide
       // that, and those are the two pages where a reader is most likely to act on
       // what they see. `print:hidden` keeps it off the trip pack.
-      className="bg-status-limited/15 px-4 py-1.5 text-center text-xs leading-relaxed text-ink-inverse/75 print:hidden"
+      //
+      // Carries `register-dark` rather than inheriting. It sits above the header, so
+      // its background came from `<body>` and it would have rendered near-white text
+      // on a pale tint the moment a light-register page changed what was underneath
+      // it. A warning nobody can read is worse than no warning, so it states its own
+      // register instead of trusting whatever it lands on.
+      className="register-dark bg-status-limited/20 px-4 py-1.5 text-center text-xs leading-relaxed text-tone-body print:hidden"
     >
       Test site. Route status and photographs here are placeholders, not verified
-      information — please do not plan travel from anything on this page.
+      information. Please do not plan travel from anything on this page.
     </p>
   );
 }

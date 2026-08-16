@@ -234,11 +234,21 @@ export function legStatus(
   return null;
 }
 
+/**
+ * Register-aware, which matters more than it looks.
+ *
+ * These resolve through `--status-*`, set by `.register-dark` and `.register-light`
+ * in globals.css, rather than pointing straight at the palette. The palette values
+ * are drawn for a light background: open-teal `#2d5d5f` measures 2.32:1 against the
+ * navy, well under half the body minimum, and it was being used as the text of the
+ * word "Open". The dark register lifts each hue to a readable lightness, so the same
+ * token is legible in both places.
+ */
 export const STATE_COLOUR: Record<LegState, string> = {
-  open: "var(--color-status-open)",
-  caution: "var(--color-status-limited)",
-  closed: "var(--color-status-suspended)",
-  unknown: "var(--color-status-unverified)",
+  open: "var(--status-open)",
+  caution: "var(--status-limited)",
+  closed: "var(--status-suspended)",
+  unknown: "var(--status-unverified)",
 };
 
 const PLAIN: Record<LegState, string> = {

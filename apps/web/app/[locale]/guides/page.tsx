@@ -74,18 +74,18 @@ const CLUSTER_ORDER: { key: string; label: string; blurb: string }[] = [
 function Entry({ article }: { article: ArticleSummary }) {
   const stale = article.freshness === "stale";
   return (
-    <li className="border-t border-white/12 py-6">
+    <li className="border-t border-tone-line py-6">
       <div className="flex flex-wrap items-baseline gap-x-3">
         <h3 className="font-serif text-xl leading-snug">
           <Link
             href={`/guides/${article.slug}`}
-            className="transition-colors hover:text-gold"
+            className="transition-colors hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4"
           >
             {article.title}
           </Link>
         </h3>
         {article.is_pillar && (
-          <span className="text-xs uppercase tracking-[0.12em] text-gold/80">
+          <span className="text-xs uppercase tracking-[0.12em] text-tone-strong underline decoration-gold decoration-2 underline-offset-4/80">
             Full guide
           </span>
         )}
@@ -100,11 +100,11 @@ function Entry({ article }: { article: ArticleSummary }) {
           </span>
         )}
       </div>
-      <p className="mt-2 max-w-[68ch] text-[15px] leading-relaxed text-ink-inverse/75">
+      <p className="mt-2 max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
         {article.answer}
       </p>
       {article.author && (
-        <p className="mt-2 text-sm text-ink-inverse/45">{article.author}</p>
+        <p className="mt-2 text-sm text-tone-muted">{article.author}</p>
       )}
     </li>
   );
@@ -126,11 +126,11 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
   return (
     <main
       id="main"
-      className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+      className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
     >
       <div className="mx-auto max-w-3xl">
         <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Guides</h1>
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
           What we know about this road. Every guide carries the name of the person who
           wrote it, the person who checked it, and the date they did. Anything past its
           re-check date says so, because a confident page about a mountain road that
@@ -138,7 +138,7 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
         </p>
 
         {all.length === 0 ? (
-          <div className="mt-12 rounded-lg bg-himalayan px-5 py-6 ring-1 ring-white/10">
+          <div className="mt-12 rounded-lg bg-surface-raised px-5 py-6 ring-1 ring-tone-line">
             <p className="text-[15px] leading-relaxed">
               Nothing published yet. These are written after the September field trip,
               from what the coordinators actually find, rather than assembled from
@@ -146,7 +146,7 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
             </p>
             <Link
               href="/status"
-              className="mt-4 inline-block text-sm text-gold underline-offset-4 hover:underline"
+              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
             >
               Meanwhile, the live route status is here
             </Link>
@@ -158,7 +158,7 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
             return (
               <section key={key} className="mt-14">
                 <h2 className="font-serif text-2xl">{label}</h2>
-                <p className="mt-1.5 text-sm text-ink-inverse/50">{blurb}</p>
+                <p className="mt-1.5 text-sm text-tone-muted">{blurb}</p>
                 <ul className="mt-4">
                   {articles.map((article) => (
                     <Entry key={article.slug} article={article} />
@@ -169,10 +169,10 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
           })
         )}
 
-        <div className="mt-16 border-t border-white/12 pt-8">
+        <div className="mt-16 border-t border-tone-line pt-8">
           <Link
             href="/enquire"
-            className="inline-flex items-center gap-2 text-sm text-gold"
+            className="inline-flex items-center gap-2 text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4"
           >
             A question none of these answers? Ask us
             <ArrowRight className="size-4" />

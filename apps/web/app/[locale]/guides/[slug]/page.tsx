@@ -88,10 +88,10 @@ export default async function GuidePage({
 
       <main
         id="main"
-        className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+        className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
       >
         <article className="mx-auto max-w-2xl">
-          <p className="text-sm uppercase tracking-[0.14em] text-gold">
+          <p className="text-sm uppercase tracking-[0.14em] text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
             {CLUSTER_LABEL[article.cluster] ?? article.cluster}
           </p>
           <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-[2.75rem]">
@@ -103,7 +103,7 @@ export default async function GuidePage({
             that, and it is the passage an answer engine lifts, so it is first and
             visually distinct rather than woven into an introduction.
           */}
-          <p className="mt-7 border-l-2 border-gold/60 pl-5 text-[17px] leading-relaxed text-ink-inverse/90">
+          <p className="mt-7 border-l-2 border-gold/60 pl-5 text-[17px] leading-relaxed text-tone-body">
             {article.answer}
           </p>
 
@@ -111,8 +111,8 @@ export default async function GuidePage({
           <div
             className={`mt-8 flex items-start gap-3 rounded-lg px-5 py-4 text-sm leading-relaxed ring-1 ${
               stale
-                ? "bg-saffron/12 text-ink-inverse/85 ring-saffron/25"
-                : "bg-white/[0.04] text-ink-inverse/65 ring-white/10"
+                ? "bg-saffron/12 text-tone-body ring-saffron/25"
+                : "bg-ink/[0.03] text-tone-body ring-tone-line"
             }`}
           >
             {stale ? (
@@ -143,7 +143,7 @@ export default async function GuidePage({
                   current, and{" "}
                   <Link
                     href="/status"
-                    className="text-gold underline-offset-4 hover:underline"
+                    className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
                   >
                     read the live status
                   </Link>{" "}
@@ -154,7 +154,7 @@ export default async function GuidePage({
           </div>
 
           {article.body && (
-            <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink-inverse/80">
+            <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-tone-body">
               {article.body.split("\n\n").map((paragraph) => (
                 <p key={paragraph.slice(0, 40)}>{paragraph}</p>
               ))}
@@ -172,7 +172,7 @@ export default async function GuidePage({
                 {article.faqs.map((faq) => (
                   <div key={faq.question}>
                     <h3 className="text-[17px] leading-snug">{faq.question}</h3>
-                    <p className="mt-2 text-[15px] leading-relaxed text-ink-inverse/75">
+                    <p className="mt-2 text-[15px] leading-relaxed text-tone-body">
                       {faq.answer}
                     </p>
                   </div>
@@ -182,7 +182,7 @@ export default async function GuidePage({
           )}
 
           {article.journey_slug && (
-            <div className="mt-12 border-t border-white/12 pt-8">
+            <div className="mt-12 border-t border-tone-line pt-8">
               <Link
                 href={`/journeys/${article.journey_slug}`}
                 className="inline-block rounded-full bg-gold px-5 py-2.5 text-sm font-medium text-midnight"
@@ -193,8 +193,8 @@ export default async function GuidePage({
           )}
 
           {article.related.length > 0 && (
-            <nav className="mt-12 border-t border-white/12 pt-8" aria-label="Related guides">
-              <h2 className="text-sm uppercase tracking-[0.14em] text-ink-inverse/45">
+            <nav className="mt-12 border-t border-tone-line pt-8" aria-label="Related guides">
+              <h2 className="text-sm uppercase tracking-[0.14em] text-tone-muted">
                 Also worth reading
               </h2>
               <ul className="mt-4 space-y-4">
@@ -202,11 +202,11 @@ export default async function GuidePage({
                   <li key={related.slug}>
                     <Link
                       href={`/guides/${related.slug}`}
-                      className="text-[15px] text-ink-inverse/85 underline-offset-4 hover:text-gold hover:underline"
+                      className="text-[15px] text-tone-body underline-offset-4 hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
                     >
                       {related.title}
                     </Link>
-                    <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-ink-inverse/55">
+                    <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-tone-muted">
                       {related.answer.slice(0, 140)}
                       {related.answer.length > 140 ? "…" : ""}
                     </p>
@@ -216,7 +216,7 @@ export default async function GuidePage({
             </nav>
           )}
 
-          <p className="mt-12 flex items-start gap-2.5 text-sm leading-relaxed text-ink-inverse/50">
+          <p className="mt-12 flex items-start gap-2.5 text-sm leading-relaxed text-tone-muted">
             <Caution className="mt-0.5 size-4 shrink-0" />
             We publish what we can verify and mark what we cannot. Nothing here is a
             guarantee of access, weather or darshan.

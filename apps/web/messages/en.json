@@ -15,7 +15,7 @@
     "switchLanguage": "भाषा बदलें",
     "lastVerified": "Last verified {time}",
     "toBeConfirmed": "To be confirmed",
-    "draft": "Draft — not published"
+    "draft": "Draft, not published"
   },
   "status": {
     "open": "Open",
@@ -53,6 +53,6 @@
     "routeStatus": "Route status",
     "leads": "Leads",
     "needsEnglish": "English is required before this can be saved.",
-    "needsFacts": "Approved facts are missing — this cannot be published yet."
+    "needsFacts": "Approved facts are missing. This cannot be published yet."
   }
 }

@@ -62,7 +62,7 @@ export default async function AttributionPage() {
     <>
       <h1 className="text-2xl font-medium">Where the business comes from</h1>
       <p className="mt-3 max-w-[72ch] text-[15px] leading-relaxed text-ink-inverse/65">
-        Contribution, not revenue — supplier cost and refunds are taken off, and
+        Contribution, not revenue. Supplier cost and refunds are taken off, and
         anything still on hold is kept separate. A channel that books the most can
         earn the least, and ranking on gross would send a season at the wrong one.
       </p>
@@ -79,9 +79,9 @@ export default async function AttributionPage() {
         <div>
           <dt className="text-ink-inverse/45">Unattributed</dt>
           <dd className="mt-0.5 text-lg">
-            {report.unattributed_contribution_share_percent ?? "—"}% of contribution
+            {report.unattributed_contribution_share_percent ?? "n/a"}% of contribution
             <span className="ml-2 text-sm text-ink-inverse/45">
-              ({report.unattributed_lead_share_percent ?? "—"}% of leads)
+              ({report.unattributed_lead_share_percent ?? "n/a"}% of leads)
             </span>
           </dd>
         </div>
@@ -94,7 +94,7 @@ export default async function AttributionPage() {
       {report.unmatched_spend_channels.length > 0 && (
         <p className="mt-5 rounded-md bg-status-limited/10 px-4 py-3 text-sm ring-1 ring-status-limited/25">
           Spend recorded against {report.unmatched_spend_channels.join(", ")}, which no
-          lead ever came from. Almost always a typo in the channel name — until it is
+          lead ever came from. Almost always a typo in the channel name, until it is
           fixed, every other channel looks better than it is.
         </p>
       )}
@@ -147,19 +147,19 @@ export default async function AttributionPage() {
                   {s.contribution_display}
                 </td>
                 <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/70">
-                  {s.contribution_margin_percent ?? "—"}%
+                  {s.contribution_margin_percent ?? "n/a"}%
                 </td>
                 {/* Present so the arithmetic can be checked, never the headline. */}
                 <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/40">
                   {s.gross_agreed}
                 </td>
                 <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/70">
-                  {s.spend ?? "—"}
+                  {s.spend ?? "n/a"}
                 </td>
                 <td className="py-3 text-right tabular-nums text-ink-inverse/70">
                   {s.acquisition_share_of_contribution
                     ? `${s.acquisition_share_of_contribution}%`
-                    : "—"}
+                    : "n/a"}
                 </td>
               </tr>
             ))}
@@ -169,7 +169,7 @@ export default async function AttributionPage() {
 
       <p className="mt-6 max-w-[72ch] text-xs leading-relaxed text-ink-inverse/40">
         Supplier cost is apportioned per traveller across each departure, so
-        contribution is an estimate. A dash means unknown, never zero — a channel with
+        contribution is an estimate. &ldquo;n/a&rdquo; means unknown, never zero. A channel with
         no recorded spend is one nobody has measured, not one that is free.
       </p>
     </>

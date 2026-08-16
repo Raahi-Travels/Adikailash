@@ -101,7 +101,7 @@ export function FamilyShares({ token }: { token: string }) {
       <h2 className="font-serif text-2xl">Let family follow along</h2>
       <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-ink-inverse/70">
         A link for somebody at home. They see the journey, roughly where you are each
-        day, the coordinator&rsquo;s number and any route notice — and nothing else. No
+        day, the coordinator&rsquo;s number and any route notice, and nothing else. No
         documents, no payments, no personal details about anybody travelling.
       </p>
 

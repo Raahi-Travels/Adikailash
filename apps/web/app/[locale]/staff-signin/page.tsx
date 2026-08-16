@@ -35,7 +35,7 @@ export default function SignInPage() {
   }
 
   return (
-    <main id="main" className="flex-1 bg-midnight px-4 py-24 text-ink-inverse">
+    <main id="main" className="flex-1 register-dark px-4 py-24 text-ink-inverse">
       <div className="mx-auto max-w-sm">
         <h1 className="text-2xl font-medium">Staff sign-in</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/65">

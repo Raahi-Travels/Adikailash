@@ -48,12 +48,12 @@ export default async function PolicyPage({
   return (
     <main
       id="main"
-      className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+      className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
     >
       <div className="mx-auto max-w-2xl">
         <Link
           href="/policies"
-          className="text-sm text-ink-inverse/55 underline-offset-4 hover:text-ink-inverse hover:underline"
+          className="text-sm text-tone-muted underline-offset-4 hover:text-tone-strong hover:underline"
         >
           Policies
         </Link>
@@ -61,19 +61,19 @@ export default async function PolicyPage({
         <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-[2.75rem]">
           {doc.title}
         </h1>
-        <p className="mt-5 text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 text-[15px] leading-relaxed text-tone-body">
           {doc.summary}
         </p>
 
-        <p className="mt-8 rounded-lg bg-white/[0.05] px-5 py-4 text-[15px] leading-relaxed ring-1 ring-white/10">
-          <span className="text-ink-inverse/50">In short. </span>
+        <p className="mt-8 rounded-lg bg-ink/[0.03] px-5 py-4 text-[15px] leading-relaxed ring-1 ring-tone-line">
+          <span className="text-tone-muted">In short. </span>
           {doc.inShort}
         </p>
 
         {!doc.reviewed && (
           <div className="mt-6 flex gap-3 rounded-lg bg-saffron/12 px-5 py-4 ring-1 ring-saffron/25">
             <Caution className="mt-0.5 size-5 shrink-0 text-saffron" />
-            <p className="text-sm leading-relaxed text-ink-inverse/85">
+            <p className="text-sm leading-relaxed text-tone-body">
               This is a working draft. It has not yet been reviewed by a lawyer, and we
               are not taking payments on this website until it has been. We are
               publishing it early because you should be able to read our terms before
@@ -87,7 +87,7 @@ export default async function PolicyPage({
           not be "a machine-translated afterthought". Until it is done properly, say so.
         */}
         {locale === "hi" && (
-          <p className="mt-6 rounded-lg bg-white/[0.05] px-5 py-4 text-sm leading-relaxed ring-1 ring-white/10">
+          <p className="mt-6 rounded-lg bg-ink/[0.03] px-5 py-4 text-sm leading-relaxed ring-1 ring-tone-line">
             यह नीति अभी केवल अंग्रेज़ी में उपलब्ध है। हिंदी अनुवाद तैयार किया जा रहा है। किसी भी
             बिंदु पर संदेह हो तो हमें फ़ोन करें, हम हिंदी में समझा देंगे।
           </p>
@@ -101,7 +101,7 @@ export default async function PolicyPage({
               {section.body.map((para) => (
                 <p
                   key={para.slice(0, 40)}
-                  className="mt-4 text-[15px] leading-relaxed text-ink-inverse/75"
+                  className="mt-4 text-[15px] leading-relaxed text-tone-body"
                 >
                   {para}
                 </p>
@@ -112,7 +112,7 @@ export default async function PolicyPage({
                   {section.points.map((point) => (
                     <li
                       key={point.slice(0, 40)}
-                      className="flex gap-3 text-[15px] leading-relaxed text-ink-inverse/75"
+                      className="flex gap-3 text-[15px] leading-relaxed text-tone-body"
                     >
                       <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-gold" />
                       <span>{point}</span>
@@ -122,7 +122,7 @@ export default async function PolicyPage({
               )}
 
               {section.pending && (
-                <p className="mt-5 border-l-2 border-saffron/40 py-1 pl-4 text-sm leading-relaxed text-ink-inverse/60">
+                <p className="mt-5 border-l-2 border-saffron/40 py-1 pl-4 text-sm leading-relaxed text-tone-body">
                   <span className="text-saffron/90">Not settled yet. </span>
                   {section.pending}
                 </p>
@@ -132,10 +132,10 @@ export default async function PolicyPage({
         </div>
 
         <nav
-          className="mt-16 border-t border-white/12 pt-8"
+          className="mt-16 border-t border-tone-line pt-8"
           aria-label="Other policies"
         >
-          <h2 className="text-sm uppercase tracking-[0.14em] text-ink-inverse/45">
+          <h2 className="text-sm uppercase tracking-[0.14em] text-tone-muted">
             Also worth reading
           </h2>
           <ul className="mt-4 space-y-3">
@@ -143,7 +143,7 @@ export default async function PolicyPage({
               <li key={slug}>
                 <Link
                   href={`/policies/${slug}`}
-                  className="text-[15px] text-ink-inverse/80 underline-offset-4 hover:text-gold hover:underline"
+                  className="text-[15px] text-tone-body underline-offset-4 hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
                 >
                   {POLICIES[slug].title}
                 </Link>

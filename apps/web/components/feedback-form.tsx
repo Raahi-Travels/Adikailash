@@ -44,7 +44,7 @@ function Stars({ name }: { name: string }) {
           className={`size-8 rounded-md text-sm transition-colors ${
             value !== null && n <= value
               ? "bg-gold text-midnight"
-              : "bg-white/[0.06] text-ink-inverse/40 ring-1 ring-white/15 hover:bg-white/10"
+              : "bg-ink/[0.04] text-tone-muted ring-1 ring-tone-line hover:bg-ink/[0.04]"
           }`}
         >
           {n}
@@ -54,7 +54,7 @@ function Stars({ name }: { name: string }) {
         <button
           type="button"
           onClick={() => setValue(null)}
-          className="ml-1 text-xs text-ink-inverse/35 underline underline-offset-2"
+          className="ml-1 text-xs text-tone-strong/35 underline underline-offset-2"
         >
           clear
         </button>
@@ -110,9 +110,9 @@ export function FeedbackForm({ token }: { token: string }) {
 
   if (state === "done" && result) {
     return (
-      <div role="status" className="rounded-lg bg-white/[0.04] px-6 py-7 ring-1 ring-white/10">
+      <div role="status" className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
         <h2 className="font-serif text-2xl">Thank you</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           {result.message}
         </p>
       </div>
@@ -120,32 +120,32 @@ export function FeedbackForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-white/[0.04] px-6 py-7 ring-1 ring-white/10">
+    <form onSubmit={onSubmit} className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
       <label className="block">
-        <span className="text-xs text-ink-inverse/50">Your name</span>
+        <span className="text-xs text-tone-muted">Your name</span>
         <input
           name="submitted_by"
-          className="mt-1 w-full max-w-xs rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+          className="mt-1 w-full max-w-xs rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
         />
       </label>
 
-      <div className="mt-8 space-y-5 border-t border-white/12 pt-7">
+      <div className="mt-8 space-y-5 border-t border-tone-line pt-7">
         {DIMENSIONS.map((d) => (
           <div key={d.key} className="flex flex-wrap items-center justify-between gap-3">
-            <span className="max-w-[38ch] text-[15px] leading-relaxed text-ink-inverse/75">
+            <span className="max-w-[38ch] text-[15px] leading-relaxed text-tone-body">
               {d.label}
             </span>
             <Stars name={d.key} />
           </div>
         ))}
-        <p className="text-xs text-ink-inverse/35">
+        <p className="text-xs text-tone-strong/35">
           Leave anything blank that you would rather not answer. Blank is not a low
-          score — we record it as unanswered.
+          score, we record it as unanswered.
         </p>
       </div>
 
-      <div className="mt-8 border-t border-white/12 pt-7">
-        <span className="text-[15px] leading-relaxed text-ink-inverse/75">
+      <div className="mt-8 border-t border-tone-line pt-7">
+        <span className="text-[15px] leading-relaxed text-tone-body">
           Would you tell somebody else to travel with us?
         </span>
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -158,33 +158,33 @@ export function FeedbackForm({ token }: { token: string }) {
               className={`size-9 rounded-md text-sm transition-colors ${
                 recommend === n
                   ? "bg-gold text-midnight"
-                  : "bg-white/[0.06] text-ink-inverse/50 ring-1 ring-white/15 hover:bg-white/10"
+                  : "bg-ink/[0.04] text-tone-muted ring-1 ring-tone-line hover:bg-ink/[0.04]"
               }`}
             >
               {n}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-ink-inverse/35">0 = definitely not · 10 = without hesitation</p>
+        <p className="mt-2 text-xs text-tone-strong/35">0 = definitely not · 10 = without hesitation</p>
       </div>
 
-      <div className="mt-8 grid gap-5 border-t border-white/12 pt-7">
+      <div className="mt-8 grid gap-5 border-t border-tone-line pt-7">
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">What went well</span>
+          <span className="text-xs text-tone-muted">What went well</span>
           <textarea
             name="what_went_well"
             rows={3}
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">What went wrong</span>
+          <span className="text-xs text-tone-muted">What went wrong</span>
           <textarea
             name="what_went_wrong"
             rows={3}
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
-          <span className="mt-1 block text-xs leading-relaxed text-ink-inverse/40">
+          <span className="mt-1 block text-xs leading-relaxed text-tone-muted">
             This is the most useful box on the page. Anything you write here reaches a
             person, and somebody will call you about it.
           </span>

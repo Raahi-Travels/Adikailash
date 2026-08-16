@@ -21,8 +21,8 @@ import { submitEnquiry, type JourneySummary } from "@/lib/api";
  */
 
 const FIELD =
-  "mt-2 w-full rounded-md bg-white/[0.06] px-3.5 py-2.5 text-[15px] text-ink-inverse ring-1 ring-white/20 placeholder:text-ink-inverse/40 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "block text-sm text-ink-inverse/85";
+  "mt-2 w-full rounded-md bg-ink/[0.04] px-3.5 py-2.5 text-[15px] text-tone-strong ring-1 ring-tone-line placeholder:text-tone-muted focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "block text-sm text-tone-body";
 
 export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -91,10 +91,10 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
     return (
       <div
         role="status"
-        className="rounded-lg bg-himalayan px-6 py-8 ring-1 ring-white/10"
+        className="rounded-lg bg-surface-raised px-6 py-8 ring-1 ring-tone-line"
       >
-        <h2 className="font-serif text-2xl text-ink-inverse">Thank you.</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <h2 className="font-serif text-2xl text-tone-strong">Thank you.</h2>
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           Your enquiry has reached us. A person will read it and reply, rather than an
           automated sequence. If your question is about dates or permits, we may ask a
           few things back before we can answer properly.
@@ -155,7 +155,7 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
           />
         </div>
       </div>
-      <p id="contact-help" className="text-sm text-ink-inverse/55">
+      <p id="contact-help" className="text-sm text-tone-muted">
         One of the two is enough. We only need a way to reply.
       </p>
 
@@ -188,7 +188,7 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
         </div>
       </div>
 
-      <label className="flex items-start gap-3 text-[15px] text-ink-inverse/85">
+      <label className="flex items-start gap-3 text-[15px] text-tone-body">
         <input
           type="checkbox"
           name="is_senior_inclusive"
@@ -196,7 +196,7 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
         />
         <span>
           Someone in our group is a senior traveller
-          <span className="mt-0.5 block text-sm text-ink-inverse/55">
+          <span className="mt-0.5 block text-sm text-tone-muted">
             Helps us suggest a slower pace. We do not use this to judge anyone&rsquo;s
             fitness.
           </span>
@@ -216,26 +216,26 @@ export function EnquiryForm({ journeys }: { journeys: JourneySummary[] }) {
         />
       </div>
 
-      <fieldset className="space-y-3 border-t border-white/12 pt-6">
-        <legend className="text-sm text-ink-inverse/85">
+      <fieldset className="space-y-3 border-t border-tone-line pt-6">
+        <legend className="text-sm text-tone-body">
           What may we send you?
         </legend>
-        <p className="text-sm text-ink-inverse/55">
+        <p className="text-sm text-tone-muted">
           Replying to this enquiry needs no permission. These are separate, and both
           start off.
         </p>
-        <label className="flex items-start gap-3 text-[15px] text-ink-inverse/85">
+        <label className="flex items-start gap-3 text-[15px] text-tone-body">
           <input type="checkbox" name="status_alerts" className="mt-1 size-4 accent-gold" />
           <span>Tell me when route or permit status changes</span>
         </label>
-        <label className="flex items-start gap-3 text-[15px] text-ink-inverse/85">
+        <label className="flex items-start gap-3 text-[15px] text-tone-body">
           <input type="checkbox" name="promotional" className="mt-1 size-4 accent-gold" />
           <span>Send me new departures and occasional updates</span>
         </label>
       </fieldset>
 
       {state === "error" && error && (
-        <p role="alert" className="rounded-md bg-status-suspended/15 px-4 py-3 text-[15px] text-ink-inverse ring-1 ring-status-suspended/30">
+        <p role="alert" className="rounded-md bg-status-suspended/15 px-4 py-3 text-[15px] text-tone-strong ring-1 ring-status-suspended/30">
           {error}
         </p>
       )}

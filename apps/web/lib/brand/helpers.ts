@@ -103,7 +103,7 @@ export function buildMetadata(input: {
     docs/IMAGE-FOLLOWUP.md.
   */
   const image = domain ? `https://${domain}${input.image ?? "/og/default.jpg"}` : null;
-  const cardTitle = `${input.title} — ${suffix}`;
+  const cardTitle = `${input.title}: ${suffix}`;
 
   return {
     title: cardTitle,

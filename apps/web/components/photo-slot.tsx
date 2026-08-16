@@ -26,7 +26,7 @@ export function PhotoSlot({
 }) {
   return (
     <div
-      className={`relative flex items-end overflow-hidden rounded-lg ring-1 ring-inset ring-white/10 ${className}`}
+      className={`relative flex items-end overflow-hidden rounded-lg ring-1 ring-inset ring-tone-line ${className}`}
       style={{ aspectRatio: ratio }}
       role="img"
       aria-label={`Illustration. Photograph pending: ${brief}`}
@@ -41,8 +41,8 @@ export function PhotoSlot({
         className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-midnight to-transparent"
       />
 
-      <p className="relative max-w-[34ch] p-5 text-sm leading-relaxed text-ink-inverse/55">
-        <span className="block text-xs uppercase tracking-[0.14em] text-ink-inverse/40">
+      <p className="relative max-w-[34ch] p-5 text-sm leading-relaxed text-tone-muted">
+        <span className="block text-xs uppercase tracking-[0.14em] text-tone-muted">
           Photograph pending
         </span>
         <span className="mt-1.5 block">{brief}</span>

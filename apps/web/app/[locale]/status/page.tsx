@@ -69,7 +69,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
   return (
     <>
       {data && <StatusLd status={data} locale={locale} />}
-    <main id="main" className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20">
+    <main id="main" className="flex-1 register-dark px-4 py-16 text-ink-inverse sm:px-6 sm:py-20">
       <div className="mx-auto max-w-4xl">
         <h1 className="font-serif text-4xl leading-tight sm:text-5xl">
           Route and permit status

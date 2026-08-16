@@ -34,22 +34,22 @@ export default async function JourneysPage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       {journeys && <JourneyListLd journeys={journeys} locale={locale} />}
-    <main id="main" className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-24">
+    <main id="main" className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-24">
       <div className="mx-auto max-w-6xl">
         <h1 className="max-w-[18ch] font-serif text-4xl leading-tight sm:text-5xl">
           Journeys
         </h1>
-        <p className="mt-5 max-w-[58ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 max-w-[58ch] text-[15px] leading-relaxed text-tone-body">
           Every journey below is operated from Kumaon by people who live there. Where a
           detail is still being confirmed, it says so rather than guessing.
         </p>
 
         {journeys === null ? (
-          <p className="mt-14 max-w-[60ch] text-ink-inverse/60">
+          <p className="mt-14 max-w-[60ch] text-tone-body">
             We cannot load journeys right now. Please try again shortly.
           </p>
         ) : journeys.length === 0 ? (
-          <p className="mt-14 max-w-[60ch] text-ink-inverse/60">
+          <p className="mt-14 max-w-[60ch] text-tone-body">
             No journeys are published yet. Nothing appears here until its itinerary,
             altitudes and accommodation have been confirmed.
           </p>

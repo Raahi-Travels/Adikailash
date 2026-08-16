@@ -74,8 +74,8 @@ export default async function FeedbackPage() {
     <>
       <h1 className="text-2xl font-medium">Post-trip feedback</h1>
       <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
-        Private, and it stays private. Anything a traveller flagged has to be settled —
-        with a note saying what was actually done — before we ask them for anything
+        Private, and it stays private. Anything a traveller flagged has to be settled,
+        with a note saying what was actually done, before we ask them for anything
         public. That order is the whole point of collecting this first.
       </p>
 
@@ -191,7 +191,7 @@ export default async function FeedbackPage() {
               <form action={askForReview} className="mt-5 border-t border-white/10 pt-4">
                 <input type="hidden" name="feedback_id" value={f.id} />
                 <p className="text-sm text-ink-inverse/50">
-                  Nothing outstanding. Ask separately for each permission — agreeing to
+                  Nothing outstanding. Ask separately for each permission. Agreeing to
                   write a sentence is not agreeing to a photograph.
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">

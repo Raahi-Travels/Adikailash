@@ -56,7 +56,7 @@ export default async function VendorsPage() {
       <h1 className="text-2xl font-medium">Vendors</h1>
       <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
         What we know about each supplier after the departures they ran. The score is a
-        planning aid and nothing more — anything unresolved caps it, so a good number
+        planning aid and nothing more. Anything unresolved caps it, so a good number
         never means there is nothing to read.
       </p>
 

@@ -20,8 +20,8 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
 
 type Kind = "private_or_international" | "b2b_ground_handling";
 
-const FIELD = "mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "text-xs text-ink-inverse/50";
+const FIELD = "mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "text-xs text-tone-muted";
 
 function Field({
   name,
@@ -44,14 +44,14 @@ function Field({
           cell taller and knocks the adjacent column's field out of alignment. */}
       <span className={`${LABEL} block truncate`}>
         {label}
-        {!required && <span className="text-ink-inverse/30"> — optional</span>}
+        {!required && <span className="text-tone-strong/30"> (optional)</span>}
       </span>
       {rows ? (
         <textarea name={name} rows={rows} className={FIELD} />
       ) : (
         <input name={name} type={type} required={required} className={FIELD} />
       )}
-      {hint && <span className="mt-1 block text-xs leading-relaxed text-ink-inverse/40">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs leading-relaxed text-tone-muted">{hint}</span>}
     </label>
   );
 }
@@ -119,9 +119,9 @@ export function SpecialistEnquiryForm({ kind }: { kind: Kind }) {
 
   if (state === "done") {
     return (
-      <div role="status" className="rounded-lg bg-white/[0.04] px-6 py-7 ring-1 ring-white/10">
+      <div role="status" className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
         <h2 className="font-serif text-2xl">Thank you</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           {isB2B
             ? "One of the three of us will read this and reply. If we cannot handle the volume or the dates you need, we will say so rather than take the enquiry and work it out later."
             : "One of the three of us will read this and write back to arrange a call at a time that is reasonable where you are. The outcome of that call is a proposal, not a booking."}
@@ -131,7 +131,7 @@ export function SpecialistEnquiryForm({ kind }: { kind: Kind }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-white/[0.04] px-6 py-7 ring-1 ring-white/10">
+    <form onSubmit={onSubmit} className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
       <div className="grid gap-5 sm:grid-cols-2">
         <Field name="name" label="Your name" required />
         <Field name="email" label="Email" type="email" required />
@@ -165,7 +165,7 @@ export function SpecialistEnquiryForm({ kind }: { kind: Kind }) {
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {["Airport and gateway transfers", "Inner line permits", "Accommodation", "Full ground handling", "Vehicles and drivers", "Local coordinator"].map(
               (service) => (
-                <label key={service} className="flex items-center gap-2 text-sm text-ink-inverse/70">
+                <label key={service} className="flex items-center gap-2 text-sm text-tone-body">
                   <input type="checkbox" name="services_needed" value={service} className="size-4 accent-gold" />
                   {service}
                 </label>
@@ -191,7 +191,7 @@ export function SpecialistEnquiryForm({ kind }: { kind: Kind }) {
       </div>
 
       {!isB2B && (
-        <div className="mt-5 rounded-md bg-white/[0.03] px-4 py-4 ring-1 ring-white/10">
+        <div className="mt-5 rounded-md bg-ink/[0.04] px-4 py-4 ring-1 ring-tone-line">
           {/*
             Doc 03: "Any accessibility or support needs the traveller CHOOSES to
             disclose." Set apart, explained, and never required — a required health
@@ -221,7 +221,7 @@ export function SpecialistEnquiryForm({ kind }: { kind: Kind }) {
         </p>
       )}
 
-      <p className="mt-5 text-xs leading-relaxed text-ink-inverse/40">
+      <p className="mt-5 text-xs leading-relaxed text-tone-muted">
         We will never ask for identity documents or payment details through this form.
       </p>
     </form>

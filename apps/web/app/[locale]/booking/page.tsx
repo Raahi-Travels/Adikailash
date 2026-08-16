@@ -148,7 +148,7 @@ export default async function BookingPage({
   return (
     <main
       id="main"
-      className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+      className="flex-1 register-dark px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
     >
       <div className="mx-auto max-w-3xl">
         {!value && (
@@ -435,7 +435,7 @@ export default async function BookingPage({
                   href={`/trip?token=${encodeURIComponent(value)}`}
                   className="inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
                 >
-                  Open your journey page — do this before you leave
+                  Open your journey page. Do this before you leave
                 </Link>
               </div>
             </div>

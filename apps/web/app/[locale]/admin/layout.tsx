@@ -57,7 +57,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/[locale]/a
 
   if (!staff) {
     return (
-      <main id="main" className="flex-1 bg-midnight px-4 py-24 text-ink-inverse">
+      <main id="main" className="flex-1 register-dark px-4 py-24 text-ink-inverse">
         <div className="mx-auto max-w-md">
           <h1 className="text-2xl font-medium">Staff sign-in required</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/65">
@@ -79,7 +79,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/[locale]/a
   const roles = (staff as { roles?: string[] }).roles ?? [];
 
   return (
-    <main id="main" className="flex-1 bg-midnight text-ink-inverse">
+    <main id="main" className="flex-1 register-dark">
       <div className="border-b border-white/10 px-4 py-3 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2">
           <span className="text-sm font-medium">Operations</span>

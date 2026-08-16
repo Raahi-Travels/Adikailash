@@ -56,7 +56,7 @@ export function AltitudeProfile({ data }: { data: AltitudeProfileData }) {
   return (
     <section className="mt-12">
       <h2 className="font-serif text-2xl">Where you sleep, night by night</h2>
-      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
         Altitude sickness is about where you spend the night, not the highest point you
         touch during the day. This is the sleeping altitude for each night of the
         journey.
@@ -92,7 +92,7 @@ export function AltitudeProfile({ data }: { data: AltitudeProfileData }) {
                 x={p.x}
                 y={p.y - 10}
                 textAnchor="middle"
-                className="fill-current text-[11px] text-ink-inverse/70"
+                className="fill-current text-[11px] text-tone-body"
               >
                 {p.altitude_m.toLocaleString("en-IN")}m
               </text>
@@ -100,15 +100,15 @@ export function AltitudeProfile({ data }: { data: AltitudeProfileData }) {
                 x={p.x}
                 y={HEIGHT - 10}
                 textAnchor="middle"
-                className="fill-current text-[11px] text-ink-inverse/45"
+                className="fill-current text-[11px] text-tone-muted"
               >
                 {p.place}
               </text>
             </g>
           ))}
         </svg>
-        <figcaption className="mt-2 text-xs text-ink-inverse/45">
-          A hollow point is a rest night — a second night at the same altitude, which
+        <figcaption className="mt-2 text-xs text-tone-muted">
+          A hollow point is a rest night: a second night at the same altitude, which
           is what acclimatisation actually means.
         </figcaption>
       </figure>
@@ -118,25 +118,25 @@ export function AltitudeProfile({ data }: { data: AltitudeProfileData }) {
         accessible source of truth", and a chart alone is unreadable to a screen
         reader and uncitable by an answer engine.
       */}
-      <ul className="mt-6 grid gap-1.5 text-[15px] leading-relaxed text-ink-inverse/75 sm:grid-cols-2">
+      <ul className="mt-6 grid gap-1.5 text-[15px] leading-relaxed text-tone-body sm:grid-cols-2">
         {data.points.map((p) => (
           <li key={`row-${p.day}-${p.place}`}>
-            <span className="text-ink-inverse/45">Night {p.day}</span> · {p.place} ·{" "}
+            <span className="text-tone-muted">Night {p.day}</span> · {p.place} ·{" "}
             {p.altitude_m.toLocaleString("en-IN")}m
-            {p.is_rest_day && <span className="text-ink-inverse/45"> · rest night</span>}
+            {p.is_rest_day && <span className="text-tone-muted"> · rest night</span>}
           </li>
         ))}
       </ul>
 
       {data.guidance_notes.length > 0 && (
         <div className="mt-8 rounded-lg bg-status-limited/10 px-5 py-5 ring-1 ring-status-limited/25">
-          <h3 className="flex items-center gap-2 text-sm text-ink-inverse/80">
+          <h3 className="flex items-center gap-2 text-sm text-tone-body">
             <Caution className="size-4 shrink-0" />
             How this journey compares with general guidance
           </h3>
           <ul className="mt-3 space-y-2">
             {data.guidance_notes.map((note, i) => (
-              <li key={i} className="text-[15px] leading-relaxed text-ink-inverse/80">
+              <li key={i} className="text-[15px] leading-relaxed text-tone-body">
                 {note}
               </li>
             ))}
@@ -145,14 +145,14 @@ export function AltitudeProfile({ data }: { data: AltitudeProfileData }) {
             The attribution is not boilerplate. Without it these read as our medical
             opinion about the reader, which is precisely what we must not give.
           */}
-          <p className="mt-4 border-t border-white/12 pt-4 text-sm leading-relaxed text-ink-inverse/60">
+          <p className="mt-4 border-t border-tone-line pt-4 text-sm leading-relaxed text-tone-body">
             {data.guidance_source}
           </p>
         </div>
       )}
 
       {data.highest_sleeping_altitude_m && (
-        <p className="mt-6 text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-6 text-sm leading-relaxed text-tone-muted">
           The highest you sleep is{" "}
           {data.highest_sleeping_altitude_m.toLocaleString("en-IN")}m
           {data.total_gain_above_threshold_m > 0 && (

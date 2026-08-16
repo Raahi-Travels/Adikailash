@@ -78,7 +78,7 @@ export default async function SpendPage() {
           </span>
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Campaign — optional</span>
+          <span className="text-xs text-ink-inverse/50">Campaign (optional)</span>
           <input name="campaign" className={FIELD} />
         </label>
         <label className="block">
@@ -113,7 +113,7 @@ export default async function SpendPage() {
       {rows.length === 0 ? (
         <p className="mt-8 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/55">
           Nothing recorded, which is the expected state while acquisition is organic.
-          Cost per lead reads as unknown rather than zero until a row exists here —
+          Cost per lead reads as unknown rather than zero until a row exists here,
           zero would read as free.
         </p>
       ) : (

@@ -35,13 +35,13 @@ export default async function TripPage({
   const { token } = await searchParams;
 
   return (
-    <main id="main" data-quiet-page className="flex-1 bg-midnight px-4 py-10 text-ink-inverse sm:px-6 sm:py-14">
+    <main id="main" data-quiet-page className="flex-1 register-dark px-4 py-10 text-ink-inverse sm:px-6 sm:py-14">
       <div className="mx-auto max-w-xl">
         {token ? (
           <TripCompanion token={token} />
         ) : (
           <p className="max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
-            This link is missing its token. Use the link the team sent you — and open
+            This link is missing its token. Use the link the team sent you, and open
             it once before you leave Dharchula, so it works when the signal goes.
           </p>
         )}

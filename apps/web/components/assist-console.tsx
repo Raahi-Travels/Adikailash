@@ -41,10 +41,10 @@ type Result = {
 };
 
 const REFUSAL_LABEL: Record<string, string> = {
-  medical: "Medical — a person, and a doctor",
-  commercial: "Price or policy — a person decides",
+  medical: "Medical: a person, and a doctor",
+  commercial: "Price or policy: a person decides",
   promise: "Cannot be promised",
-  complaint: "Complaint — needs an owner",
+  complaint: "Complaint: needs an owner",
   status_stale: "Our last check is too old to repeat",
   no_grounding: "We have not published this",
 };
@@ -152,7 +152,7 @@ export function AssistConsole() {
           {result.passages.length > 0 && (
             <section>
               <h2 className="text-sm text-ink-inverse/50">
-                What it was allowed to use — check the draft against these
+                What it was allowed to use. Check the draft against these
               </h2>
               <ul className="mt-3 space-y-3">
                 {result.passages.map((p) => (
@@ -177,7 +177,7 @@ export function AssistConsole() {
 
           <p className="border-t border-white/12 pt-5 text-xs leading-relaxed text-ink-inverse/40">
             Read it before you send it. It answers only from our own published
-            content, which means it is wrong whenever that content is — and it has no
+            content, which means it is wrong whenever that content is, and it has no
             way of knowing that.
           </p>
         </div>

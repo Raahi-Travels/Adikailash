@@ -182,7 +182,7 @@ export function TripCompanion({ token }: { token: string }) {
       <div className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
         <p className="max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
           We could not load your journey, and there is no saved copy on this phone.
-          Open this page once while you still have signal — after that it works
+          Open this page once while you still have signal. After that it works
           without a network.
         </p>
       </div>
@@ -244,7 +244,7 @@ export function TripCompanion({ token }: { token: string }) {
           </ul>
           <p className="mt-4 text-sm leading-relaxed text-ink-inverse/50">
             Your coordinator is with the group. If you cannot find them and it is
-            urgent, call the number above — somebody answers it.
+            urgent, call the number above. Somebody answers it.
           </p>
         </section>
       )}
@@ -300,7 +300,7 @@ export function TripCompanion({ token }: { token: string }) {
 
       <p className="border-t border-white/12 pt-5 text-xs leading-relaxed text-ink-inverse/40">
         This page works without a network once you have opened it. Nothing on it
-        updates by itself — when you have signal again, open it and it will refresh.
+        updates by itself. When you have signal again, open it and it will refresh.
       </p>
     </div>
   );

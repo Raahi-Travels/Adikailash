@@ -169,38 +169,38 @@ function DepartureRow({
   const placesLeft = Math.max(0, d.capacity - d.reserved_count);
 
   return (
-    <article className="border-t border-white/12 py-7">
+    <article className="border-t border-tone-line py-7">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div>
-          <p className="text-sm text-ink-inverse/55">
+          <p className="text-sm text-tone-muted">
             <time dateTime={d.start_date}>{dayRange(d.start_date, d.end_date, locale)}</time>
-            <span className="mx-2 text-ink-inverse/30">·</span>
+            <span className="mx-2 text-tone-strong/30">·</span>
             {nights(d.start_date, d.end_date)} nights
           </p>
           <h3 className="mt-1.5 font-serif text-xl">
             <Link
               href={`/journeys/${d.journey_slug}`}
-              className="transition-colors hover:text-gold"
+              className="transition-colors hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4"
             >
               {d.journey_name}
             </Link>
           </h3>
-          <p className="mt-1 text-[15px] text-ink-inverse/70">{d.tier_name}</p>
+          <p className="mt-1 text-[15px] text-tone-body">{d.tier_name}</p>
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-ink-inverse/75">{d.state_label}</p>
+          <p className="text-sm text-tone-body">{d.state_label}</p>
           {d.price ? (
             <p className="mt-1 font-serif text-lg">{d.price}</p>
           ) : (
-            <p className="mt-1 text-sm text-ink-inverse/45">Price on enquiry</p>
+            <p className="mt-1 text-sm text-tone-muted">Price on enquiry</p>
           )}
         </div>
       </div>
 
-      <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 text-sm text-ink-inverse/60">
+      <dl className="mt-4 flex flex-wrap gap-x-7 gap-y-2 text-sm text-tone-body">
         <div className="flex items-center gap-2">
-          <Group className="size-4 shrink-0 text-ink-inverse/40" />
+          <Group className="size-4 shrink-0 text-tone-muted" />
           <dt className="sr-only">Group</dt>
           <dd>
             {d.availability_label}
@@ -209,7 +209,7 @@ function DepartureRow({
         </div>
         {d.gateway && (
           <div className="flex items-center gap-2">
-            <Vehicle className="size-4 shrink-0 text-ink-inverse/40" />
+            <Vehicle className="size-4 shrink-0 text-tone-muted" />
             <dt className="sr-only">Starts from</dt>
             <dd>Starts from {d.gateway}</dd>
           </div>
@@ -220,7 +220,7 @@ function DepartureRow({
         */}
         {d.operator_disclosed && d.operator_name && (
           <div className="flex items-center gap-2">
-            <Altitude className="size-4 shrink-0 text-ink-inverse/40" />
+            <Altitude className="size-4 shrink-0 text-tone-muted" />
             <dt className="sr-only">Operated by</dt>
             <dd>Operated by {d.operator_name}</dd>
           </div>
@@ -249,14 +249,14 @@ function DepartureRow({
             </Link>
           )
         ) : (
-          <span className="rounded-full px-4 py-2 text-sm text-ink-inverse/60 ring-1 ring-white/15">
+          <span className="rounded-full px-4 py-2 text-sm text-tone-body ring-1 ring-tone-line">
             {action.label}
           </span>
         )}
-        <div className="max-w-[52ch] text-sm leading-relaxed text-ink-inverse/55">
+        <div className="max-w-[52ch] text-sm leading-relaxed text-tone-muted">
           <p>{action.note}</p>
           {action.emphasis && paymentNote && (
-            <p className="mt-1 text-ink-inverse/40">{paymentNote}</p>
+            <p className="mt-1 text-tone-muted">{paymentNote}</p>
           )}
         </div>
       </div>
@@ -279,20 +279,20 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
   }
 
   return (
-    <main id="main" className="flex-1 bg-midnight text-ink-inverse">
+    <main id="main" className="flex-1 register-light">
       {/* Header band. The calendar reads as a spreadsheet without it; a road under the
           heading attaches the dates to a place. Falls back to ridge art with no file. */}
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
         <SceneBackdrop name="departures" />
         <div className="mx-auto max-w-4xl">
-          <div className="flex items-center gap-3 text-gold">
+          <div className="flex items-center gap-3 text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
             <CalendarIcon className="size-6" />
             <p className="text-sm uppercase tracking-[0.14em]">Dates</p>
           </div>
           <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
             When we are going
           </h1>
-          <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
             Small groups on fixed dates, plus private departures on dates you choose.
             Each date below says exactly what it is open for right now. A date that is
             still forming is described that way rather than sold as confirmed.
@@ -303,14 +303,14 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
       <div className="px-4 pb-16 sm:px-6 sm:pb-20">
         <div className="mx-auto max-w-4xl">
         {departures === null && (
-          <p className="mt-12 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
+          <p className="mt-12 rounded-lg bg-surface-raised px-5 py-4 text-[15px] ring-1 ring-tone-line">
             We cannot load dates right now. Please message us and we will send the
             current calendar.
           </p>
         )}
 
         {departures !== null && departures.length === 0 && (
-          <div className="mt-12 rounded-lg bg-himalayan px-5 py-6 ring-1 ring-white/10">
+          <div className="mt-12 rounded-lg bg-surface-raised px-5 py-6 ring-1 ring-tone-line">
             <p className="text-[15px] leading-relaxed">
               No dates are published yet. The Adi Kailash season runs roughly May to
               October, and we open dates once the road and permit position for the year
@@ -318,7 +318,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
             </p>
             <Link
               href="/enquire"
-              className="mt-4 inline-block text-sm text-gold underline-offset-4 hover:underline"
+              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
             >
               Tell us when you want to travel
             </Link>
@@ -327,7 +327,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
 
         {[...months.entries()].map(([month, list]) => (
           <section key={month} className="mt-14">
-            <h2 className="font-serif text-2xl text-ink-inverse/85">{month}</h2>
+            <h2 className="font-serif text-2xl text-tone-body">{month}</h2>
             <div className="mt-4">
               {list.map((d) => (
                 <DepartureRow key={d.id} departure={d} locale={locale} />
@@ -336,9 +336,9 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
           </section>
         ))}
 
-        <div className="mt-16 border-t border-white/12 pt-8">
+        <div className="mt-16 border-t border-tone-line pt-8">
           <h2 className="font-serif text-2xl">Nothing here fits?</h2>
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
             Most of what we run is private: your family, your pace, dates that suit your
             leave. Tell us roughly when, and we will tell you honestly whether that
             window works on this route.
@@ -352,19 +352,19 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
             </Link>
             <Link
               href="/status"
-              className="rounded-full px-5 py-2.5 text-sm text-ink-inverse/80 ring-1 ring-white/20 transition-colors hover:text-ink-inverse"
+              className="rounded-full px-5 py-2.5 text-sm text-tone-body ring-1 ring-tone-line transition-colors hover:text-tone-strong"
             >
               Check route and permit status
             </Link>
           </div>
         </div>
 
-        <p className="mt-12 text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-12 text-sm leading-relaxed text-tone-muted">
           Dates can move. Landslides, permit decisions and weather on this route are
           outside anyone&apos;s control, and we would rather change a date than run one we
           are not confident about. What happens to your money when a date changes is set
           out in our{" "}
-          <Link href="/policies/cancellation" className="text-gold underline-offset-4 hover:underline">
+          <Link href="/policies/cancellation" className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline">
             cancellation policy
           </Link>
           .

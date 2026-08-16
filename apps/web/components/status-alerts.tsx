@@ -55,9 +55,9 @@ export function StatusAlerts({ segmentSlug }: { segmentSlug?: string }) {
 
   if (state === "done") {
     return (
-      <div role="status" className="rounded-lg bg-himalayan px-5 py-5 ring-1 ring-white/10">
-        <h3 className="text-lg text-ink-inverse">Almost there</h3>
-        <p className="mt-2 max-w-[56ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <div role="status" className="rounded-lg bg-surface-raised px-5 py-5 ring-1 ring-tone-line">
+        <h3 className="text-lg text-tone-strong">Almost there</h3>
+        <p className="mt-2 max-w-[56ch] text-[15px] leading-relaxed text-tone-body">
           {message}
         </p>
       </div>
@@ -65,28 +65,28 @@ export function StatusAlerts({ segmentSlug }: { segmentSlug?: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
+    <form onSubmit={onSubmit} className="rounded-lg bg-ink/[0.04] px-5 py-5 ring-1 ring-tone-line">
       <h3 className="text-lg">Tell me when this changes</h3>
-      <p className="mt-2 max-w-[58ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <p className="mt-2 max-w-[58ch] text-[15px] leading-relaxed text-tone-body">
         We will message you when the route status actually changes. Not when we
         re-check it and find nothing new, which is most days.
       </p>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <label className="min-w-52 flex-1">
-          <span className="text-xs text-ink-inverse/50">Email</span>
+          <span className="text-xs text-tone-muted">Email</span>
           <input
             name="destination"
             type="email"
             required
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </label>
         <label className="min-w-36">
-          <span className="text-xs text-ink-inverse/50">Name, optional</span>
+          <span className="text-xs text-tone-muted">Name, optional</span>
           <input
             name="name"
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </label>
         <button
@@ -99,7 +99,7 @@ export function StatusAlerts({ segmentSlug }: { segmentSlug?: string }) {
       </div>
 
       {/* Unchecked by default. Submitting is not agreeing. */}
-      <label className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-ink-inverse/70">
+      <label className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-tone-body">
         <input type="checkbox" name="consent" className="mt-1 size-4 shrink-0 accent-gold" />
         <span>
           Yes, email me when the route or permit status changes. We will confirm the

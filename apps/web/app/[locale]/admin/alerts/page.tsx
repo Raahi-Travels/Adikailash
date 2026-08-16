@@ -59,7 +59,7 @@ export default async function AlertsPage() {
         <p className="mt-4 max-w-[72ch] rounded-md bg-status-limited/10 px-4 py-3 text-[15px] leading-relaxed ring-1 ring-status-limited/25">
           Nothing is being sent. Decision O9 has not settled a messaging provider, so
           these rows are what a subscriber <em>would</em> have received. That is
-          deliberate — it is the only way to check the rules against a real season
+          deliberate. It is the only way to check the rules against a real season
           before a message reaches anybody.
         </p>
       )}
@@ -102,7 +102,7 @@ export default async function AlertsPage() {
               {m.template_name && (
                 <p className="mt-2 text-xs text-ink-inverse/40">
                   template {m.template_name} · {m.template_parameters?.length ?? 0}{" "}
-                  variable(s) — needs Meta approval before this channel can send
+                  variable(s). Needs Meta approval before this channel can send
                 </p>
               )}
               {m.suppressed_reason && (

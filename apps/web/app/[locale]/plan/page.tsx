@@ -35,12 +35,12 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
   const recommended = checklist?.requirements.filter((r) => !r.is_mandatory) ?? [];
 
   return (
-    <main id="main" className="flex-1 bg-midnight px-4 py-16 text-ink-inverse sm:px-6 sm:py-20">
+    <main id="main" className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20">
       <div className="mx-auto max-w-4xl">
         <h1 className="max-w-[20ch] font-serif text-4xl leading-tight sm:text-5xl">
           Plan your journey
         </h1>
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
           Adi Kailash sits inside an inner-line area. The paperwork is real, and a
           missing document at Dharchula ends the journey there. Here is what to bring
           and what we do with it.
@@ -76,22 +76,22 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
           )}
 
           {checklist === null ? (
-            <p className="mt-6 text-ink-inverse/60">
+            <p className="mt-6 text-tone-body">
               The document list is unavailable right now. Please ask the team.
             </p>
           ) : (
             <>
               <ul className="mt-8 space-y-6">
                 {mandatory.map((req) => (
-                  <li key={req.id} className="border-t border-white/12 pt-5">
+                  <li key={req.id} className="border-t border-tone-line pt-5">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <h3 className="text-lg">{req.label}</h3>
                       {req.is_permit_bearing && (
-                        <span className="text-sm text-gold">Used for your permit</span>
+                        <span className="text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4">Used for your permit</span>
                       )}
                     </div>
                     {req.description && (
-                      <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                      <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                         {req.description}
                       </p>
                     )}
@@ -104,10 +104,10 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
                   <h3 className="mt-12 font-serif text-xl">Strongly recommended</h3>
                   <ul className="mt-5 space-y-6">
                     {recommended.map((req) => (
-                      <li key={req.id} className="border-t border-white/12 pt-5">
+                      <li key={req.id} className="border-t border-tone-line pt-5">
                         <h4 className="text-lg">{req.label}</h4>
                         {req.description && (
-                          <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                          <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                             {req.description}
                           </p>
                         )}
@@ -122,7 +122,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
 
         <section className="mt-16">
           <h2 className="font-serif text-2xl">How your documents are handled</h2>
-          <div className="mt-5 max-w-[64ch] space-y-4 text-[15px] leading-relaxed text-ink-inverse/70">
+          <div className="mt-5 max-w-[64ch] space-y-4 text-[15px] leading-relaxed text-tone-body">
             <p>
               Once you have reserved, we send you a private link to upload each
               document. Files go straight into encrypted storage. They are never posted
@@ -147,7 +147,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
 
         <section className="mt-16">
           <h2 className="font-serif text-2xl">Altitude and your health</h2>
-          <div className="mt-5 max-w-[64ch] space-y-4 text-[15px] leading-relaxed text-ink-inverse/70">
+          <div className="mt-5 max-w-[64ch] space-y-4 text-[15px] leading-relaxed text-tone-body">
             <p>
               This journey crosses ground high enough for altitude sickness to be a
               genuine risk, on roads that are long and rough. That is true regardless of
@@ -167,9 +167,9 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
           </div>
         </section>
 
-        <section className="mt-16 border-t border-white/12 pt-10">
+        <section className="mt-16 border-t border-tone-line pt-10">
           <h2 className="font-serif text-2xl">Still deciding?</h2>
-          <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-tone-body">
             Talk to someone who has driven this road, before you book anything.
           </p>
           <Link

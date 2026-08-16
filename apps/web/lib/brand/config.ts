@@ -103,7 +103,7 @@ export const brand = {
       FOUNDER_OPS,
       "Operating entity to be confirmed before booking opens",
     ),
-    registrationNumber: undecided("O1", `${FOUNDER_BRAND} + adviser`, "—"),
+    registrationNumber: undecided("O1", `${FOUNDER_BRAND} + adviser`, "not yet registered"),
     registeredAddress: undecided("O1", `${FOUNDER_BRAND} + adviser`, "Pithoragarh, Uttarakhand"),
     copyrightHolder: undecided("O1", FOUNDER_BRAND, "The Sacred North"),
   },
@@ -156,7 +156,7 @@ export const brand = {
     /** Doc 09: deposits cannot be taken until O3 and O4 are approved. */
     paymentsEnabled: settled(false),
     paymentsBlockedReason: settled(
-      "Deposit, refund and operator decisions (O2–O4) are not yet approved.",
+      "Deposit, refund and operator decisions (O2 to O4) are not yet approved.",
     ),
   },
 } as const;
