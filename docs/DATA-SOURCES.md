@@ -178,33 +178,21 @@ followed, a 12 MB cap, and it fails closed when the secret is unset. There is al
 unauthenticated `?probe=1` that fetches those two homepages and returns two status
 codes with no body, which is how the table above was measured.
 
-### Turning it on
+### It needs no configuration
 
-It is deployed and inert until both sides hold the same secret. Nothing breaks while
-it is off; the two sources simply report nothing in production, which is what they
-already do.
+The relay takes no caller-supplied URL, only one of three fixed names, so there is
+nothing to abuse it for and therefore no secret to share and nothing to set on either
+side. The Python default points at the deployed URL; `INDIA_FETCH_URL` overrides it
+for a preview deployment or a move.
 
-1. **Vercel** project settings, environment variables, all environments:
+An earlier version accepted `?url=` against a host allowlist. That is a proxy, and a
+proxy needs a shared secret in two places, one of which needs dashboard access. The
+feature would have sat built, proven and switched off. Deleting the parameter deleted
+the secret, the configuration and the handover step together.
 
-   ```
-   INDIA_FETCH_SECRET = 7e055472c6a620392ed9fcebe245f733ea794adcaf7a3d214faec873cb4a55b4
-   ```
-
-2. **Coolify**, application `adikailash-api`, environment variables:
-
-   ```
-   INDIA_FETCH_URL    = https://adikailash-ten.vercel.app/api/india-fetch
-   INDIA_FETCH_SECRET = 7e055472c6a620392ed9fcebe245f733ea794adcaf7a3d214faec873cb4a55b4
-   ```
-
-3. Redeploy the API, then check that the two sources stop reporting errors:
-
-   ```
-   curl -s https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io/live | jq '.road_register.last_error, .permit_portal.last_error'
-   ```
-
-Replace the secret with your own if you would rather not use one that has been
-written into a repository. It only needs to match on both sides.
+Abuse now means hitting it in a loop to burn function budget, which a five-minute
+edge cache handles. The refresh runs hourly, so a five-minute copy costs nothing in
+freshness and keeps us off a small government server.
 
 ## Traps
 
