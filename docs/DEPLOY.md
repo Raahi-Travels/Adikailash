@@ -148,43 +148,67 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 - [ ] Confirm `payments_enabled: false` (it should be, until O2 to O4)
 - [ ] Check the footer still names the real legal entity, or an honest gap, not a guess
 
-## 3b. Triggering the API deploy — there is no webhook
+## 3b. Why a push may not deploy the API
 
-**Pushing to `main` does not deploy the API.** Confirmed on 13 Aug 2026: the
-repository has no webhooks (`gh api repos/Raahi-Travels/Adikailash/hooks` returns
-`[]`), and eight minutes after a 22-commit push the live API was still serving 24
-paths against a local 64. Vercel deploys itself through its GitHub App; Coolify does
-not, and the difference is easy to miss because the web half updates and the API half
-silently does not.
+Vercel deploys itself through its GitHub App. Coolify is *configured* to
+(`is_auto_deploy_enabled = true`, source `raahi-algo-backend`, a GitHub App), but a
+22-commit push on 16 Aug 2026 produced **no deployment record at all** — Coolify never
+received the event. Auto-deploy being on is not the same as GitHub sending anything.
 
-Trigger it from the VPS, where the token lives:
+Do not diagnose this with `gh api repos/.../hooks`: a GitHub App integration leaves no
+repo-level webhook, so an empty list proves nothing. That check was run first and gave
+the wrong answer.
+
+Check whether Coolify heard about it:
 
 ```sh
 ssh root@72.62.241.119
-TOKEN=$(cat /root/.coolify_ak_token)
-# Find the application uuid once, then keep it:
-curl -s -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/v1/applications \
-  | python3 -c "import sys,json;[print(a['uuid'], a['name']) for a in json.load(sys.stdin)]"
-# Deploy:
-curl -s -X GET -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8000/api/v1/deploy?uuid=<APP_UUID>&force=false"
+docker exec coolify-db psql -U coolify -d coolify -t -A -F"|" -c \
+  "select application_id, status, commit, is_webhook, created_at
+   from application_deployment_queues order by created_at desc limit 5;"
 ```
 
-Then confirm the new code is actually live rather than assuming:
+No row for `application_id 14` after a push means the event never arrived — most
+likely the `raahi-algo-backend` GitHub App installation does not list this repository
+under its repository access. Fix it in GitHub → the App → Configure → Repository
+access. Until then, deploy through the API:
+
+```sh
+TOKEN=$(cat /root/.coolify_ak_token)
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8000/api/v1/deploy?uuid=pos48g4k0sw4gw80ww0c0swg&force=false"
+```
+
+Then confirm rather than assume — the path count is the cheapest real signal:
 
 ```sh
 curl -s https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io/openapi.json \
   | python3 -c "import sys,json;print(len(json.load(sys.stdin)['paths']),'paths')"
 ```
 
-A path count well short of local means the build did not take. **Migrations already
-ran** — dev and the live API share one Supabase database, so schema changes are live
-the moment they are applied locally, long before the code that uses them. That is
-survivable because every migration here is additive, and it is the reason to read
-each one for `op.drop_*` before applying it locally at all.
+## 3c. Migrations run in the image, not as a pre-deployment command
 
-Better: add the webhook so this stops being a manual step. Coolify → the application
-→ Webhooks → copy the deploy URL → GitHub → Settings → Webhooks → add it for `push`.
+Coolify's pre-deployment command executes inside the **currently running** container.
+Because dev and production share one Supabase database (D6), the schema routinely
+moves ahead of the deployed image — and then the old container is asked to upgrade a
+revision it has never heard of:
+
+```
+FAILED: Can't locate revision identified by '0f647b3d522f'
+```
+
+That is a deadlock, not a transient error: the image that contains the revision is
+the one the failing step is preventing from starting. It stranded the API on 9 August
+code for a week.
+
+So `pre_deployment_command` is **empty on purpose**. Migrations run at container start
+through `api.migrate`, under a Postgres advisory lock, before uvicorn is exec'd. If
+they fail the container never becomes healthy, Coolify keeps the previous version
+running, and the deploy is marked failed — which is the correct outcome when the code
+and the schema disagree.
+
+If you ever put a pre-deployment command back, this breaks again the first time
+somebody applies a migration locally.
 
 ## 4. Ongoing
 
