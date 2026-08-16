@@ -69,6 +69,12 @@ _DAILY = (
     "weather_code",
     "wind_speed_10m_max",
     "snowfall_sum",
+    # Requested instead of an air-quality figure. All of Uttarakhand has three CPCB
+    # stations, the nearest 210 km away in the plains, and the modelled PM2.5 at
+    # 4,989 m is 0.1 ug/m3: there is no air-quality story here. UV is the exposure
+    # that actually harms people at this altitude, and it is high on exactly the
+    # clear cold days when nobody expects it.
+    "uv_index_max",
 )
 
 
@@ -86,6 +92,9 @@ class PointForecast:
     #: not honoured. Should always be False; if it starts being True, the provider
     #: changed something.
     corrected_locally: bool
+    #: Peak UV index for the day, or None. Not corrected for elevation: the models
+    #: already account for path length, and there is no simple lapse rate for it.
+    uv_index_max: float | None = None
 
 
 @dataclass(frozen=True)
@@ -258,6 +267,13 @@ def _parse(point: Point, payload: dict) -> list[PointForecast]:
         # traveller should hear snow.
         condition = _worst(condition_from_wmo(c) for c in codes)
 
+        uv_values = [
+            daily.get(f"uv_index_max_{model}", [None] * (index + 1))[index]
+            for model in MODELS
+            if index < len(daily.get(f"uv_index_max_{model}") or [])
+        ]
+        uv = max((u for u in uv_values if u is not None), default=None)
+
         out.append(
             PointForecast(
                 slug=point.slug,
@@ -266,6 +282,7 @@ def _parse(point: Point, payload: dict) -> list[PointForecast]:
                 condition=condition,
                 resolved_elevation_m=point.elevation_m if needs_local_fix else resolved,
                 corrected_locally=needs_local_fix,
+                uv_index_max=uv,
             )
         )
 

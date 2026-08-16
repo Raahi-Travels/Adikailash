@@ -134,7 +134,10 @@ async def ingest_weather(session: AsyncSession) -> int:
             continue
 
         advisory = advisory_for(
-            point_forecast.condition, consensus, destination.altitude_m
+            point_forecast.condition,
+            consensus,
+            destination.altitude_m,
+            point_forecast.uv_index_max,
         )
 
         existing = await session.scalar(

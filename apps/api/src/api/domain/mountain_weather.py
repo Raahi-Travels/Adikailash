@@ -223,8 +223,17 @@ def condition_from_wmo(code: int | None) -> str:
     return _WMO.get(code, "unknown")
 
 
+#: Above this the World Health Organization calls for protection. Reached routinely
+#: on this route on days that feel cold, which is what makes it worth saying: nobody
+#: reaches for sunscreen at four thousand metres in a wind.
+UV_WORTH_MENTIONING = 6.0
+
+
 def advisory_for(
-    condition: str, consensus: Consensus | None, altitude_m: int | None
+    condition: str,
+    consensus: Consensus | None,
+    altitude_m: int | None,
+    uv_index: float | None = None,
 ) -> tuple[str, str] | None:
     """Practical guidance, in English and Hindi, or nothing.
 
@@ -251,6 +260,13 @@ def advisory_for(
             "Below freezing overnight. Carry more warmth than the daytime "
             "temperature suggests.",
             "रात में तापमान शून्य से नीचे। दिन के तापमान से अधिक गर्म कपड़े साथ रखें।",
+        )
+    if uv_index is not None and uv_index >= UV_WORTH_MENTIONING:
+        return (
+            f"Ultraviolet index around {uv_index:.0f}. Sun at this altitude burns "
+            "even when the air is cold, and on snow it reaches you twice.",
+            f"पराबैंगनी सूचकांक लगभग {uv_index:.0f}। इस ऊँचाई पर ठंड में भी धूप जलाती "
+            "है, और बर्फ़ पर वह दो बार पड़ती है।",
         )
     if altitude_m and altitude_m >= 3000 and condition == "clear":
         return (
