@@ -40,8 +40,8 @@ export function StagingNotice() {
       // register instead of trusting whatever it lands on.
       className="register-dark bg-status-limited/20 px-4 py-1.5 text-center text-xs leading-relaxed text-tone-body print:hidden"
     >
-      Test site. Route status and photographs here are placeholders, not verified
-      information. Please do not plan travel from anything on this page.
+      Test site. No route status has been verified yet and the photographs are
+      placeholders. Please do not plan travel from anything on this page.
     </p>
   );
 }

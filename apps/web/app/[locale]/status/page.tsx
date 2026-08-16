@@ -109,6 +109,25 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
           </p>
         )}
 
+        {/* An empty route list is a fact, not a reason to omit the section. The page
+            promises "what our coordinators have actually confirmed", and going
+            silently from that heading to the weather leaves a reader to conclude
+            everything is fine. Nine fabricated verifications were removed from the
+            database on 17 Aug 2026; until a coordinator publishes a real one, this
+            is the true answer and the page gives it. */}
+        {data && data.routes.length === 0 && (
+          <section className="mt-14">
+            <h2 className="font-serif text-2xl">Road and permits</h2>
+            <p className="mt-4 max-w-[68ch] leading-relaxed text-tone-body">
+              Nothing verified yet. Our coordinators publish a segment here once
+              somebody has driven it or spoken to someone who has, and until then we
+              would rather show you an empty page than a reassuring one. What other
+              people publish about this road is below, along with how old each of
+              those readings is.
+            </p>
+          </section>
+        )}
+
         {data && data.routes.length > 0 && (
           <section className="mt-14">
             <h2 className="font-serif text-2xl">Road and permits</h2>
