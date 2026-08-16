@@ -27,7 +27,8 @@ bun run check:imagery
 
 That fails while any generated image is still in place, and the pre-launch checklist
 in `docs/DEPLOY.md` runs it. When a real photograph replaces a placeholder, add its
-filename to `apps/web/public/scenes/REAL.txt` to record that it was actually taken.
+line in `apps/web/public/scenes/PROVENANCE.txt` saying what it is — `original`
+for a photograph the team took, `supplier_provided` for one a host gave us.
 
 Formats: AVIF or WebP win over JPG if both exist. JPG is fine.
 
@@ -220,4 +221,9 @@ The field-trip shot list. Each of these replaces the file of the same name:
 - The checkpost, so people know what to expect
 - The three of you, so the About page has real faces on it
 
-Then add each filename to `public/scenes/REAL.txt` and `bun run check:imagery` passes.
+Then set each filename to `original` in `public/scenes/PROVENANCE.txt` and
+`bun run check:imagery` passes.
+
+Generated imagery is allowed, and declared as `ai_generated`. The check only
+refuses it in slots that stand in for a named real place — the journey cards, the
+homestay kitchen, the permit office — because a viewer reads those as that place.

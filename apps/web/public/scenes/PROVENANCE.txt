@@ -1,0 +1,32 @@
+# What each scene image actually is.
+#
+#   <filename>  <provenance>
+#
+# Provenance values mirror `MediaProvenance` in apps/api/src/api/models/catalogue.py:
+#
+#   original            a photograph the team took
+#   supplier_provided   a photograph a host or operator gave us, with permission
+#   licensed_editorial  licensed stock, used within its licence
+#   illustrative        clearly decorative; does not claim to show a real place
+#   ai_generated        synthetic
+#
+# `bun run check:imagery` does NOT ban ai_generated. Doc 02's rule is narrower and
+# more useful than that: "Only original or verified supplier imagery may represent
+# actual stays, vehicles or route conditions." So the check fails when a synthetic or
+# illustrative image sits in a slot that *depicts a named real place* — a journey
+# card for Adi Kailash, a homestay kitchen, the permit office. Those are claims. A
+# texture behind a heading is not.
+#
+# An unlisted file also fails, because an undeclared image is the one nobody decided
+# about.
+
+hero.webp                                    ai_generated
+homestay-kitchen.webp                        ai_generated
+permits.webp                                 ai_generated
+journeys/default.webp                        ai_generated
+journeys/adi-kailash-om-parvat.webp          ai_generated
+journeys/adi-kailash-om-parvat-detail.webp   ai_generated
+journeys/homestay-immersion.webp             ai_generated
+journeys/homestay-immersion-detail.webp      ai_generated
+journeys/kumaon-spiritual-circuit.webp       ai_generated
+journeys/kumaon-spiritual-circuit-detail.webp ai_generated

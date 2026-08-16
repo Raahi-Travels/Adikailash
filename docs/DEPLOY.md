@@ -130,7 +130,11 @@ send `X-Robots-Tag: noindex`, but that is not access control.
 
 ## 3. Before the first public deploy
 
-- [ ] Replace the placeholder imagery: `bun run --cwd apps/web check:imagery` must pass
+- [ ] Imagery provenance: `bun run --cwd apps/web check:imagery` must pass. It does
+      not ban generated images — it refuses them only in slots that stand in for a
+      named real place (journey cards, the homestay kitchen, the permit office),
+      which is doc 02's actual rule. Everything else may be `ai_generated` or
+      `illustrative` as long as `public/scenes/PROVENANCE.txt` says so.
 - [ ] Brand portability holds: `bun run --cwd apps/web check:brand` must pass. D3 makes
       the working name provisional and D4 exists so replacing it is a config edit;
       this is the check that the claim is still true. Its first run found the brand
