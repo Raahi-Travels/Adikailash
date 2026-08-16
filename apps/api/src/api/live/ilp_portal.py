@@ -116,15 +116,23 @@ async def fetch(*, client: httpx.AsyncClient | None = None) -> PortalState:
             logger.warning("ILP portal homepage unreachable: %s", exc)
 
         try:
-            register = await india_get(f"{PORTAL}/registeruser", client=http)
+            # Not `raise_for_status`: a 302 away from the registration form is the
+            # answer, not a failure. The relay reports the origin's status in a
+            # header and `india.get` re-raises anything non-200, so this one call
+            # tolerates that and reads the status itself.
+            try:
+                register = await india_get(f"{PORTAL}/registeruser", client=http)
+                status = register.status_code
+                body = register.text
+            except httpx.HTTPStatusError as exc:
+                status = exc.response.status_code
+                body = ""
             # A redirect away from the registration form, or an explicit refusal in
             # the body, both mean the same thing to a traveller: they cannot start.
-            if register.status_code in (301, 302, 303, 307, 308):
+            if status in (301, 302, 303, 307, 308):
                 registration_open = False
-            elif register.status_code == 200:
-                registration_open = "registration disabled" not in _text(
-                    register.text
-                ).lower()
+            elif status == 200:
+                registration_open = "registration disabled" not in _text(body).lower()
         except httpx.HTTPError as exc:
             logger.warning("ILP registration page unreachable: %s", exc)
     finally:

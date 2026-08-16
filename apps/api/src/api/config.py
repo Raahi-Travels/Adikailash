@@ -75,11 +75,11 @@ class Settings(BaseSettings):
     open_meteo_api_key: str = Field(default="", alias="OPEN_METEO_API_KEY")
     open_meteo_host: str = Field(default="", alias="OPEN_METEO_HOST")
 
-    # Two Indian government portals refuse this host's address. When set, requests to
-    # them go through a Vercel function pinned to Mumbai; see `api/live/india.py`.
-    # Unset means direct, which is correct in development and on any Indian host.
+    # Two Indian government portals refuse this host's address, so those requests go
+    # through a function pinned to Mumbai; see `api/live/india.py`. There is no
+    # secret: the relay takes no caller-supplied URL, so there is nothing to protect.
+    # This override exists for a preview deployment or a move; the default works.
     india_fetch_url: str = Field(default="", alias="INDIA_FETCH_URL")
-    india_fetch_secret: str = Field(default="", alias="INDIA_FETCH_SECRET")
 
     #: Guards every outside fetch. Set false to make the app stop calling anyone,
     #: which is what you want if a provider starts misbehaving and you cannot deploy.
