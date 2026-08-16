@@ -224,23 +224,26 @@ produced 44 `DROP TABLE` statements against their schema.
 
 ## 3d. Verifying a deploy actually happened
 
-The workflow used to poll until the API served at least seventy paths. The old image
-already served seventy-seven, so a run could go green having verified nothing. It now
-fingerprints what is serving *before* triggering, and waits for that to change.
+The workflow sends `github.sha` as the SSH command. The forced command on the VPS
+never executes it: it strips every non-hex character, requires exactly forty, then
+polls the running container's image tag until it matches. Coolify tags each built
+image with the commit SHA, so this is a positive identification of what is serving.
 
-The fingerprint is `revision:openapi-hash`.
+Two earlier versions were wrong in opposite directions, and both are worth
+remembering because they look identical from the outside, which is a green run:
 
-- `revision` comes from `/health` and is stamped into the image from the `GIT_SHA` or
-  `SOURCE_COMMIT` build argument.
-- **Coolify does not currently pass either**, so it reports `unknown` and the OpenAPI
-  hash does the work. That is why the fingerprint has two halves: a build that stamps
-  its commit and one that does not are both detected.
-- To make the first half work, set a build argument on the application in Coolify.
-  Nothing depends on it; it turns a change-detector into a positive identification.
+- **Polling for "at least seventy paths"** passed instantly against the old image,
+  which already served seventy-seven. A run could go green having verified nothing.
+- **Waiting for the served fingerprint to change** then failed a healthy deploy whose
+  commit touched no endpoint. Nothing observable changed, so it timed out after ten
+  minutes on a deployment that had worked perfectly.
 
-An unreachable API yields `?:?`, which differs from the previous value and would
-otherwise read as a successful deploy at the exact moment the service is down. The
-wait step requires both halves to be real. That case is unit-tested.
+The lesson is that "has something changed" and "is something up" are both proxies.
+"Is *this commit* running" is the actual question.
+
+If a run fails, the container is genuinely not on that commit. Check Coolify's
+deployment log; the build failed and the previous version is still serving, which is
+the correct outcome of a failed build rather than a problem with the check.
 
 ## 3e. The hourly refresh
 
