@@ -105,7 +105,29 @@ export function LiveSources({
   const beds = data.bed_availability;
   const bedsPayload = beds?.payload as unknown as BedsPayload | undefined;
 
-  const notIssuing = permitPayload?.is_issuing === false;
+  // A stale permit verdict is withheld rather than shown, which is the opposite of
+  // how every other reading on this page degrades, and deliberately so. This one is
+  // binary and consequential in both directions: a stale "not being issued" turns
+  // away somebody whose trip is now possible, and a stale "being issued" sends
+  // somebody towards a closed border. Everything else here is a detail a reader can
+  // discount; this is the fact they would act on.
+  //
+  // It matters in practice rather than in theory. The production host is in Kuala
+  // Lumpur and this portal refuses non-Indian addresses, so the reading can sit
+  // un-refreshable for as long as that is true.
+  const permitIsCurrent = permit != null && !permit.is_stale;
+  const notIssuing = permitIsCurrent && permitPayload?.is_issuing === false;
+
+  // Written as one expression rather than nested ternaries in the markup, because
+  // the nested version silently rendered two verdicts at once: the "not issuing"
+  // branch fell through to "Being issued" and then appended its own text.
+  const verdict = !permitIsCurrent
+    ? "We cannot tell you right now"
+    : permitPayload?.is_issuing === true
+      ? "Being issued"
+      : permitPayload?.is_issuing === false
+        ? "Not being issued"
+        : "We could not tell";
 
   return (
     <div>
@@ -128,21 +150,23 @@ export function LiveSources({
           <h3 className="text-[15px] font-medium text-tone-strong">
             Inner Line Permits
           </h3>
-          <p className="mt-2 text-lg text-tone-strong">
-            {permitPayload.is_issuing === null
-              ? "We could not tell"
-              : permitPayload.is_issuing
-                ? "Being issued"
-                : "Not being issued"}
-          </p>
+          <p className="mt-2 text-lg text-tone-strong">{verdict}</p>
 
-          {permitPayload.notice && (
+          {!permitIsCurrent && (
+            <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
+              We have not been able to reach the permit portal recently enough to
+              trust what it last told us, so we are not going to repeat it. Ask us,
+              or read the portal yourself using the link below.
+            </p>
+          )}
+
+          {permitIsCurrent && permitPayload.notice && (
             <blockquote className="mt-4 border-l-2 border-status-suspended/50 pl-4 text-[15px] leading-relaxed text-tone-body">
               {permitPayload.notice}
             </blockquote>
           )}
 
-          {permitPayload.uncertainty && (
+          {permitIsCurrent && permitPayload.uncertainty && (
             <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
               {permitPayload.uncertainty}
             </p>

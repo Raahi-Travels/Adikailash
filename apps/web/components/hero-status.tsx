@@ -90,9 +90,15 @@ export function HeroStatus({
   // Only when the portal actually said so. `null` means the two signals disagreed
   // or the site was unreachable, and inventing a suspension is as bad as missing
   // one: it would stop enquiries on a route that is open.
+  // Only from a reading we could actually refresh. A stale suspension notice would
+  // keep turning away enquiries after the portal reopened, and the production host
+  // is in a country this portal refuses to talk to, so "stale" is the normal case
+  // rather than the rare one.
+  const permit = live?.permit_portal;
   const notIssuing =
-    (live?.permit_portal?.payload as { is_issuing?: boolean | null } | undefined)
-      ?.is_issuing === false;
+    permit != null &&
+    !permit.is_stale &&
+    (permit.payload as { is_issuing?: boolean | null }).is_issuing === false;
 
   return (
     <Shell>

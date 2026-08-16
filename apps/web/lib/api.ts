@@ -225,11 +225,17 @@ export const api = {
   /** Never cached. See module docstring. */
   status: (locale: Locale) => get<LiveStatus>("/status", locale),
   /**
-   * Cached for five minutes. These are refreshed by a scheduled job rather than by
-   * traffic, so a shorter window would just add requests without adding freshness,
-   * and a longer one would delay a permit suspension reaching the page.
+   * Sixty seconds, not the five minutes this started at.
+   *
+   * The underlying values refresh hourly on the server, so a longer window would
+   * cost nothing in freshness on paper. But this payload carries the permit state,
+   * and this module's own rule is that "a cached 'route open' banner is the same lie
+   * as a stale one". A permit suspension, or a reopening, is precisely that class of
+   * fact: consequential in both directions and acted upon immediately. Sixty seconds
+   * keeps our own API from being hit per request without letting the most important
+   * thing on the page sit five minutes behind.
    */
-  live: (locale: Locale) => get<LiveSources>("/live", locale, 300),
+  live: (locale: Locale) => get<LiveSources>("/live", locale, 60),
   departures: (locale: Locale) => get<Departure[]>("/departures", locale),
   permitChecklist: (locale: Locale, journey?: string) =>
     get<PermitChecklist>(
