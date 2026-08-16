@@ -9,6 +9,7 @@ import {
 } from "next/font/google";
 
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { StagingNotice } from "@/components/staging-notice";
 import { OrganizationLd } from "@/components/structured-data";
 import { routing } from "@/i18n/routing";
 import type { Locale } from "@/lib/api";
@@ -82,6 +83,7 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-midnight">
         <NextIntlClientProvider>
           <OrganizationLd locale={locale} />
+          <StagingNotice />
           <SiteHeader locale={locale as Locale} />
           {children}
           <SiteFooter locale={locale as Locale} />
