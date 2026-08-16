@@ -320,3 +320,50 @@ departure, on a route with no hospital above Dharchula. They looked entirely at 
 The check is verified to catch all seven, and verified **not** to fire on doc 09's own
 disclaimer, which a naive pattern flags as the very thing it exists to prevent. A
 check that fails on the disclaimer is a check people switch off.
+
+## D45 — No fabricated verification survives in the database
+
+Nine route statuses were deleted on 17 Aug 2026: eight labelled `DEMO DATA - not a
+real verification`, one attributed to `ops@example.invalid`, a reserved non-domain.
+There are now zero, which is the true count.
+
+A route status asserts that a named person checked a named stretch on a given date.
+Nothing except a coordinator can produce one. Research cannot, and a plausible entry
+written to clear a warning is the precise failure this product exists to prevent.
+
+The status page was changed at the same time, because an empty list rendered as **no
+section at all**: a reader went from the heading "what our coordinators have actually
+confirmed" straight to the weather and would reasonably conclude everything was fine.
+Absence is now stated.
+
+## D46 — The leaked Coolify token is contained, and still needs rotating
+
+A full-privilege Coolify API token was printed into a session transcript. Assessed
+rather than assumed:
+
+- It reaches `/servers`, `/projects`, `/teams` and `/databases`. Full team scope.
+- **Coolify's API is unreachable from the internet.** Port 8000 is filtered upstream
+  by Hostinger, which is the same block that forced the SSH-with-forced-command
+  deploy in the first place. Verified again on 17 Aug 2026: no route from outside.
+- So using it requires shell access to the box first, at which point the token is not
+  the weakest thing available.
+
+It is hygiene rather than an open door. Coolify 4.0.0-beta.462 exposes no token API,
+so creation is UI-only and a hand-inserted Sanctum row is rejected; this is why the
+earlier programmatic attempt failed. Rotate in the UI, write the new value to
+`/root/.coolify_ak_token` with mode 600, and nothing else needs changing.
+
+## D47 — Four decisions block launch and none of them are technical
+
+`legalEntityName` (O1), `operatorDisclosure` (O2), `domain` (O7) and `supportHours`
+(O10) are unresolved, and `isLaunchReady()` is false because of them.
+
+They are founder decisions. Inventing a legal entity name would be a legal
+misrepresentation as well as the fabrication failure this codebase spends most of its
+guardrails preventing, so the code states the gap instead and does so everywhere it
+matters: the footer reads "Legal entity to be confirmed", `robots.txt` disallows the
+whole site because no domain is settled, and payments are off.
+
+Nothing is technically blocked. The site is deployed, public and working. What is
+blocked is describing ourselves as a company somebody can contract with, which is
+correct until somebody decides what that company is.
