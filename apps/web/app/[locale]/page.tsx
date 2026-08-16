@@ -46,10 +46,10 @@ function since(iso: string | null | undefined, locale: string) {
 
 function Fact({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="border-t border-white/12 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
-      <p className="text-sm text-ink-inverse/55">{label}</p>
-      <p className="type-reading mt-1.5 text-lg text-ink-inverse">{value}</p>
-      {note && <p className="mt-1 text-sm text-ink-inverse/50">{note}</p>}
+    <div className="border-t border-tone-line pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
+      <p className="text-sm text-tone-muted">{label}</p>
+      <p className="type-reading mt-1.5 text-lg text-tone-strong">{value}</p>
+      {note && <p className="mt-1 text-sm text-tone-muted">{note}</p>}
     </div>
   );
 }
@@ -59,10 +59,11 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   setRequestLocale(locale);
   const typed = locale as Locale;
 
-  const [journeys, checklist, status] = await Promise.all([
+  const [journeys, checklist, status, live] = await Promise.all([
     api.journeys(typed),
     api.permitChecklist(typed),
     api.status(typed),
+    api.live(typed),
   ]);
   const wa = whatsappLink({ intent: "journey" });
   const campaign = brand.campaign.flagship;
@@ -100,13 +101,13 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
           <div>
-            <p className="max-w-[24ch] font-serif text-[1.375rem] leading-snug text-ink-inverse/60 sm:text-2xl">
+            <p className="max-w-[24ch] font-serif text-[1.375rem] leading-snug text-tone-muted sm:text-2xl">
               {displayLocalized(campaign.headlineLead, locale)}
             </p>
-            <h1 className="type-display mt-3 max-w-[15ch] text-ink-inverse">
+            <h1 className="type-display mt-3 max-w-[15ch] text-tone-strong">
               {displayLocalized(campaign.headlineTurn, locale)}
             </h1>
-            <p className="mt-7 max-w-[44ch] text-lg leading-relaxed text-ink-inverse/70">
+            <p className="mt-7 max-w-[44ch] text-lg leading-relaxed text-tone-body">
               {displayLocalized(campaign.support, locale)}
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -134,7 +135,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             </div>
           </div>
 
-          <HeroStatus data={status} locale={typed} />
+          <HeroStatus data={status} live={live} locale={typed} />
         </div>
       </section>
 
@@ -146,14 +147,17 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         rather than a thing we say about ourselves.
       */}
       <div className="register-light relative px-4 sm:px-6">
-        <div className="mx-auto -mt-px max-w-6xl rounded-2xl bg-midnight px-6 py-7 text-ink-inverse sm:px-8">
+        {/* `register-dark` rather than bare navy: it declares its own register, so
+            the tone and status variables resolve for anything placed inside it later
+            rather than inheriting the light values from the section it overlaps. */}
+        <div className="register-dark mx-auto -mt-px max-w-6xl rounded-2xl px-6 py-7 sm:px-8">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <p className="text-sm text-ink-inverse/55">Highest ground</p>
-              <p className="type-reading mt-1.5 text-lg text-ink-inverse">
+              <p className="text-sm text-tone-muted">Highest ground</p>
+              <p className="type-reading mt-1.5 text-lg text-tone-strong">
                 about {HIGHEST.altitudeM.toLocaleString("en-IN")} m
               </p>
-              <p className="mt-1 text-sm text-ink-inverse/50">{HIGHEST.name}</p>
+              <p className="mt-1 text-sm text-tone-muted">{HIGHEST.name}</p>
             </div>
             <Fact
               label="Documents required"

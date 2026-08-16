@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { StatusBadge } from "@/components/status-badge";
+import { LiveSources } from "@/components/live-sources";
 import { StatusAlerts } from "@/components/status-alerts";
 import { StatusLd } from "@/components/structured-data";
 import { api, type Locale } from "@/lib/api";
@@ -64,7 +65,12 @@ function fmt(iso: string, locale: string) {
 export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const data = await api.status(locale as Locale);
+  // Fetched together: the two are read side by side on the page, and a sequential
+  // pair would add the slower one's latency to the faster one for no reason.
+  const [data, live] = await Promise.all([
+    api.status(locale as Locale),
+    api.live(locale as Locale),
+  ]);
 
   return (
     <>
@@ -110,13 +116,13 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
               {data.routes.map((route) => (
                 <article
                   key={route.id}
-                  className="border-t border-white/12 py-6"
+                  className="border-t border-tone-line py-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3 className="text-lg">{route.segment_name}</h3>
                       {route.requires_permit && (
-                        <p className="mt-1 text-sm text-ink-inverse/55">
+                        <p className="mt-1 text-sm text-tone-muted">
                           Inner-line permit required
                         </p>
                       )}
@@ -130,7 +136,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                     </p>
                   )}
 
-                  <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-ink-inverse/55">
+                  <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-tone-muted">
                     <div className="flex gap-2">
                       <dt>Verified</dt>
                       <dd className="text-ink-inverse/80">
@@ -170,7 +176,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
             </p>
             <div className="mt-6">
               {data.weather.map((w) => (
-                <article key={w.id} className="border-t border-white/12 py-6">
+                <article key={w.id} className="border-t border-tone-line py-6">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3 className="text-lg">{w.place}</h3>
@@ -198,7 +204,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                     </p>
                   )}
 
-                  <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-ink-inverse/55">
+                  <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-tone-muted">
                     <div className="flex gap-2">
                       <dt>Observed</dt>
                       <dd className="text-ink-inverse/80">
@@ -222,11 +228,19 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
           </section>
         )}
 
+        {/* What other people publish, kept below and visibly apart from what our
+            own coordinators verified. Doc 08: third-party data is not authoritative
+            without defined verification, and the permit state in here is the one
+            fact that can override everything above it. */}
+        <div className="mt-20">
+          <LiveSources data={live} locale={locale as Locale} />
+        </div>
+
         <div className="mt-16">
           <StatusAlerts />
         </div>
 
-        <p className="mt-10 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-10 border-t border-tone-line pt-6 text-sm leading-relaxed text-tone-muted">
           We publish what we can verify and mark what we cannot. Nothing on this page is
           a guarantee of access, weather or darshan. If a segment matters to your
           travel, ask us before you set out.

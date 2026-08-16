@@ -191,12 +191,45 @@ async function get<T>(path: string, locale: Locale, revalidate?: number): Promis
   }
 }
 
+
+/**
+ * What outside sources last told us. Deliberately separate from `LiveStatus`, which
+ * is what our own coordinators verified: merging them would put a scraped government
+ * table and a person who drove the road behind the same words.
+ */
+export type LiveSource = {
+  source: string;
+  /** Shape varies by source. Each consumer knows which one it asked for. */
+  payload: Record<string, unknown>;
+  fetched_at: string;
+  /** Derived server-side at read time from `fetched_at`. */
+  is_stale: boolean;
+  /** Set when the last fetch failed. The payload is then the previous answer. */
+  last_error: string | null;
+  source_url: string | null;
+};
+
+export type LiveSources = {
+  permit_portal: LiveSource | null;
+  road_register: LiveSource | null;
+  hazard_alerts: LiveSource | null;
+  bed_availability: LiveSource | null;
+  /** Travels with the data so a page cannot render readings without the caveat. */
+  coverage_note: string;
+};
+
 export const api = {
   journeys: (locale: Locale) => get<JourneySummary[]>("/journeys", locale, 60),
   journey: (slug: string, locale: Locale) =>
     get<JourneyDetail>(`/journeys/${slug}`, locale, 60),
   /** Never cached. See module docstring. */
   status: (locale: Locale) => get<LiveStatus>("/status", locale),
+  /**
+   * Cached for five minutes. These are refreshed by a scheduled job rather than by
+   * traffic, so a shorter window would just add requests without adding freshness,
+   * and a longer one would delay a permit suspension reaching the page.
+   */
+  live: (locale: Locale) => get<LiveSources>("/live", locale, 300),
   departures: (locale: Locale) => get<Departure[]>("/departures", locale),
   permitChecklist: (locale: Locale, journey?: string) =>
     get<PermitChecklist>(

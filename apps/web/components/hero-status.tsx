@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { api, type Locale } from "@/lib/api";
+import { api, type Locale, type LiveSources } from "@/lib/api";
 import { whatsappLink } from "@/lib/brand";
 import {
   legLabel,
@@ -47,12 +47,14 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 export function HeroStatus({
   data,
+  live,
   locale,
 }: {
   // Passed in rather than fetched here: the hinge band below the hero reports on the
   // same readings, and two components independently calling the status endpoint can
   // disagree by a verification if one lands either side of a coordinator's update.
   data: Awaited<ReturnType<typeof api.status>>;
+  live: LiveSources | null;
   locale: Locale;
 }) {
   const wa = whatsappLink({ intent: "status" });
@@ -85,6 +87,13 @@ export function HeroStatus({
 
   const confirmed = legs.filter((l) => l.state !== "unknown").length;
 
+  // Only when the portal actually said so. `null` means the two signals disagreed
+  // or the site was unreachable, and inventing a suspension is as bad as missing
+  // one: it would stop enquiries on a route that is open.
+  const notIssuing =
+    (live?.permit_portal?.payload as { is_issuing?: boolean | null } | undefined)
+      ?.is_issuing === false;
+
   return (
     <Shell>
       <div className="flex items-baseline justify-between gap-4">
@@ -98,6 +107,14 @@ export function HeroStatus({
           Every segment
         </Link>
       </div>
+
+      {notIssuing && (
+        <p className="mt-4 rounded-xl bg-status-suspended/15 px-3.5 py-3 text-sm leading-relaxed text-ink-inverse ring-1 ring-status-suspended/30">
+          <span className="font-medium">Permits are not being issued.</span> The
+          district portal has suspended Inner Line Permits, so nobody is travelling
+          above Chiyalekh at the moment, us included.
+        </p>
+      )}
 
       <ul className="mt-4">
         {legs.map(({ station, status, state }) => (

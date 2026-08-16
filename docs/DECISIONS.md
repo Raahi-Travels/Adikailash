@@ -230,3 +230,93 @@ with the handoff docs, resolved as follows:
   rather than cream-on-cream, which satisfies the intent behind the warning.
 - **Em-dashes** are banned in visible copy by `taste-skill`, so status labels, seeded
   content and page copy use full stops or hyphens instead.
+
+---
+
+## D39 — Two registers, and what decides which
+
+**Navy carries what we have verified. Off-white carries what we are offering.**
+
+Live route state, permits, altitude and weather are dark. Journeys, homestays,
+guides, planning and reading are light. This is why the home page opens dark and
+turns light, and why the route instrument at its foot returns to navy. It is not
+alternation for variety; it is the line the API already draws between a timestamped
+reading and a piece of marketing copy, made visible.
+
+It also settles per-page treatment with no further argument: `/status`, `/trip`,
+`/booking`, `/documents` and the family view are dark throughout; `/journeys`,
+`/plan`, `/guides`, `/departures`, `/private`, `/partners`, `/policies`, `/enquire`
+and `/feedback` are light throughout.
+
+Components read `--tone-*` and never a fixed colour, so the same component renders
+correctly in either. Anything rendering outside a register falls back to light.
+
+## D40 — Status colours are register-relative
+
+Doc 02's status palette is drawn for a light background and several values are
+unreadable on navy. Measured against `#0b1d2d`: open-teal `#2d5d5f` is **2.32:1**,
+less than half the 4.5:1 body minimum, and limited and unverified both sit near
+3.7:1. Each was being used as the text of a status label.
+
+`--color-status-*` therefore resolves through a `--status-*` variable that each
+register sets, so `text-status-open` means "open, in whichever register this element
+is". Dark variants are the same hues at reduced chroma and raised lightness, each
+taken to the first value clearing 4.6:1.
+
+Gold stays out of body text on light: `#c89a4e` on snow is 2.37:1. It survives as the
+link underline and the contour colour, where it points without needing to be read.
+
+## D41 — Weather is corrected for elevation, or it is not published
+
+Open-Meteo is used because it reports the elevation its own grid holds **and lets you
+override it**. OpenWeatherMap, WeatherAPI and Visual Crossing report neither, which is
+disqualifying here rather than inconvenient: you cannot correct an error you cannot
+see.
+
+Within a 10 by 8 km box near Gunji the ground spans 2,876 m inside one model grid
+cell, and no regional high-resolution model covers India. Uncorrected, Nabhidhang
+reads 5.4 C too cold and Jyolingkong 4.4 C too warm on the same day, in opposite
+directions.
+
+`timezone=auto` is banned: it returns **Asia/Kathmandu** for Nabhidhang, Kalapani and
+Lipulekh, because the geocoder resolves the disputed border in Nepal's favour.
+
+Readings come from two genuinely different models and are shown as a range. A single
+model's ensemble is under-dispersed here (about 2 C against 8.8 C across models) and
+believing it would manufacture confidence.
+
+The free tier is non-commercial. `OPEN_METEO_API_KEY` moves to the paid host, and
+that becomes a launch requirement the day journeys are sold.
+
+## D42 — Third-party data never borrows our verification language
+
+`/live` is separate from `/status` and renders in its own section below it. A scraped
+government table and a coordinator who drove the road are different kinds of claim,
+and a reader who cannot tell them apart will trust the wrong one.
+
+Every response carries a coverage note stating that no official source reports road
+status above Tawaghat and no weather station exists on the route, so a UI cannot
+render the readings without the caveat. The permit portal's notice is passed through
+verbatim; a paraphrase of "suspended until further orders" is a liability.
+
+A stale reading keeps its payload and loses its freshness: `fetched_at` only advances
+on success, so a failing job can never make old data look current.
+
+## D43 — Route statuses are not seeded from research
+
+Eight route statuses still read `verified_by = "DEMO DATA - not a real verification"`
+and will keep reading that until a coordinator enters real ones. A route status means
+a named person checked that stretch on that date. No amount of research produces one,
+and replacing them with plausible entries to clear a warning banner is the exact
+failure this site exists to prevent.
+
+## D44 — `check:copy` guards the two things comps smuggle in
+
+Em-dashes in user-visible text, and claims with nothing behind them. The redesign
+mockups arrived carrying traveller counts, a Trustpilot score, "Since 2010", years of
+experience and a **98% safety record**, for a business that has not run its first
+departure, on a route with no hospital above Dharchula. They looked entirely at home.
+
+The check is verified to catch all seven, and verified **not** to fire on doc 09's own
+disclaimer, which a naive pattern flags as the very thing it exists to prevent. A
+check that fails on the disclaimer is a check people switch off.
