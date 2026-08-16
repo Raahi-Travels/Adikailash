@@ -63,7 +63,7 @@ export function Scene({
         />
       )}
       {process.env.NODE_ENV !== "production" && (
-        <span className="absolute bottom-2 right-2 rounded bg-midnight/85 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-tone-strong underline decoration-gold decoration-2 underline-offset-4/90 ring-1 ring-gold/25">
+        <span className="absolute bottom-2 right-2 rounded bg-midnight/85 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-gold/90 ring-1 ring-gold/25">
           Placeholder
         </span>
       )}

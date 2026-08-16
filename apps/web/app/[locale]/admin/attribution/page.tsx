@@ -51,7 +51,7 @@ export default async function AttributionPage() {
     return (
       <>
         <h1 className="text-2xl font-medium">Where the business comes from</h1>
-        <p className="mt-4 text-[15px] text-ink-inverse/60">
+        <p className="mt-4 text-[15px] text-tone-body">
           Could not load the report. This needs a finance or founder role.
         </p>
       </>
@@ -61,7 +61,7 @@ export default async function AttributionPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Where the business comes from</h1>
-      <p className="mt-3 max-w-[72ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[72ch] text-[15px] leading-relaxed text-tone-body">
         Contribution, not revenue. Supplier cost and refunds are taken off, and
         anything still on hold is kept separate. A channel that books the most can
         earn the least, and ranking on gross would send a season at the wrong one.
@@ -69,24 +69,24 @@ export default async function AttributionPage() {
 
       <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3 text-sm">
         <div>
-          <dt className="text-ink-inverse/45">Total contribution</dt>
+          <dt className="text-tone-muted">Total contribution</dt>
           <dd className="mt-0.5 text-lg">{report.total_contribution_display}</dd>
         </div>
         <div>
-          <dt className="text-ink-inverse/45">On hold, not counted</dt>
+          <dt className="text-tone-muted">On hold, not counted</dt>
           <dd className="mt-0.5 text-lg">{report.total_conditional_value}</dd>
         </div>
         <div>
-          <dt className="text-ink-inverse/45">Unattributed</dt>
+          <dt className="text-tone-muted">Unattributed</dt>
           <dd className="mt-0.5 text-lg">
             {report.unattributed_contribution_share_percent ?? "n/a"}% of contribution
-            <span className="ml-2 text-sm text-ink-inverse/45">
+            <span className="ml-2 text-sm text-tone-muted">
               ({report.unattributed_lead_share_percent ?? "n/a"}% of leads)
             </span>
           </dd>
         </div>
         <div>
-          <dt className="text-ink-inverse/45">Model</dt>
+          <dt className="text-tone-muted">Model</dt>
           <dd className="mt-0.5 text-lg">{report.attribution_model}</dd>
         </div>
       </dl>
@@ -101,8 +101,8 @@ export default async function AttributionPage() {
 
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[820px] text-sm">
-          <thead className="text-left text-xs text-ink-inverse/45">
-            <tr className="border-b border-white/10">
+          <thead className="text-left text-xs text-tone-muted">
+            <tr className="border-b border-tone-line">
               <th className="py-2 pr-4 font-normal">Source</th>
               <th className="py-2 pr-4 text-right font-normal">Leads</th>
               <th className="py-2 pr-4 text-right font-normal">Bookings</th>
@@ -115,7 +115,7 @@ export default async function AttributionPage() {
           </thead>
           <tbody>
             {report.sources.map((s) => (
-              <tr key={s.source} className="border-b border-white/[0.06] align-top">
+              <tr key={s.source} className="border-b border-tone-line align-top">
                 <td className="py-3 pr-4">
                   {s.source}
                   {s.is_low_confidence && (
@@ -126,7 +126,7 @@ export default async function AttributionPage() {
                   {s.caveats.map((c, i) => (
                     <p
                       key={i}
-                      className="mt-1 max-w-[46ch] text-xs leading-relaxed text-ink-inverse/45"
+                      className="mt-1 max-w-[46ch] text-xs leading-relaxed text-tone-muted"
                     >
                       {c}
                     </p>
@@ -136,7 +136,7 @@ export default async function AttributionPage() {
                 <td className="py-3 pr-4 text-right tabular-nums">
                   {s.earning_reservations}
                   {s.conditional_reservations > 0 && (
-                    <span className="text-ink-inverse/40">
+                    <span className="text-tone-muted">
                       {" "}
                       +{s.conditional_reservations} held
                     </span>
@@ -146,17 +146,17 @@ export default async function AttributionPage() {
                 <td className="py-3 pr-4 text-right text-[15px] tabular-nums">
                   {s.contribution_display}
                 </td>
-                <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/70">
+                <td className="py-3 pr-4 text-right tabular-nums text-tone-body">
                   {s.contribution_margin_percent ?? "n/a"}%
                 </td>
                 {/* Present so the arithmetic can be checked, never the headline. */}
-                <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/40">
+                <td className="py-3 pr-4 text-right tabular-nums text-tone-muted">
                   {s.gross_agreed}
                 </td>
-                <td className="py-3 pr-4 text-right tabular-nums text-ink-inverse/70">
+                <td className="py-3 pr-4 text-right tabular-nums text-tone-body">
                   {s.spend ?? "n/a"}
                 </td>
-                <td className="py-3 text-right tabular-nums text-ink-inverse/70">
+                <td className="py-3 text-right tabular-nums text-tone-body">
                   {s.acquisition_share_of_contribution
                     ? `${s.acquisition_share_of_contribution}%`
                     : "n/a"}
@@ -167,7 +167,7 @@ export default async function AttributionPage() {
         </table>
       </div>
 
-      <p className="mt-6 max-w-[72ch] text-xs leading-relaxed text-ink-inverse/40">
+      <p className="mt-6 max-w-[72ch] text-xs leading-relaxed text-tone-muted">
         Supplier cost is apportioned per traveller across each departure, so
         contribution is an estimate. &ldquo;n/a&rdquo; means unknown, never zero. A channel with
         no recorded spend is one nobody has measured, not one that is free.

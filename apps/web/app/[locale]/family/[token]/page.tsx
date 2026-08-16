@@ -92,19 +92,19 @@ export default async function FamilyPage({
   const currentDay = view.days.find((d) => d.on_date === today);
 
   return (
-    <main id="main" data-quiet-page className="flex-1 register-dark px-4 py-14 text-ink-inverse sm:px-6 sm:py-16">
+    <main id="main" data-quiet-page className="flex-1 register-dark px-4 py-14 text-tone-strong sm:px-6 sm:py-16">
       <div className="mx-auto max-w-2xl">
         {/*
           Named, deliberately. This page is opened from a forwarded link and asks a
           worried person to trust a phone number on it — an unbranded page doing that
           is indistinguishable from a scam.
         */}
-        <p className="font-serif text-base tracking-wide text-ink-inverse/70">
+        <p className="font-serif text-base tracking-wide text-tone-body">
           {display(brand.identity.name)}
         </p>
 
         {/* Built as one string: JSX would insert whitespace before the comma. */}
-        <p className="mt-6 text-sm text-ink-inverse/50">
+        <p className="mt-6 text-sm text-tone-muted">
           {`${view.shared_by ? `${view.shared_by} shared this with you` : "Shared with you"}${
             view.shared_with_label ? `, ${view.shared_with_label}` : ""
           }.`}
@@ -112,7 +112,7 @@ export default async function FamilyPage({
         <h1 className="mt-3 font-serif text-3xl leading-tight sm:text-4xl">
           {view.journey_name}
         </h1>
-        <p className="mt-2 text-[15px] text-ink-inverse/70">
+        <p className="mt-2 text-[15px] text-tone-body">
           {formatDate(view.starts_on)} to {formatDate(view.ends_on)}
           {view.traveller_first_names.length > 0 && (
             <> · {view.traveller_first_names.join(", ")}</>
@@ -124,12 +124,12 @@ export default async function FamilyPage({
           burying it under an itinerary would be a failure of judgement about who is
           reading.
         */}
-        <section className="mt-10 rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-white/10">
-          <h2 className="text-sm text-ink-inverse/50">Latest word from the group</h2>
+        <section className="mt-10 rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-tone-line">
+          <h2 className="text-sm text-tone-muted">Latest word from the group</h2>
           {view.latest_check_in ? (
             <>
               <p className="mt-3 text-lg leading-relaxed">{view.latest_check_in.note}</p>
-              <p className="mt-3 text-sm text-ink-inverse/50">
+              <p className="mt-3 text-sm text-tone-muted">
                 {sinceText(view.latest_check_in.at)}, from {view.latest_check_in.posted_by}.
               </p>
             </>
@@ -139,7 +139,7 @@ export default async function FamilyPage({
               person with something worse than the truth, and on this route there
               are two-day stretches with no signal at all.
             */
-            <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+            <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
               No check-in yet. There is no mobile network for long stretches above
               Dharchula, so a gap of a day or two is normal and is not a sign that
               anything is wrong. The coordinator posts one whenever they get signal.
@@ -149,10 +149,10 @@ export default async function FamilyPage({
 
         {currentDay && (
           <section className="mt-8">
-            <h2 className="text-sm text-ink-inverse/50">Today</h2>
+            <h2 className="text-sm text-tone-muted">Today</h2>
             <p className="mt-2 text-lg">{currentDay.title}</p>
             {currentDay.staying_at && (
-              <p className="mt-1 text-[15px] text-ink-inverse/60">
+              <p className="mt-1 text-[15px] text-tone-body">
                 Staying at {currentDay.staying_at} tonight.
               </p>
             )}
@@ -161,15 +161,15 @@ export default async function FamilyPage({
 
         {view.route_notices.length > 0 && (
           <section className="mt-8 rounded-lg bg-status-limited/10 px-5 py-5 ring-1 ring-status-limited/25">
-            <h2 className="text-sm text-ink-inverse/60">On the road right now</h2>
+            <h2 className="text-sm text-tone-body">On the road right now</h2>
             <ul className="mt-3 space-y-2">
               {view.route_notices.map((notice, i) => (
-                <li key={i} className="text-[15px] leading-relaxed text-ink-inverse/80">
+                <li key={i} className="text-[15px] leading-relaxed text-tone-body">
                   {notice}
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-xs leading-relaxed text-ink-inverse/45">
+            <p className="mt-3 text-xs leading-relaxed text-tone-muted">
               This is the same public route information anyone can read on our status
               page. It is not specific to this group.
             </p>
@@ -177,7 +177,7 @@ export default async function FamilyPage({
         )}
 
         <section className="mt-10">
-          <h2 className="text-sm text-ink-inverse/50">The plan, broadly</h2>
+          <h2 className="text-sm text-tone-muted">The plan, broadly</h2>
           <ol className="mt-4 space-y-3">
             {view.days.map((day) => (
               <li
@@ -186,13 +186,13 @@ export default async function FamilyPage({
                   day.on_date === today ? "bg-white/[0.06] ring-1 ring-gold/30" : ""
                 }`}
               >
-                <span className="w-14 shrink-0 pt-0.5 text-xs text-ink-inverse/40">
+                <span className="w-14 shrink-0 pt-0.5 text-xs text-tone-muted">
                   {formatDayAndMonth(day.on_date) ?? `Day ${day.day}`}
                 </span>
                 <span className="text-[15px] leading-relaxed">
                   {day.title}
                   {day.staying_at && (
-                    <span className="block text-sm text-ink-inverse/50">
+                    <span className="block text-sm text-tone-muted">
                       Staying at {day.staying_at}
                     </span>
                   )}
@@ -200,7 +200,7 @@ export default async function FamilyPage({
               </li>
             ))}
           </ol>
-          <p className="mt-4 text-xs leading-relaxed text-ink-inverse/45">
+          <p className="mt-4 text-xs leading-relaxed text-tone-muted">
             Days change. The road decides, and the coordinator will move things around
             for weather or altitude without asking anybody first. That is the right
             call to make on the ground.
@@ -208,8 +208,8 @@ export default async function FamilyPage({
         </section>
 
         {view.contacts.length > 0 && (
-          <section className="mt-10 border-t border-white/12 pt-8">
-            <h2 className="text-sm text-ink-inverse/50">If you need to reach somebody</h2>
+          <section className="mt-10 border-t border-tone-line pt-8">
+            <h2 className="text-sm text-tone-muted">If you need to reach somebody</h2>
             <ul className="mt-4 space-y-4">
               {view.contacts.map((contact, i) => (
                 <li key={i}>
@@ -223,7 +223,7 @@ export default async function FamilyPage({
                     </a>
                   )}
                   {contact.note && (
-                    <p className="mt-1 text-sm text-ink-inverse/50">{contact.note}</p>
+                    <p className="mt-1 text-sm text-tone-muted">{contact.note}</p>
                   )}
                 </li>
               ))}
@@ -231,7 +231,7 @@ export default async function FamilyPage({
           </section>
         )}
 
-        <p className="mt-12 border-t border-white/12 pt-6 text-xs leading-relaxed text-ink-inverse/45">
+        <p className="mt-12 border-t border-tone-line pt-6 text-xs leading-relaxed text-tone-muted">
           This page deliberately does not show documents, payments or anything
           personal about the travellers. The person who shared it with you can turn
           this link off at any time.

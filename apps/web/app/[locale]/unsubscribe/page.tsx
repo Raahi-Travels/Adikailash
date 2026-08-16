@@ -43,14 +43,14 @@ export default async function UnsubscribePage({
 
       {token ? (
         <>
-          <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-tone-body">
             One click and we stop. Anything already waiting to be sent to you is
             cancelled too, not just future messages.
           </p>
           <UnsubscribeForm token={token} />
         </>
       ) : (
-        <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-tone-body">
           This link is missing its token, so we cannot tell which subscription to
           stop. Use the link at the bottom of any alert we sent you, or write to us
           and we will do it by hand.

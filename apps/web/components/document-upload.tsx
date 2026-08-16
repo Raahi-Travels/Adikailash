@@ -28,12 +28,12 @@ function StateChip({ doc }: { doc: TravellerDocument }) {
       : doc.state === "needs_correction"
         ? ["Needs correction", "text-status-limited ring-status-limited/30"]
         : doc.state === "uploaded" || doc.state === "under_review"
-          ? ["With our team", "text-ink-inverse/70 ring-white/20"]
+          ? ["With our team", "text-tone-body ring-tone-line"]
           : doc.state === "waived"
-            ? ["Not required for you", "text-ink-inverse/60 ring-white/20"]
+            ? ["Not required for you", "text-tone-body ring-tone-line"]
             : doc.state === "expired"
               ? ["Expired", "text-status-suspended ring-status-suspended/30"]
-              : ["Not sent yet", "text-ink-inverse/55 ring-white/15"];
+              : ["Not sent yet", "text-tone-muted ring-tone-line"];
 
   return (
     <span className={`shrink-0 rounded-full px-3 py-1 text-sm ring-1 ${tone}`}>
@@ -115,9 +115,9 @@ export function DocumentUpload({
 
   if (loadError) {
     return (
-      <div className="rounded-lg bg-himalayan px-6 py-8 ring-1 ring-white/10">
-        <h2 className="text-xl text-ink-inverse">This link is not working</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <div className="rounded-lg bg-tone-raised px-6 py-8 ring-1 ring-tone-line">
+        <h2 className="text-xl text-tone-strong">This link is not working</h2>
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           {loadError}
         </p>
       </div>
@@ -136,9 +136,9 @@ export function DocumentUpload({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg bg-himalayan px-6 py-8 ring-1 ring-white/10">
-        <h2 className="text-xl text-ink-inverse">Nothing to send yet</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <div className="rounded-lg bg-tone-raised px-6 py-8 ring-1 ring-tone-line">
+        <h2 className="text-xl text-tone-strong">Nothing to send yet</h2>
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           Your coordinator has not requested any documents yet. They will let you know
           when the permit paperwork opens for your departure.
         </p>
@@ -158,7 +158,7 @@ export function DocumentUpload({
 
   return (
     <div>
-      <p className="text-[15px] text-ink-inverse/70">
+      <p className="text-[15px] text-tone-body">
         {data.outstanding_count === 0
           ? "Everything we asked for is with us. We will tell you if anything needs changing."
           : `${data.outstanding_count} of ${rows.length} still need something from you.`}
@@ -174,24 +174,24 @@ export function DocumentUpload({
           {traveller && (
             <h3 className="text-sm uppercase tracking-[0.12em] text-gold">
               {traveller}
-              <span className="ml-3 normal-case tracking-normal text-ink-inverse/45">
+              <span className="ml-3 normal-case tracking-normal text-tone-muted">
                 {docs.filter((d) => d.awaiting_you).length} of {docs.length} outstanding
               </span>
             </h3>
           )}
       <ul className="mt-4 space-y-5">
         {docs.map((doc) => (
-          <li key={doc.id} className="border-t border-white/12 pt-5">
+          <li key={doc.id} className="border-t border-tone-line pt-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-[17px] text-ink-inverse">
+                <h3 className="text-[17px] text-tone-strong">
                   {doc.requirement_label}
                   {!doc.is_mandatory && (
-                    <span className="ml-2 text-sm text-ink-inverse/50">optional</span>
+                    <span className="ml-2 text-sm text-tone-muted">optional</span>
                   )}
                 </h3>
                 {doc.requirement_description && (
-                  <p className="mt-1.5 max-w-[58ch] text-sm leading-relaxed text-ink-inverse/60">
+                  <p className="mt-1.5 max-w-[58ch] text-sm leading-relaxed text-tone-body">
                     {doc.requirement_description}
                   </p>
                 )}
@@ -200,14 +200,14 @@ export function DocumentUpload({
             </div>
 
             {doc.correction_reason && (
-              <p className="mt-3 max-w-[58ch] rounded-md bg-status-limited/15 px-4 py-3 text-sm leading-relaxed text-ink-inverse ring-1 ring-status-limited/25">
+              <p className="mt-3 max-w-[58ch] rounded-md bg-status-limited/15 px-4 py-3 text-sm leading-relaxed text-tone-strong ring-1 ring-status-limited/25">
                 <span className="font-medium">Please send this again. </span>
                 {doc.correction_reason}
               </p>
             )}
 
             {doc.is_uploaded && !doc.is_accepted && doc.state !== "needs_correction" && (
-              <p className="mt-3 text-sm text-ink-inverse/55">
+              <p className="mt-3 text-sm text-tone-muted">
                 {doc.original_filename ? `${doc.original_filename} received. ` : "Received. "}
                 A member of our team will check it. Being received is not the same as
                 being accepted.
@@ -240,8 +240,8 @@ export function DocumentUpload({
                   htmlFor={`file-${doc.id}`}
                   className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ring-1 transition-colors ${
                     doc.busy
-                      ? "cursor-wait text-ink-inverse/50 ring-white/15"
-                      : "text-ink-inverse ring-white/30 hover:ring-white/60"
+                      ? "cursor-wait text-tone-muted ring-tone-line"
+                      : "text-tone-strong ring-tone-line hover:ring-tone-line"
                   }`}
                 >
                   {doc.busy
@@ -258,7 +258,7 @@ export function DocumentUpload({
         </section>
       ))}
 
-      <p className="mt-10 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/55">
+      <p className="mt-10 border-t border-tone-line pt-6 text-sm leading-relaxed text-tone-muted">
         Sending these does not guarantee a permit. Permits are issued by the
         authorities, not by us. We submit your paperwork and tell you the outcome as
         soon as we have it. Files go straight into encrypted storage and are only seen

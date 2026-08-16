@@ -87,7 +87,7 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <h3 className="text-lg">{req.label}</h3>
                       {req.is_permit_bearing && (
-                        <span className="text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4">Used for your permit</span>
+                        <span className="text-sm text-tone-body">Used for your permit</span>
                       )}
                     </div>
                     {req.description && (

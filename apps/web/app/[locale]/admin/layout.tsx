@@ -57,10 +57,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/[locale]/a
 
   if (!staff) {
     return (
-      <main id="main" className="flex-1 register-dark px-4 py-24 text-ink-inverse">
+      <main id="main" className="flex-1 register-dark px-4 py-24 text-tone-strong">
         <div className="mx-auto max-w-md">
           <h1 className="text-2xl font-medium">Staff sign-in required</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/65">
+          <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
             This area manages departures, verified route status and traveller
             documents. Accounts are created by an administrator; there is no self
             sign-up.
@@ -80,7 +80,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/[locale]/a
 
   return (
     <main id="main" className="flex-1 register-dark">
-      <div className="border-b border-white/10 px-4 py-3 sm:px-6">
+      <div className="border-b border-tone-line px-4 py-3 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2">
           <span className="text-sm font-medium">Operations</span>
           <nav className="flex flex-wrap gap-5" aria-label="Admin">
@@ -88,16 +88,16 @@ export default async function AdminLayout({ children }: LayoutProps<"/[locale]/a
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-ink-inverse/65 hover:text-ink-inverse"
+                className="text-sm text-tone-body hover:text-tone-strong"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
-          <p className="ml-auto text-sm text-ink-inverse/55">
+          <p className="ml-auto text-sm text-tone-muted">
             {staff.name}
             {roles.length > 0 && (
-              <span className="ml-2 text-ink-inverse/40">{roles.join(", ")}</span>
+              <span className="ml-2 text-tone-muted">{roles.join(", ")}</span>
             )}
           </p>
         </div>

@@ -97,9 +97,9 @@ export function FamilyShares({ token }: { token: string }) {
   const live = shares.filter((s) => !s.revoked_at);
 
   return (
-    <section className="mt-10 border-t border-white/12 pt-8">
+    <section className="mt-10 border-t border-tone-line pt-8">
       <h2 className="font-serif text-2xl">Let family follow along</h2>
-      <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-tone-body">
         A link for somebody at home. They see the journey, roughly where you are each
         day, the coordinator&rsquo;s number and any route notice, and nothing else. No
         documents, no payments, no personal details about anybody travelling.
@@ -110,12 +110,12 @@ export function FamilyShares({ token }: { token: string }) {
           {live.map((share) => (
             <li
               key={share.id}
-              className="rounded-lg bg-white/[0.04] px-4 py-4 ring-1 ring-white/10"
+              className="rounded-lg bg-white/[0.04] px-4 py-4 ring-1 ring-tone-line"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[15px]">{share.label}</p>
-                  <p className="mt-0.5 text-sm text-ink-inverse/50">
+                  <p className="mt-0.5 text-sm text-tone-muted">
                     {share.view_count === 0
                       ? "Not opened yet"
                       : `Opened ${share.view_count} time${share.view_count === 1 ? "" : "s"}`}
@@ -129,7 +129,7 @@ export function FamilyShares({ token }: { token: string }) {
                       void navigator.clipboard?.writeText(share.url);
                       setCopied(share.id);
                     }}
-                    className="rounded-full bg-white/[0.08] px-4 py-1.5 text-sm ring-1 ring-white/15 hover:bg-white/[0.12]"
+                    className="rounded-full bg-white/[0.08] px-4 py-1.5 text-sm ring-1 ring-tone-line hover:bg-white/[0.12]"
                   >
                     {copied === share.id ? "Copied" : "Copy link"}
                   </button>
@@ -138,13 +138,13 @@ export function FamilyShares({ token }: { token: string }) {
                     type="button"
                     onClick={() => revoke(share.id)}
                     disabled={busy}
-                    className="rounded-full bg-white/[0.08] px-4 py-1.5 text-sm ring-1 ring-white/15 hover:bg-white/[0.12] disabled:opacity-50"
+                    className="rounded-full bg-white/[0.08] px-4 py-1.5 text-sm ring-1 ring-tone-line hover:bg-white/[0.12] disabled:opacity-50"
                   >
                     Turn off
                   </button>
                 </div>
               </div>
-              <p className="mt-2 break-all text-xs text-ink-inverse/35">{share.url}</p>
+              <p className="mt-2 break-all text-xs text-tone-muted">{share.url}</p>
             </li>
           ))}
         </ul>
@@ -152,16 +152,16 @@ export function FamilyShares({ token }: { token: string }) {
 
       <form onSubmit={create} className="mt-6 flex flex-wrap items-end gap-3">
         <label className="min-w-48 flex-1">
-          <span className="text-xs text-ink-inverse/50">Who is it for</span>
+          <span className="text-xs text-tone-muted">Who is it for</span>
           <input
             name="label"
             required
             maxLength={120}
             placeholder="Amma"
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </label>
-        <label className="flex items-center gap-2 pb-2.5 text-sm text-ink-inverse/70">
+        <label className="flex items-center gap-2 pb-2.5 text-sm text-tone-body">
           <input
             type="checkbox"
             name="shows_check_ins"
@@ -179,7 +179,7 @@ export function FamilyShares({ token }: { token: string }) {
         </button>
       </form>
 
-      <p className="mt-4 text-xs leading-relaxed text-ink-inverse/40">
+      <p className="mt-4 text-xs leading-relaxed text-tone-muted">
         Links stop working two weeks after the journey ends, and you can turn any of
         them off at any time.
       </p>

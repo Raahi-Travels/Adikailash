@@ -54,14 +54,14 @@ export default async function VendorsPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Vendors</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         What we know about each supplier after the departures they ran. The score is a
         planning aid and nothing more. Anything unresolved caps it, so a good number
         never means there is nothing to read.
       </p>
 
       {vendors.length === 0 && (
-        <p className="mt-8 text-[15px] text-ink-inverse/55">
+        <p className="mt-8 text-[15px] text-tone-muted">
           No suppliers recorded yet.
         </p>
       )}
@@ -70,12 +70,12 @@ export default async function VendorsPage() {
         {vendors.map((v) => (
           <li
             key={v.supplier_id}
-            className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10"
+            className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <div>
                 <p className="text-lg">{v.name}</p>
-                <p className="mt-0.5 text-sm text-ink-inverse/50">
+                <p className="mt-0.5 text-sm text-tone-muted">
                   {LABEL[v.recommendation] ?? v.recommendation} ·{" "}
                   {v.review_count} review{v.review_count === 1 ? "" : "s"}
                   {v.incident_count > 0 && ` · ${v.incident_count} incident(s)`}
@@ -85,7 +85,7 @@ export default async function VendorsPage() {
                 <div className="text-right">
                   <p
                     className={`text-3xl tabular-nums ${
-                      v.is_score_capped ? "text-status-suspended" : "text-ink-inverse"
+                      v.is_score_capped ? "text-status-suspended" : "text-tone-strong"
                     }`}
                   >
                     {v.reliability_score}
@@ -95,7 +95,7 @@ export default async function VendorsPage() {
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-ink-inverse/35">no score yet</p>
+                <p className="text-sm text-tone-muted">no score yet</p>
               )}
             </div>
 
@@ -111,24 +111,24 @@ export default async function VendorsPage() {
               </ul>
             )}
 
-            <p className="mt-4 text-[15px] leading-relaxed text-ink-inverse/75">
+            <p className="mt-4 text-[15px] leading-relaxed text-tone-body">
               {v.headline}
             </p>
 
             {v.notes.map((n, i) => (
-              <p key={i} className="mt-2 text-sm leading-relaxed text-ink-inverse/55">
+              <p key={i} className="mt-2 text-sm leading-relaxed text-tone-muted">
                 {n}
               </p>
             ))}
 
             {v.score_explanation.length > 0 && (
               <details className="mt-4">
-                <summary className="cursor-pointer text-xs text-ink-inverse/45">
+                <summary className="cursor-pointer text-xs text-tone-muted">
                   How the score was reached
                 </summary>
                 <ul className="mt-2 space-y-1">
                   {v.score_explanation.map((e, i) => (
-                    <li key={i} className="text-xs leading-relaxed text-ink-inverse/55">
+                    <li key={i} className="text-xs leading-relaxed text-tone-muted">
                       {e}
                     </li>
                   ))}
@@ -136,7 +136,7 @@ export default async function VendorsPage() {
               </details>
             )}
 
-            <p className="mt-4 border-t border-white/10 pt-3 text-xs text-ink-inverse/45">
+            <p className="mt-4 border-t border-tone-line pt-3 text-xs text-tone-muted">
               {v.traveller_average
                 ? `Travellers rate them ${v.traveller_average}/5 from ${v.traveller_count}`
                 : "No traveller ratings yet"}

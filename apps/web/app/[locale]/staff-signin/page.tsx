@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 
 const FIELD =
-  "mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold";
+  "mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -35,16 +35,16 @@ export default function SignInPage() {
   }
 
   return (
-    <main id="main" className="flex-1 register-dark px-4 py-24 text-ink-inverse">
+    <main id="main" className="flex-1 register-dark px-4 py-24 text-tone-strong">
       <div className="mx-auto max-w-sm">
         <h1 className="text-2xl font-medium">Staff sign-in</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/65">
+        <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
           Accounts are created by an administrator. There is no self sign-up.
         </p>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-5">
           <div>
-            <label className="block text-sm text-ink-inverse/85" htmlFor="email">
+            <label className="block text-sm text-tone-body" htmlFor="email">
               Email
             </label>
             <input
@@ -57,7 +57,7 @@ export default function SignInPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-ink-inverse/85" htmlFor="password">
+            <label className="block text-sm text-tone-body" htmlFor="password">
               Password
             </label>
             <input

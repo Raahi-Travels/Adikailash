@@ -120,14 +120,14 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               {wa ? (
                 <a
                   href={wa}
-                  className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                  className="rounded-full px-6 py-3 text-sm font-medium text-tone-strong ring-1 ring-tone-line transition-colors hover:ring-tone-line"
                 >
                   {displayLocalized(campaign.secondaryCta, locale)}
                 </a>
               ) : (
                 <Link
                   href="/enquire"
-                  className="rounded-full px-6 py-3 text-sm font-medium text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                  className="rounded-full px-6 py-3 text-sm font-medium text-tone-strong ring-1 ring-tone-line transition-colors hover:ring-tone-line"
                 >
                   {displayLocalized(campaign.secondaryCta, locale)}
                 </Link>
@@ -258,10 +258,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <section className="register-dark px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-[52ch]">
-            <h2 className="type-section text-ink-inverse">
+            <h2 className="type-section text-tone-strong">
               From 910 metres to four and a half thousand
             </h2>
-            <p className="mt-5 leading-relaxed text-ink-inverse/70">
+            <p className="mt-5 leading-relaxed text-tone-body">
               The drive drops into the Kali gorge before it climbs, and above Gunji it
               forks: one arm to Jyolingkong below Adi Kailash, the other to Nabhidhang
               for Om Parvat. This is what your body is being asked to do.
@@ -291,12 +291,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* 6. Close. */}
-      <section className="register-dark border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
+      <section className="register-dark border-t border-tone-line px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-serif text-2xl leading-snug text-ink-inverse sm:text-3xl">
+          <p className="font-serif text-2xl leading-snug text-tone-strong sm:text-3xl">
             {displayLocalized(brand.identity.promise, locale)}
           </p>
-          <p className="mt-5 text-ink-inverse/65">
+          <p className="mt-5 text-tone-body">
             Talk to someone who lives in Pithoragarh and has driven this road.
           </p>
           <Link

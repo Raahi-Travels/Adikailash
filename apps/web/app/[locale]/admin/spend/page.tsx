@@ -21,7 +21,7 @@ import { adminGet, adminPost } from "@/lib/admin-api";
 export const dynamic = "force-dynamic";
 
 const FIELD =
-  "mt-1 w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold";
+  "mt-1 w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
 
 type Spend = {
   id: number;
@@ -54,7 +54,7 @@ export default async function SpendPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Acquisition spend</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         What was actually spent, per channel, per period. Everything else the
         contribution report needs is a by-product of running the business; this is the
         one number that has to be typed off an invoice.
@@ -62,41 +62,41 @@ export default async function SpendPage() {
 
       <form
         action={record}
-        className="mt-8 grid max-w-3xl gap-4 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10 sm:grid-cols-2"
+        className="mt-8 grid max-w-3xl gap-4 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line sm:grid-cols-2"
       >
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Channel</span>
+          <span className="text-xs text-tone-muted">Channel</span>
           <input
             name="channel"
             required
             placeholder="instagram"
             className={FIELD}
           />
-          <span className="mt-1 block text-xs leading-relaxed text-ink-inverse/40">
+          <span className="mt-1 block text-xs leading-relaxed text-tone-muted">
             Must match the source leads arrive with, or it attributes to nothing. The
             report lists any that do not match.
           </span>
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Campaign (optional)</span>
+          <span className="text-xs text-tone-muted">Campaign (optional)</span>
           <input name="campaign" className={FIELD} />
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Period start</span>
+          <span className="text-xs text-tone-muted">Period start</span>
           <input name="period_start" type="date" required className={FIELD} />
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Period end</span>
+          <span className="text-xs text-tone-muted">Period end</span>
           <input name="period_end" type="date" required className={FIELD} />
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">Amount (INR)</span>
+          <span className="text-xs text-tone-muted">Amount (INR)</span>
           <input name="amount" type="number" min="0" step="1" required className={FIELD} />
         </label>
         <label className="block">
-          <span className="text-xs text-ink-inverse/50">What it bought</span>
+          <span className="text-xs text-tone-muted">What it bought</span>
           <input name="note" placeholder="Boost for the May departure" className={FIELD} />
-          <span className="mt-1 block text-xs leading-relaxed text-ink-inverse/40">
+          <span className="mt-1 block text-xs leading-relaxed text-tone-muted">
             The only field that will still explain a surprising number next season.
           </span>
         </label>
@@ -111,15 +111,15 @@ export default async function SpendPage() {
       </form>
 
       {rows.length === 0 ? (
-        <p className="mt-8 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/55">
+        <p className="mt-8 max-w-[70ch] text-[15px] leading-relaxed text-tone-muted">
           Nothing recorded, which is the expected state while acquisition is organic.
           Cost per lead reads as unknown rather than zero until a row exists here,
           zero would read as free.
         </p>
       ) : (
         <table className="mt-8 w-full max-w-3xl text-sm">
-          <thead className="text-left text-xs text-ink-inverse/45">
-            <tr className="border-b border-white/10">
+          <thead className="text-left text-xs text-tone-muted">
+            <tr className="border-b border-tone-line">
               <th className="py-2 pr-4 font-normal">Channel</th>
               <th className="py-2 pr-4 font-normal">Period</th>
               <th className="py-2 pr-4 text-right font-normal">Amount</th>
@@ -128,23 +128,23 @@ export default async function SpendPage() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} className="border-b border-white/[0.06] align-top">
+              <tr key={r.id} className="border-b border-tone-line align-top">
                 <td className="py-3 pr-4">
                   {r.channel}
                   {r.campaign && (
-                    <span className="text-ink-inverse/40"> · {r.campaign}</span>
+                    <span className="text-tone-muted"> · {r.campaign}</span>
                   )}
                 </td>
-                <td className="py-3 pr-4 text-ink-inverse/70">
+                <td className="py-3 pr-4 text-tone-body">
                   {r.period_start} to {r.period_end}
                 </td>
                 <td className="py-3 pr-4 text-right tabular-nums">
                   {r.currency} {r.amount}
                 </td>
-                <td className="py-3 text-ink-inverse/60">
+                <td className="py-3 text-tone-body">
                   {r.note}
                   {r.recorded_by && (
-                    <span className="block text-xs text-ink-inverse/35">
+                    <span className="block text-xs text-tone-muted">
                       {r.recorded_by}
                     </span>
                   )}

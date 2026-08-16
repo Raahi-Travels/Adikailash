@@ -46,7 +46,7 @@ export default async function AlertsPage() {
     return (
       <>
         <h1 className="text-2xl font-medium">Route alerts</h1>
-        <p className="mt-4 text-[15px] text-ink-inverse/60">Could not load the queue.</p>
+        <p className="mt-4 text-[15px] text-tone-body">Could not load the queue.</p>
       </>
     );
   }
@@ -72,14 +72,14 @@ export default async function AlertsPage() {
           ["Active subscribers", queue.active_subscribers],
         ].map(([label, value]) => (
           <div key={String(label)}>
-            <dt className="text-ink-inverse/45">{label}</dt>
+            <dt className="text-tone-muted">{label}</dt>
             <dd className="mt-0.5 text-lg tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
 
       {queue.messages.length === 0 ? (
-        <p className="mt-8 text-[15px] text-ink-inverse/55">
+        <p className="mt-8 text-[15px] text-tone-muted">
           Nothing queued. A route that has not changed produces no messages, which is
           the intended behaviour rather than a fault.
         </p>
@@ -88,19 +88,19 @@ export default async function AlertsPage() {
           {queue.messages.map((m) => (
             <li
               key={m.id}
-              className="rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-white/10"
+              className="rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-tone-line"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <p className="text-[15px]">{m.subject}</p>
-                <p className="text-xs text-ink-inverse/45">
+                <p className="text-xs text-tone-muted">
                   {m.channel} · {m.urgency} · {m.state}
                 </p>
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-ink-inverse/70">
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-tone-body">
                 {m.body}
               </p>
               {m.template_name && (
-                <p className="mt-2 text-xs text-ink-inverse/40">
+                <p className="mt-2 text-xs text-tone-muted">
                   template {m.template_name} · {m.template_parameters?.length ?? 0}{" "}
                   variable(s). Needs Meta approval before this channel can send
                 </p>

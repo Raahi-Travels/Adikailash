@@ -86,7 +86,7 @@ const CONSENT_LABEL: Record<string, string> = {
 };
 
 const FIELD =
-  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold";
+  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
 
 function ago(iso: string) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
@@ -161,7 +161,7 @@ function LeadRow({
 
   return (
     <article
-      className={`border-t border-white/12 py-6 ${
+      className={`border-t border-tone-line py-6 ${
         lead.is_unassigned ? "border-l-2 border-l-saffron/60 pl-4" : ""
       }`}
     >
@@ -180,26 +180,26 @@ function LeadRow({
           </span>
         )}
 
-        <span className="ml-auto text-sm text-ink-inverse/45">
+        <span className="ml-auto text-sm text-tone-muted">
           Came in {ago(lead.created_at)}
           {lead.first_touch_source ? ` via ${lead.first_touch_source}` : ""}
           {lead.campaign ? ` (${lead.campaign})` : ""}
         </span>
       </div>
 
-      <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink-inverse/65">
+      <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-tone-body">
         {lead.phone && (
           <div className="flex items-center gap-2">
             <dt className="sr-only">Phone</dt>
             <dd>
-              <a href={`tel:${lead.phone}`} className="hover:text-ink-inverse">
+              <a href={`tel:${lead.phone}`} className="hover:text-tone-strong">
                 {lead.phone}
               </a>
             </dd>
             {wa && (
               <a
                 href={wa}
-                className="text-ink-inverse/40 transition-colors hover:text-gold"
+                className="text-tone-muted transition-colors hover:text-gold"
                 aria-label={`Message ${lead.name ?? "this lead"} on WhatsApp`}
               >
                 <Conversation className="size-4" />
@@ -227,7 +227,7 @@ function LeadRow({
         )}
         {lead.group_size && (
           <div className="flex items-center gap-1.5">
-            <Group className="size-4 text-ink-inverse/35" />
+            <Group className="size-4 text-tone-muted" />
             <dt className="sr-only">Group</dt>
             <dd>
               {lead.group_size}
@@ -243,16 +243,16 @@ function LeadRow({
       </dl>
 
       {lead.primary_concern && (
-        <p className="mt-3 max-w-[70ch] border-l-2 border-white/15 pl-4 text-[15px] leading-relaxed text-ink-inverse/75">
+        <p className="mt-3 max-w-[70ch] border-l-2 border-tone-line pl-4 text-[15px] leading-relaxed text-tone-body">
           {lead.primary_concern}
         </p>
       )}
 
       {lead.consents.length > 0 && (
-        <p className="mt-3 flex flex-wrap gap-2 text-xs text-ink-inverse/45">
+        <p className="mt-3 flex flex-wrap gap-2 text-xs text-tone-muted">
           <span className="sr-only">Consents given</span>
           {lead.consents.map((c) => (
-            <span key={c} className="rounded px-2 py-0.5 ring-1 ring-white/10">
+            <span key={c} className="rounded px-2 py-0.5 ring-1 ring-tone-line">
               {CONSENT_LABEL[c] ?? c}
             </span>
           ))}
@@ -265,7 +265,7 @@ function LeadRow({
         <input type="hidden" name="filter" value={filter ?? ""} />
 
         <label className="min-w-36 flex-1">
-          <span className="text-xs text-ink-inverse/50">Owner</span>
+          <span className="text-xs text-tone-muted">Owner</span>
           <input
             name="owner"
             defaultValue={lead.owner ?? ""}
@@ -275,7 +275,7 @@ function LeadRow({
         </label>
 
         <label className="min-w-56 flex-[2]">
-          <span className="text-xs text-ink-inverse/50">Next action</span>
+          <span className="text-xs text-tone-muted">Next action</span>
           <input
             name="next_action"
             defaultValue={lead.next_action ?? ""}
@@ -285,7 +285,7 @@ function LeadRow({
         </label>
 
         <label className="min-w-36">
-          <span className="text-xs text-ink-inverse/50">By when</span>
+          <span className="text-xs text-tone-muted">By when</span>
           <input
             type="date"
             name="next_action_due_at"
@@ -295,10 +295,10 @@ function LeadRow({
         </label>
 
         <label className="min-w-44">
-          <span className="text-xs text-ink-inverse/50">Stage</span>
+          <span className="text-xs text-tone-muted">Stage</span>
           <select name="stage" defaultValue={lead.stage} className={`mt-1 ${FIELD}`}>
             {STAGES.map(([value, label]) => (
-              <option key={value} value={value} className="bg-midnight">
+              <option key={value} value={value} className="register-dark">
                 {label}
               </option>
             ))}
@@ -306,7 +306,7 @@ function LeadRow({
         </label>
 
         <label className="min-w-36">
-          <span className="text-xs text-ink-inverse/50">Priority</span>
+          <span className="text-xs text-tone-muted">Priority</span>
           <select
             name="priority"
             defaultValue={String(lead.priority)}
@@ -321,7 +321,7 @@ function LeadRow({
         </label>
 
         <label className="min-w-44 flex-1">
-          <span className="text-xs text-ink-inverse/50">
+          <span className="text-xs text-tone-muted">
             If lost, why
           </span>
           <input
@@ -346,7 +346,7 @@ function LeadRow({
         >
           <Caution className="mt-0.5 size-4 shrink-0" />
           <span>
-            {error} <span className="text-ink-inverse/55">Nothing was saved.</span>
+            {error} <span className="text-tone-muted">Nothing was saved.</span>
           </span>
         </p>
       )}
@@ -354,7 +354,7 @@ function LeadRow({
       {lead.next_action && lead.next_action_due_at && (
         <p
           className={`mt-3 text-sm ${
-            lead.is_overdue ? "text-status-suspended" : "text-ink-inverse/50"
+            lead.is_overdue ? "text-status-suspended" : "text-tone-muted"
           }`}
         >
           Currently: {lead.next_action}, due {dueLabel(lead.next_action_due_at)}
@@ -394,14 +394,14 @@ export default async function LeadsPage({
   return (
     <>
       <h1 className="text-2xl font-medium">Enquiries</h1>
-      <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
         Sorted by what needs a person first: leads nobody owns, then overdue ones, then
         by priority. Give every lead you touch an owner and a next action in the same
         save, so nothing sits here waiting for someone to notice it.
       </p>
 
       {queue === null && (
-        <p className="mt-8 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
+        <p className="mt-8 rounded-lg bg-tone-raised px-5 py-4 text-[15px] ring-1 ring-tone-line">
           Could not load the queue. Either the API is unreachable, or your account does
           not have a sales role.
         </p>
@@ -419,7 +419,7 @@ export default async function LeadsPage({
                   className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
                     active
                       ? "bg-gold text-midnight"
-                      : "text-ink-inverse/70 ring-1 ring-white/15 hover:text-ink-inverse"
+                      : "text-tone-body ring-1 ring-tone-line hover:text-tone-strong"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -444,7 +444,7 @@ export default async function LeadsPage({
           )}
 
           {queue.leads.length === 0 ? (
-            <p className="mt-10 text-[15px] text-ink-inverse/60">
+            <p className="mt-10 text-[15px] text-tone-body">
               {filter || stage
                 ? "Nothing matches that filter."
                 : "No enquiries yet. They will appear here the moment someone sends one."}
@@ -464,7 +464,7 @@ export default async function LeadsPage({
           )}
 
           {stage && (
-            <p className="mt-6 text-sm text-ink-inverse/50">
+            <p className="mt-6 text-sm text-tone-muted">
               Filtered to {STAGE_LABEL[stage] ?? stage}.{" "}
               <a href="?" className="text-gold underline-offset-4 hover:underline">
                 Clear

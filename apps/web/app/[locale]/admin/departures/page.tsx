@@ -49,13 +49,13 @@ export default async function AdminDeparturesPage({
   return (
     <>
       <h1 className="text-2xl font-medium">Departures</h1>
-      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
         Changing a state is recorded against your name with the reason you give. The
         record cannot be edited afterwards.
       </p>
 
       {withMoves.length === 0 && (
-        <p className="mt-8 text-[15px] text-ink-inverse/60">
+        <p className="mt-8 text-[15px] text-tone-body">
           No departures exist yet.
         </p>
       )}
@@ -64,15 +64,15 @@ export default async function AdminDeparturesPage({
         {withMoves.map(({ departure, moves }) => (
           <article
             key={departure.id}
-            className="border-t border-white/12 pt-5"
+            className="border-t border-tone-line pt-5"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <div>
                 <h2 className="text-[15px]">
                   {departure.journey_name}
-                  <span className="ml-2 text-ink-inverse/55">{departure.tier_name}</span>
+                  <span className="ml-2 text-tone-muted">{departure.tier_name}</span>
                 </h2>
-                <p className="mt-1 text-sm text-ink-inverse/55">
+                <p className="mt-1 text-sm text-tone-muted">
                   {departure.start_date} to {departure.end_date} · {departure.gateway}
                 </p>
               </div>
@@ -92,7 +92,7 @@ export default async function AdminDeparturesPage({
                     Operations
                   </Link>
                 </p>
-                <p className="mt-0.5 text-ink-inverse/50">
+                <p className="mt-0.5 text-tone-muted">
                   {departure.reserved_count} of {departure.capacity} held ·{" "}
                   {departure.payment_action === "none"
                     ? "no payment"
@@ -113,7 +113,7 @@ export default async function AdminDeparturesPage({
                 <input type="hidden" name="departure_id" value={departure.id} />
                 <div>
                   <label
-                    className="block text-sm text-ink-inverse/70"
+                    className="block text-sm text-tone-body"
                     htmlFor={`target-${departure.id}`}
                   >
                     Move to
@@ -121,7 +121,7 @@ export default async function AdminDeparturesPage({
                   <select
                     id={`target-${departure.id}`}
                     name="target_state"
-                    className="mt-1.5 rounded-md bg-white/[0.06] px-3 py-2 text-sm ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="mt-1.5 rounded-md bg-white/[0.06] px-3 py-2 text-sm ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
                   >
                     {moves.allowed.map((state) => (
                       <option key={state} value={state}>
@@ -132,7 +132,7 @@ export default async function AdminDeparturesPage({
                 </div>
                 <div className="min-w-[18rem] flex-1">
                   <label
-                    className="block text-sm text-ink-inverse/70"
+                    className="block text-sm text-tone-body"
                     htmlFor={`reason-${departure.id}`}
                   >
                     Reason (recorded permanently)
@@ -142,7 +142,7 @@ export default async function AdminDeparturesPage({
                     name="reason"
                     required
                     minLength={3}
-                    className="mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-sm ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-sm ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
                     placeholder="Permit issuance paused pending district notice"
                   />
                 </div>
@@ -154,7 +154,7 @@ export default async function AdminDeparturesPage({
                 </button>
               </form>
             ) : (
-              <p className="mt-4 text-sm text-ink-inverse/50">
+              <p className="mt-4 text-sm text-tone-muted">
                 {moves === null
                   ? "Your roles do not permit changing departure state."
                   : "This departure is in a terminal state."}

@@ -28,8 +28,8 @@ import {
 export const dynamic = "force-dynamic";
 
 const FIELD =
-  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "text-xs text-ink-inverse/50";
+  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "text-xs text-tone-muted";
 const BUTTON =
   "rounded-full bg-gold px-4 py-2 text-sm font-medium text-midnight transition-transform active:scale-[0.98]";
 
@@ -254,7 +254,7 @@ export default async function DepartureOpsPage({
           Manifest
         </Link>
       </div>
-      <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+      <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
         Suppliers, what they are owed, and where people sleep. The manifest answers
         whether this can leave; this is what you work from in the weeks before.
       </p>
@@ -266,14 +266,14 @@ export default async function DepartureOpsPage({
         >
           <Caution className="mt-0.5 size-5 shrink-0" />
           <span>
-            {error} <span className="text-ink-inverse/55">Nothing was saved.</span>
+            {error} <span className="text-tone-muted">Nothing was saved.</span>
           </span>
         </p>
       )}
 
       {/* ------------------------------------------------------------ economics */}
 
-      <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
+      <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line">
         <h2 className="text-lg">Money on this departure</h2>
         {!hasRevenue ? (
           /*
@@ -281,7 +281,7 @@ export default async function DepartureOpsPage({
             just minus the cost, and reading it as a loss would be wrong: nothing has
             been sold yet.
           */
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
             Nothing is sold on this departure yet, so there is no margin to report.
             {Number(economics.committed_cost) > 0 && (
               <>
@@ -317,7 +317,7 @@ export default async function DepartureOpsPage({
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-sm leading-relaxed text-ink-inverse/45">
+            <p className="mt-4 text-sm leading-relaxed text-tone-muted">
               Margin is agreed revenue less committed cost, not cash. Of the amount
               sold, {money(economics.customer_revenue_received)} has actually arrived.
             </p>
@@ -336,7 +336,7 @@ export default async function DepartureOpsPage({
 
       <section className="mt-10">
         <h2 className="font-serif text-xl">Suppliers</h2>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Nothing is charged here. Record what was agreed and what has actually been
           paid, with its reference, so finance can reconcile against a statement.
         </p>
@@ -344,12 +344,12 @@ export default async function DepartureOpsPage({
         {bookings.length > 0 && (
           <div className="mt-5">
             {bookings.map((b) => (
-              <article key={b.id} className="border-t border-white/12 py-5">
+              <article key={b.id} className="border-t border-tone-line py-5">
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <Vehicle className="size-4 shrink-0 text-ink-inverse/35" />
+                  <Vehicle className="size-4 shrink-0 text-tone-muted" />
                   <h3 className="text-[17px]">{b.supplier_name}</h3>
-                  <span className="text-sm text-ink-inverse/50">{b.kind}</span>
-                  <span className="text-sm text-ink-inverse/70">
+                  <span className="text-sm text-tone-muted">{b.kind}</span>
+                  <span className="text-sm text-tone-body">
                     {money(b.agreed_cost, b.currency)} agreed ·{" "}
                     {money(b.paid, b.currency)} paid
                     {Number(b.outstanding) > 0 && (
@@ -364,16 +364,16 @@ export default async function DepartureOpsPage({
                       Paid more than agreed
                     </span>
                   )}
-                  <span className="ml-auto text-sm text-ink-inverse/45">
+                  <span className="ml-auto text-sm text-tone-muted">
                     {BOOKING_STATES.find(([v]) => v === b.state)?.[1] ?? b.state}
                     {b.confirmed_by ? ` by ${b.confirmed_by}` : ""}
                   </span>
                 </div>
-                <p className="mt-1.5 max-w-[70ch] text-[15px] text-ink-inverse/75">
+                <p className="mt-1.5 max-w-[70ch] text-[15px] text-tone-body">
                   {b.service}
                 </p>
                 {b.cancellation_reason && (
-                  <p className="mt-1 text-sm text-ink-inverse/50">
+                  <p className="mt-1 text-sm text-tone-muted">
                     Cancelled: {b.cancellation_reason}
                   </p>
                 )}
@@ -381,7 +381,7 @@ export default async function DepartureOpsPage({
                 {b.payments.length > 0 && (
                   <ul className="mt-3 space-y-1">
                     {b.payments.map((p) => (
-                      <li key={p.id} className="text-sm text-ink-inverse/55">
+                      <li key={p.id} className="text-sm text-tone-muted">
                         {p.direction === "refunded" ? "Refunded " : "Paid "}
                         {money(p.amount, b.currency)} ·{" "}
                         {METHODS.find(([v]) => v === p.method)?.[1] ?? p.method}
@@ -400,7 +400,7 @@ export default async function DepartureOpsPage({
                       <span className={LABEL}>State</span>
                       <select name="state" defaultValue={b.state} className={`mt-1 ${FIELD}`}>
                         {BOOKING_STATES.map(([v, l]) => (
-                          <option key={v} value={v} className="bg-midnight">
+                          <option key={v} value={v} className="register-dark">
                             {l}
                           </option>
                         ))}
@@ -465,7 +465,7 @@ export default async function DepartureOpsPage({
           </div>
         )}
 
-        <form action={bookSupplier} className="mt-6 flex flex-wrap items-end gap-3 border-t border-white/12 pt-5">
+        <form action={bookSupplier} className="mt-6 flex flex-wrap items-end gap-3 border-t border-tone-line pt-5">
           {hidden}
           <label className="min-w-48">
             <span className={LABEL}>Supplier</span>
@@ -496,7 +496,7 @@ export default async function DepartureOpsPage({
         </form>
 
         <details className="mt-5">
-          <summary className="cursor-pointer text-sm text-ink-inverse/55">
+          <summary className="cursor-pointer text-sm text-tone-muted">
             Add a new supplier
           </summary>
           <form action={addSupplier} className="mt-4 flex flex-wrap items-end gap-3">
@@ -538,7 +538,7 @@ export default async function DepartureOpsPage({
 
       <section className="mt-10">
         <div className="flex items-center gap-2.5">
-          <Homestay className="size-5 text-ink-inverse/45" />
+          <Homestay className="size-5 text-tone-muted" />
           <h2 className="font-serif text-xl">Where people sleep</h2>
           {rooming.is_complete && <Verified className="size-5 text-status-open" />}
         </div>
@@ -550,12 +550,12 @@ export default async function DepartureOpsPage({
             </h3>
             <ul className="mt-2 space-y-1">
               {rooming.over_capacity.map((o) => (
-                <li key={o} className="text-[15px] text-ink-inverse/85">
+                <li key={o} className="text-[15px] text-tone-body">
                   {o}
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-sm text-ink-inverse/55">
+            <p className="mt-3 text-sm text-tone-muted">
               This is the failure that leaves a family standing outside at nine at
               night, at altitude. Fix it before the vehicles leave.
             </p>
@@ -563,13 +563,13 @@ export default async function DepartureOpsPage({
         )}
 
         {rooming.unknown_capacity.length > 0 && (
-          <div className="mt-4 rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-white/10">
-            <h3 className="text-[15px] text-ink-inverse/70">
+          <div className="mt-4 rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-tone-line">
+            <h3 className="text-[15px] text-tone-body">
               Nobody has recorded what these households can take
             </h3>
             <ul className="mt-2 space-y-1">
               {rooming.unknown_capacity.map((u) => (
-                <li key={u} className="text-sm text-ink-inverse/60">
+                <li key={u} className="text-sm text-tone-body">
                   {u}
                 </li>
               ))}
@@ -582,7 +582,7 @@ export default async function DepartureOpsPage({
             <h3 className="text-[15px] text-saffron/90">Nobody has a bed yet</h3>
             <ul className="mt-2 space-y-1">
               {rooming.unassigned.map((u) => (
-                <li key={u} className="text-sm leading-relaxed text-ink-inverse/60">
+                <li key={u} className="text-sm leading-relaxed text-tone-body">
                   {u}
                 </li>
               ))}
@@ -593,7 +593,7 @@ export default async function DepartureOpsPage({
         {byNight.size > 0 && (
           <div className="mt-6">
             {[...byNight.entries()].map(([night, beds]) => (
-              <div key={night} className="border-t border-white/12 py-4">
+              <div key={night} className="border-t border-tone-line py-4">
                 <h3 className="text-sm uppercase tracking-[0.12em] text-gold">
                   {day(night)}
                 </h3>
@@ -604,16 +604,16 @@ export default async function DepartureOpsPage({
                       className="flex flex-wrap items-center gap-x-4 text-[15px]"
                     >
                       <span>{bed.traveller_name}</span>
-                      <span className="text-ink-inverse/55">{bed.stay_name}</span>
+                      <span className="text-tone-muted">{bed.stay_name}</span>
                       {bed.note && (
-                        <span className="text-sm text-ink-inverse/45">{bed.note}</span>
+                        <span className="text-sm text-tone-muted">{bed.note}</span>
                       )}
                       <form action={removeBed} className="ml-auto">
                         {hidden}
                         <input type="hidden" name="assignment_id" value={bed.id} />
                         <button
                           type="submit"
-                          className="text-sm text-ink-inverse/40 transition-colors hover:text-status-suspended"
+                          className="text-sm text-tone-muted transition-colors hover:text-status-suspended"
                         >
                           Remove
                         </button>
@@ -627,7 +627,7 @@ export default async function DepartureOpsPage({
         )}
 
         {rooming.beds.length === 0 && (
-          <p className="mt-4 text-[15px] text-ink-inverse/60">
+          <p className="mt-4 text-[15px] text-tone-body">
             No beds assigned yet. {rooming.nights.length} night
             {rooming.nights.length === 1 ? "" : "s"} on this departure.
           </p>

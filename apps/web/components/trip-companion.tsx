@@ -65,30 +65,30 @@ function age(iso: string) {
 
 function DayCard({ day, heading }: { day: Day; heading: string }) {
   return (
-    <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-white/10">
-      <h2 className="text-sm text-ink-inverse/50">{heading}</h2>
+    <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-tone-line">
+      <h2 className="text-sm text-tone-muted">{heading}</h2>
       <p className="mt-2 font-serif text-2xl leading-snug">{day.title}</p>
 
       {day.travel_note && (
-        <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/75">
+        <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
           {day.travel_note}
         </p>
       )}
       {day.altitude_note && (
-        <p className="mt-3 rounded-md bg-status-limited/10 px-3 py-2.5 text-[15px] leading-relaxed text-ink-inverse/85 ring-1 ring-status-limited/25">
+        <p className="mt-3 rounded-md bg-status-limited/10 px-3 py-2.5 text-[15px] leading-relaxed text-tone-body ring-1 ring-status-limited/25">
           {day.altitude_note}
         </p>
       )}
       {day.staying_at && (
-        <p className="mt-3 text-[15px] text-ink-inverse/70">
+        <p className="mt-3 text-[15px] text-tone-body">
           Tonight: {day.staying_at}
           {day.stay_note && (
-            <span className="mt-1 block text-sm text-ink-inverse/50">{day.stay_note}</span>
+            <span className="mt-1 block text-sm text-tone-muted">{day.stay_note}</span>
           )}
         </p>
       )}
       {day.is_route_dependent && (
-        <p className="mt-3 text-sm leading-relaxed text-ink-inverse/50">
+        <p className="mt-3 text-sm leading-relaxed text-tone-muted">
           This day depends on the route being open. Your coordinator will tell you on
           the morning, not before.
         </p>
@@ -174,13 +174,13 @@ export function TripCompanion({ token }: { token: string }) {
   }, [token]);
 
   if (state === "loading") {
-    return <p className="text-[15px] text-ink-inverse/50">Loading your journey…</p>;
+    return <p className="text-[15px] text-tone-muted">Loading your journey…</p>;
   }
 
   if (state === "error" || !data) {
     return (
-      <div className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
-        <p className="max-w-[52ch] text-[15px] leading-relaxed text-ink-inverse/70">
+      <div className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line">
+        <p className="max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
           We could not load your journey, and there is no saved copy on this phone.
           Open this page once while you still have signal. After that it works
           without a network.
@@ -193,7 +193,7 @@ export function TripCompanion({ token }: { token: string }) {
     <div className="space-y-6">
       <header>
         <h1 className="font-serif text-3xl leading-tight">{data.journey_name}</h1>
-        <p className="mt-1.5 text-sm text-ink-inverse/50">
+        <p className="mt-1.5 text-sm text-tone-muted">
           {data.reference}
           {" · "}
           {/*
@@ -224,8 +224,8 @@ export function TripCompanion({ token }: { token: string }) {
       )}
 
       {data.contacts.length > 0 && (
-        <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-white/10">
-          <h2 className="text-sm text-ink-inverse/50">If something goes wrong</h2>
+        <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-tone-line">
+          <h2 className="text-sm text-tone-muted">If something goes wrong</h2>
           <ul className="mt-3 space-y-4">
             {data.contacts.map((c, i) => (
               <li key={i}>
@@ -238,11 +238,11 @@ export function TripCompanion({ token }: { token: string }) {
                     {c.phone}
                   </a>
                 )}
-                {c.note && <p className="mt-1 text-sm text-ink-inverse/50">{c.note}</p>}
+                {c.note && <p className="mt-1 text-sm text-tone-muted">{c.note}</p>}
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm leading-relaxed text-ink-inverse/50">
+          <p className="mt-4 text-sm leading-relaxed text-tone-muted">
             Your coordinator is with the group. If you cannot find them and it is
             urgent, call the number above. Somebody answers it.
           </p>
@@ -251,11 +251,11 @@ export function TripCompanion({ token }: { token: string }) {
 
       {data.latest_check_in && (
         <section>
-          <h2 className="text-sm text-ink-inverse/50">Last check-in</h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-inverse/80">
+          <h2 className="text-sm text-tone-muted">Last check-in</h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-tone-body">
             {data.latest_check_in.note}
           </p>
-          <p className="mt-1 text-sm text-ink-inverse/45">
+          <p className="mt-1 text-sm text-tone-muted">
             {age(data.latest_check_in.at)}, {data.latest_check_in.posted_by}
           </p>
         </section>
@@ -263,16 +263,16 @@ export function TripCompanion({ token }: { token: string }) {
 
       {data.route_notices.length > 0 && (
         <section className="rounded-lg bg-status-limited/10 px-5 py-5 ring-1 ring-status-limited/25">
-          <h2 className="text-sm text-ink-inverse/60">Route notices</h2>
+          <h2 className="text-sm text-tone-body">Route notices</h2>
           <ul className="mt-3 space-y-2">
             {data.route_notices.map((n, i) => (
-              <li key={i} className="text-[15px] leading-relaxed text-ink-inverse/80">
+              <li key={i} className="text-[15px] leading-relaxed text-tone-body">
                 {n}
               </li>
             ))}
           </ul>
           {fromCache && unreachable && (
-            <p className="mt-3 text-xs leading-relaxed text-ink-inverse/50">
+            <p className="mt-3 text-xs leading-relaxed text-tone-muted">
               These were current when this copy was saved. Ask your coordinator before
               relying on them.
             </p>
@@ -280,25 +280,25 @@ export function TripCompanion({ token }: { token: string }) {
         </section>
       )}
 
-      <details className="rounded-lg bg-white/[0.03] px-5 py-4 ring-1 ring-white/10">
-        <summary className="cursor-pointer text-sm text-ink-inverse/60">
+      <details className="rounded-lg bg-white/[0.03] px-5 py-4 ring-1 ring-tone-line">
+        <summary className="cursor-pointer text-sm text-tone-body">
           The whole journey, day by day
         </summary>
         <ol className="mt-4 space-y-4">
           {data.days.map((d) => (
-            <li key={d.day} className={d.is_today ? "text-ink-inverse" : "text-ink-inverse/60"}>
+            <li key={d.day} className={d.is_today ? "text-tone-strong" : "text-tone-body"}>
               <p className="text-[15px]">
-                <span className="text-ink-inverse/40">Day {d.day}</span> · {d.title}
+                <span className="text-tone-muted">Day {d.day}</span> · {d.title}
               </p>
               {d.staying_at && (
-                <p className="text-sm text-ink-inverse/45">{d.staying_at}</p>
+                <p className="text-sm text-tone-muted">{d.staying_at}</p>
               )}
             </li>
           ))}
         </ol>
       </details>
 
-      <p className="border-t border-white/12 pt-5 text-xs leading-relaxed text-ink-inverse/40">
+      <p className="border-t border-tone-line pt-5 text-xs leading-relaxed text-tone-muted">
         This page works without a network once you have opened it. Nothing on it
         updates by itself. When you have signal again, open it and it will refresh.
       </p>

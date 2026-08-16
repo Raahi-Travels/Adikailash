@@ -41,7 +41,7 @@ type Gap = { question: string; asked_at: string; locale: string };
 const TONE: Record<string, string> = {
   stale: "text-status-suspended",
   due_soon: "text-status-limited",
-  current: "text-ink-inverse/45",
+  current: "text-tone-muted",
 };
 
 export default async function GuidesPage() {
@@ -54,25 +54,25 @@ export default async function GuidesPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Guides</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         Sorted by what needs a person, not alphabetically. Every guide carries a
         promise to re-check it; the ones at the top are the ones where that promise
         has run out.
       </p>
 
       {gaps.length > 0 && (
-        <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
-          <h2 className="text-sm text-ink-inverse/50">
+        <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line">
+          <h2 className="text-sm text-tone-muted">
             Asked, and we had nothing published
           </h2>
           <ul className="mt-3 space-y-1.5">
             {gaps.slice(0, 8).map((g, i) => (
-              <li key={i} className="text-[15px] leading-relaxed text-ink-inverse/80">
+              <li key={i} className="text-[15px] leading-relaxed text-tone-body">
                 {g.question}
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs leading-relaxed text-ink-inverse/45">
+          <p className="mt-3 text-xs leading-relaxed text-tone-muted">
             Real questions from the assistant, not a keyword tool. Each one is a guide
             somebody already wanted.
           </p>
@@ -80,19 +80,19 @@ export default async function GuidesPage() {
       )}
 
       {guides.length === 0 ? (
-        <p className="mt-8 text-[15px] text-ink-inverse/55">No guides yet.</p>
+        <p className="mt-8 text-[15px] text-tone-muted">No guides yet.</p>
       ) : (
         <ul className="mt-8 space-y-4">
           {guides.map((g) => (
             <li
               key={g.slug}
-              className="rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-white/10"
+              className="rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-tone-line"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <p className="text-[15px]">
                   {g.title}
                   {g.is_pillar && (
-                    <span className="ml-2 text-xs text-ink-inverse/40">pillar</span>
+                    <span className="ml-2 text-xs text-tone-muted">pillar</span>
                   )}
                 </p>
                 <p
@@ -104,10 +104,10 @@ export default async function GuidesPage() {
                   {g.freshness_label}
                 </p>
               </div>
-              <p className="mt-1.5 max-w-[74ch] text-sm leading-relaxed text-ink-inverse/60">
+              <p className="mt-1.5 max-w-[74ch] text-sm leading-relaxed text-tone-body">
                 {g.answer}
               </p>
-              <p className="mt-2 text-xs text-ink-inverse/40">
+              <p className="mt-2 text-xs text-tone-muted">
                 {g.cluster.replaceAll("_", " ")} · {g.slug}
                 {g.reviewed_by
                   ? ` · reviewed by ${g.reviewed_by}`

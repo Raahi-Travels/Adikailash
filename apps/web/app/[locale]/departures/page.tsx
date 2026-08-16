@@ -285,7 +285,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
         <SceneBackdrop name="departures" />
         <div className="mx-auto max-w-4xl">
-          <div className="flex items-center gap-3 text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
+          <div className="flex items-center gap-3 text-tone-strong">
             <CalendarIcon className="size-6" />
             <p className="text-sm uppercase tracking-[0.14em]">Dates</p>
           </div>
@@ -318,7 +318,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
             </p>
             <Link
               href="/enquire"
-              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
+              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
             >
               Tell us when you want to travel
             </Link>
@@ -364,7 +364,7 @@ export default async function DeparturesPage({ params }: PageProps<"/[locale]">)
           outside anyone&apos;s control, and we would rather change a date than run one we
           are not confident about. What happens to your money when a date changes is set
           out in our{" "}
-          <Link href="/policies/cancellation" className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline">
+          <Link href="/policies/cancellation" className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline">
             cancellation policy
           </Link>
           .

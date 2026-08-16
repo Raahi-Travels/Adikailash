@@ -60,14 +60,14 @@ export default async function ReservationsPage({
   return (
     <>
       <h1 className="text-2xl font-medium">Reservations</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         Sorted by what needs a person first: reservations nobody owns, then holds that
         have expired, then overdue actions. An expired hold is capacity somebody else
         could be using while nobody has decided anything.
       </p>
 
       {queue === null && (
-        <p className="mt-8 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
+        <p className="mt-8 rounded-lg bg-tone-raised px-5 py-4 text-[15px] ring-1 ring-tone-line">
           Could not load reservations. Either the API is unreachable, or your account
           does not have a reservations role.
         </p>
@@ -85,7 +85,7 @@ export default async function ReservationsPage({
                   className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
                     active
                       ? "bg-gold text-midnight"
-                      : "text-ink-inverse/70 ring-1 ring-white/15 hover:text-ink-inverse"
+                      : "text-tone-body ring-1 ring-tone-line hover:text-tone-strong"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -98,7 +98,7 @@ export default async function ReservationsPage({
               className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
                 unassigned
                   ? "bg-gold text-midnight"
-                  : "text-ink-inverse/70 ring-1 ring-white/15 hover:text-ink-inverse"
+                  : "text-tone-body ring-1 ring-tone-line hover:text-tone-strong"
               }`}
             >
               Nobody owns
@@ -116,7 +116,7 @@ export default async function ReservationsPage({
           )}
 
           {queue.reservations.length === 0 ? (
-            <p className="mt-10 text-[15px] text-ink-inverse/60">
+            <p className="mt-10 text-[15px] text-tone-body">
               {state || unassigned
                 ? "Nothing matches that filter."
                 : "No reservations yet. They appear here as soon as one is opened."}
@@ -126,7 +126,7 @@ export default async function ReservationsPage({
               {queue.reservations.map((r) => (
                 <article
                   key={r.id}
-                  className={`border-t border-white/12 py-6 ${
+                  className={`border-t border-tone-line py-6 ${
                     r.coordinator === null ? "border-l-2 border-l-saffron/60 pl-4" : ""
                   }`}
                 >
@@ -140,7 +140,7 @@ export default async function ReservationsPage({
                       </Link>
                     </h2>
                     <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs ring-1 ${STATE_TONE[r.state] ?? "text-ink-inverse/70 ring-white/20"}`}
+                      className={`rounded-full px-2.5 py-0.5 text-xs ring-1 ${STATE_TONE[r.state] ?? "text-tone-body ring-tone-line"}`}
                     >
                       {stateLabel(r.state)}
                     </span>
@@ -160,24 +160,24 @@ export default async function ReservationsPage({
                         Action overdue
                       </span>
                     )}
-                    <span className="ml-auto text-sm text-ink-inverse/45">
+                    <span className="ml-auto text-sm text-tone-muted">
                       {r.coordinator ?? "Unassigned"}
                     </span>
                   </div>
 
-                  <p className="mt-2 text-[15px] text-ink-inverse/80">
+                  <p className="mt-2 text-[15px] text-tone-body">
                     {r.group_lead_name ?? "No group lead named"}
                     {r.journey_name ? ` · ${r.journey_name}` : ""}
                   </p>
 
-                  <dl className="mt-3 flex flex-wrap gap-x-7 gap-y-1.5 text-sm text-ink-inverse/60">
+                  <dl className="mt-3 flex flex-wrap gap-x-7 gap-y-1.5 text-sm text-tone-body">
                     <div className="flex items-center gap-2">
-                      <CalendarIcon className="size-4 text-ink-inverse/35" />
+                      <CalendarIcon className="size-4 text-tone-muted" />
                       <dt className="sr-only">Departure</dt>
                       <dd>{shortDate(r.start_date) ?? "Date to be confirmed"}</dd>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Group className="size-4 text-ink-inverse/35" />
+                      <Group className="size-4 text-tone-muted" />
                       <dt className="sr-only">Party</dt>
                       <dd
                         className={
@@ -194,7 +194,7 @@ export default async function ReservationsPage({
                       <dd>
                         {money(r.amount_received)} of {money(r.agreed_amount)}
                         {Number(r.balance_outstanding) > 0 && (
-                          <span className="text-ink-inverse/45">
+                          <span className="text-tone-muted">
                             {" "}
                             · {money(r.balance_outstanding)} outstanding
                           </span>
@@ -206,7 +206,7 @@ export default async function ReservationsPage({
                   {r.next_action && (
                     <p
                       className={`mt-3 text-sm ${
-                        r.is_overdue ? "text-status-suspended" : "text-ink-inverse/50"
+                        r.is_overdue ? "text-status-suspended" : "text-tone-muted"
                       }`}
                     >
                       Next: {r.next_action}

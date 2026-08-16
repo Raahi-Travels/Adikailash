@@ -91,7 +91,7 @@ export default async function GuidePage({
         className="flex-1 register-light px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
       >
         <article className="mx-auto max-w-2xl">
-          <p className="text-sm uppercase tracking-[0.14em] text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
+          <p className="text-sm uppercase tracking-[0.14em] text-tone-muted">
             {CLUSTER_LABEL[article.cluster] ?? article.cluster}
           </p>
           <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-[2.75rem]">
@@ -143,7 +143,7 @@ export default async function GuidePage({
                   current, and{" "}
                   <Link
                     href="/status"
-                    className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
+                    className="text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
                   >
                     read the live status
                   </Link>{" "}
@@ -202,7 +202,7 @@ export default async function GuidePage({
                   <li key={related.slug}>
                     <Link
                       href={`/guides/${related.slug}`}
-                      className="text-[15px] text-tone-body underline-offset-4 hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
+                      className="text-[15px] text-tone-body underline-offset-4 hover:text-tone-strong underline decoration-gold decoration-2 hover:underline"
                     >
                       {related.title}
                     </Link>

@@ -251,7 +251,7 @@ export function RouteProfile({
         {legs.map(({ station, status, state }) => (
           <li
             key={station.slug}
-            className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-white/10 py-3.5"
+            className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-tone-line py-3.5"
           >
             <span
               aria-hidden="true"
@@ -261,7 +261,7 @@ export function RouteProfile({
             <span className="min-w-0 flex-1 text-[15px]">
               {station.from ? stationName(station.from) : ""} to {station.name}
             </span>
-            <span className="type-reading text-sm text-ink-inverse/50">
+            <span className="type-reading text-sm text-tone-muted">
               {station.confidence === "approximate" ? "~" : ""}
               {station.altitudeM.toLocaleString("en-IN")} m
             </span>
@@ -271,14 +271,14 @@ export function RouteProfile({
             >
               {legLabel(status)}
             </span>
-            <span className="type-reading w-24 shrink-0 text-right text-sm text-ink-inverse/45">
+            <span className="type-reading w-24 shrink-0 text-right text-sm text-tone-muted">
               {status ? age(status.verified_at, locale) : "never"}
             </span>
           </li>
         ))}
       </ul>
 
-      <p className="mt-6 max-w-[68ch] text-sm leading-relaxed text-ink-inverse/55">
+      <p className="mt-6 max-w-[68ch] text-sm leading-relaxed text-tone-muted">
         The highest ground on this journey is {HIGHEST.name} at about{" "}
         <span className="type-reading">
           {HIGHEST.altitudeM.toLocaleString("en-IN")} m

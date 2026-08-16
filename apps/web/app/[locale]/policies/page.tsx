@@ -56,7 +56,7 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
                 className="group block border-t border-tone-line py-7 transition-colors hover:bg-ink/[0.03]"
               >
                 <div className="flex items-baseline gap-4">
-                  <h2 className="font-serif text-2xl transition-colors group-hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4">
+                  <h2 className="font-serif text-2xl transition-colors group-hover:text-gold">
                     {doc.title}
                   </h2>
                   {!doc.reviewed && (
@@ -64,7 +64,7 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
                       Draft
                     </span>
                   )}
-                  <ArrowRight className="ml-auto size-5 shrink-0 self-center text-tone-strong/30 transition-all group-hover:translate-x-1 group-hover:text-tone-strong underline decoration-gold decoration-2 underline-offset-4" />
+                  <ArrowRight className="ml-auto size-5 shrink-0 self-center text-tone-strong/30 transition-all group-hover:translate-x-1 group-hover:text-gold" />
                 </div>
                 <p className="mt-3 max-w-[64ch] text-[15px] leading-relaxed text-tone-body">
                   {doc.inShort}

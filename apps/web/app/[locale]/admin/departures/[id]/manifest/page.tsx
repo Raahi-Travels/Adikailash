@@ -78,16 +78,16 @@ export default async function ManifestPage({
     <>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <h1 className="text-2xl font-medium">Manifest</h1>
-        <span className="text-sm text-ink-inverse/60">
+        <span className="text-sm text-tone-body">
           {m.journey_name} · {m.tier_name}
         </span>
-        <span className="ml-auto text-sm text-ink-inverse/50">
+        <span className="ml-auto text-sm text-tone-muted">
           {when(m.start_date)} to {when(m.end_date)}
           {m.gateway ? ` · from ${m.gateway}` : ""}
         </span>
       </div>
 
-      <p className="mt-2 text-sm text-ink-inverse/50">
+      <p className="mt-2 text-sm text-tone-muted">
         Operated by {m.operator_name ?? "nobody yet"} · {m.confirmed_travellers}{" "}
         confirmed traveller{m.confirmed_travellers === 1 ? "" : "s"} in{" "}
         {m.confirmed_parties} part{m.confirmed_parties === 1 ? "y" : "ies"} · capacity{" "}
@@ -119,7 +119,7 @@ export default async function ManifestPage({
             {m.blockers.map((b) => (
               <li
                 key={b}
-                className="flex gap-3 text-[15px] leading-relaxed text-ink-inverse/85"
+                className="flex gap-3 text-[15px] leading-relaxed text-tone-body"
               >
                 <span
                   aria-hidden
@@ -133,13 +133,13 @@ export default async function ManifestPage({
       </section>
 
       {m.warnings.length > 0 && (
-        <section className="mt-5 rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-white/10">
-          <h2 className="text-[15px] text-ink-inverse/70">
+        <section className="mt-5 rounded-lg bg-white/[0.04] px-5 py-4 ring-1 ring-tone-line">
+          <h2 className="text-[15px] text-tone-body">
             Worth chasing, but not a reason to hold the departure
           </h2>
           <ul className="mt-3 space-y-1.5">
             {m.warnings.map((w) => (
-              <li key={w} className="text-sm leading-relaxed text-ink-inverse/60">
+              <li key={w} className="text-sm leading-relaxed text-tone-body">
                 {w}
               </li>
             ))}
@@ -150,13 +150,13 @@ export default async function ManifestPage({
       <section className="mt-10">
         <h2 className="font-serif text-xl">Parties</h2>
         {m.parties.length === 0 ? (
-          <p className="mt-3 text-[15px] text-ink-inverse/60">
+          <p className="mt-3 text-[15px] text-tone-body">
             No reservations on this departure yet.
           </p>
         ) : (
           <div className="mt-5">
             {m.parties.map((p) => (
-              <article key={p.reservation_id} className="border-t border-white/12 py-5">
+              <article key={p.reservation_id} className="border-t border-tone-line py-5">
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <h3 className="text-[17px]">
                     <Link
@@ -166,16 +166,16 @@ export default async function ManifestPage({
                       {p.reference}
                     </Link>
                   </h3>
-                  <span className="text-sm text-ink-inverse/55">
+                  <span className="text-sm text-tone-muted">
                     {stateLabel(p.state)}
                   </span>
-                  <span className="text-sm text-ink-inverse/70">
+                  <span className="text-sm text-tone-body">
                     {p.group_lead ?? "No group lead named"}
                   </span>
                   {!p.policy_accepted && (
                     <span className="text-sm text-saffron/90">Terms not accepted</span>
                   )}
-                  <span className="ml-auto text-sm text-ink-inverse/45">
+                  <span className="ml-auto text-sm text-tone-muted">
                     {p.coordinator ?? "Unassigned"}
                   </span>
                 </div>
@@ -186,19 +186,19 @@ export default async function ManifestPage({
                       key={t.full_name}
                       className="flex flex-wrap items-center gap-x-4 text-sm"
                     >
-                      <Group className="size-4 shrink-0 text-ink-inverse/30" />
-                      <span className="text-[15px] text-ink-inverse/85">
+                      <Group className="size-4 shrink-0 text-tone-muted" />
+                      <span className="text-[15px] text-tone-body">
                         {t.full_name}
                       </span>
                       {t.role === "group_lead" && (
                         <span className="text-xs text-gold">lead</span>
                       )}
                       {t.date_of_birth && (
-                        <span className="text-ink-inverse/45">
+                        <span className="text-tone-muted">
                           {when(t.date_of_birth)}
                         </span>
                       )}
-                      {t.is_senior && <span className="text-ink-inverse/55">elder</span>}
+                      {t.is_senior && <span className="text-tone-muted">elder</span>}
                       {t.has_disclosed_health_information && (
                         <span className="text-saffron/80">health info on file</span>
                       )}
@@ -211,7 +211,7 @@ export default async function ManifestPage({
                           {t.permit_documents_outstanding === 1 ? "" : "s"} missing
                         </span>
                       ) : t.documents_outstanding > 0 ? (
-                        <span className="text-ink-inverse/45">
+                        <span className="text-tone-muted">
                           {t.documents_outstanding} other document
                           {t.documents_outstanding === 1 ? "" : "s"} outstanding
                         </span>
@@ -233,7 +233,7 @@ export default async function ManifestPage({
         )}
       </section>
 
-      <p className="mt-10 border-t border-white/12 pt-6 text-sm leading-relaxed text-ink-inverse/50">
+      <p className="mt-10 border-t border-tone-line pt-6 text-sm leading-relaxed text-tone-muted">
         This page is derived at read time and changes as documents are accepted and
         reservations move. Print it the morning you leave, not the week before. Doc 09
         expects an offline contingency pack; this is what it is printed from.

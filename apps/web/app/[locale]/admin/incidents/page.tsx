@@ -27,8 +27,8 @@ import { adminGet, adminPatch, adminPost, currentStaff } from "@/lib/admin-api";
 export const dynamic = "force-dynamic";
 
 const FIELD =
-  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "text-xs text-ink-inverse/50";
+  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "text-xs text-tone-muted";
 const BUTTON =
   "rounded-full bg-gold px-4 py-2 text-sm font-medium text-midnight transition-transform active:scale-[0.98]";
 
@@ -72,8 +72,8 @@ const CATEGORIES = [
 ] as const;
 
 const SEVERITY_TONE: Record<string, string> = {
-  near_miss: "text-ink-inverse/60 ring-white/15",
-  minor: "text-ink-inverse/70 ring-white/20",
+  near_miss: "text-tone-body ring-tone-line",
+  minor: "text-tone-body ring-tone-line",
   significant: "text-status-limited ring-status-limited/30",
   serious: "text-status-suspended ring-status-suspended/30",
   critical: "text-status-suspended ring-status-suspended/50",
@@ -158,12 +158,12 @@ export default async function IncidentsPage({
   return (
     <>
       <h1 className="text-2xl font-medium">Incidents</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         Anything that went wrong, what was done, and how it ended. Open and overdue
         first. A near miss is worth recording: it is the one that tells you where the
         next real one will happen.
       </p>
-      <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/45">
+      <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
         Record what was seen, never what it was. We are not qualified to diagnose
         anybody, and a clinical judgement here is the sentence that gets read back.
       </p>
@@ -175,7 +175,7 @@ export default async function IncidentsPage({
         >
           <Caution className="mt-0.5 size-5 shrink-0" />
           <span>
-            {error} <span className="text-ink-inverse/55">Nothing was saved.</span>
+            {error} <span className="text-tone-muted">Nothing was saved.</span>
           </span>
         </p>
       )}
@@ -193,7 +193,7 @@ export default async function IncidentsPage({
               className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
                 active
                   ? "bg-gold text-midnight"
-                  : "text-ink-inverse/70 ring-1 ring-white/15 hover:text-ink-inverse"
+                  : "text-tone-body ring-1 ring-tone-line hover:text-tone-strong"
               }`}
             >
               {f.label}
@@ -203,7 +203,7 @@ export default async function IncidentsPage({
       </nav>
 
       {incidents.length === 0 ? (
-        <p className="mt-10 text-[15px] text-ink-inverse/60">
+        <p className="mt-10 text-[15px] text-tone-body">
           Nothing recorded. That is either good news or a reporting problem, and the
           second is more common than the first.
         </p>
@@ -212,7 +212,7 @@ export default async function IncidentsPage({
           {incidents.map((i) => (
             <article
               key={i.id}
-              className={`border-t border-white/12 py-6 ${
+              className={`border-t border-tone-line py-6 ${
                 i.is_overdue ? "border-l-2 border-l-status-suspended pl-4" : ""
               }`}
             >
@@ -222,7 +222,7 @@ export default async function IncidentsPage({
                 >
                   {label(SEVERITIES, i.severity)}
                 </span>
-                <span className="text-sm text-ink-inverse/60">
+                <span className="text-sm text-tone-body">
                   {label(CATEGORIES, i.category)}
                 </span>
                 {i.needs_founder && i.is_open && (
@@ -242,23 +242,23 @@ export default async function IncidentsPage({
                     Closed
                   </span>
                 )}
-                <span className="ml-auto text-sm text-ink-inverse/45">
+                <span className="ml-auto text-sm text-tone-muted">
                   {when(i.occurred_at)} · reported by {i.reported_by}
                 </span>
               </div>
 
-              <p className="mt-3 max-w-[72ch] whitespace-pre-line text-[15px] leading-relaxed text-ink-inverse/85">
+              <p className="mt-3 max-w-[72ch] whitespace-pre-line text-[15px] leading-relaxed text-tone-body">
                 {i.observed}
               </p>
               {i.immediate_action && (
-                <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-ink-inverse/65">
-                  <span className="text-ink-inverse/45">What was done. </span>
+                <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-tone-body">
+                  <span className="text-tone-muted">What was done. </span>
                   {i.immediate_action}
                 </p>
               )}
               {i.outcome && (
-                <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-ink-inverse/65">
-                  <span className="text-ink-inverse/45">How it ended. </span>
+                <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-tone-body">
+                  <span className="text-tone-muted">How it ended. </span>
                   {i.outcome}
                 </p>
               )}
@@ -285,7 +285,7 @@ export default async function IncidentsPage({
                       className={`mt-1 ${FIELD}`}
                     />
                   </label>
-                  <label className="flex items-center gap-2 pb-2 text-sm text-ink-inverse/70">
+                  <label className="flex items-center gap-2 pb-2 text-sm text-tone-body">
                     <input
                       type="checkbox"
                       name="travellers_informed"
@@ -294,7 +294,7 @@ export default async function IncidentsPage({
                     />
                     Travellers told
                   </label>
-                  <label className="flex items-center gap-2 pb-2 text-sm text-ink-inverse/70">
+                  <label className="flex items-center gap-2 pb-2 text-sm text-tone-body">
                     <input type="checkbox" name="resolve" className="size-4 accent-gold" />
                     Close it
                   </label>
@@ -308,7 +308,7 @@ export default async function IncidentsPage({
         </div>
       )}
 
-      <section className="mt-12 border-t border-white/12 pt-8">
+      <section className="mt-12 border-t border-tone-line pt-8">
         <h2 className="font-serif text-xl">Report something</h2>
         <form action={reportIncident} className="mt-4 space-y-3">
           {hidden}
@@ -317,7 +317,7 @@ export default async function IncidentsPage({
               <span className={LABEL}>Severity</span>
               <select name="severity" defaultValue="minor" className={`mt-1 ${FIELD}`}>
                 {SEVERITIES.map(([v, l]) => (
-                  <option key={v} value={v} className="bg-midnight">
+                  <option key={v} value={v} className="register-dark">
                     {l}
                   </option>
                 ))}

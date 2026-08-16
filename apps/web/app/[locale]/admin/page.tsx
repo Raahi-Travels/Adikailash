@@ -29,22 +29,22 @@ export default async function AdminOverview({ params }: PageProps<"/[locale]/adm
       )}
 
       {status && stale.length === 0 && blocking.length === 0 && staleWeather.length === 0 && (
-        <p className="mt-6 text-[15px] text-ink-inverse/65">
+        <p className="mt-6 text-[15px] text-tone-body">
           Every published segment is within its verification window.
         </p>
       )}
 
       {blocking.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-ink-inverse/55">
+          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-tone-muted">
             Blocking sale
           </h2>
-          <ul className="mt-4 divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-4 divide-y divide-tone-line border-y border-tone-line">
             {blocking.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3.5">
                 <div>
                   <p className="text-[15px]">{r.segment_name}</p>
-                  <p className="mt-0.5 text-sm text-ink-inverse/55">
+                  <p className="mt-0.5 text-sm text-tone-muted">
                     Departures on this segment cannot take payment.
                   </p>
                 </div>
@@ -57,15 +57,15 @@ export default async function AdminOverview({ params }: PageProps<"/[locale]/adm
 
       {stale.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-ink-inverse/55">
+          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-tone-muted">
             Overdue verification
           </h2>
-          <ul className="mt-4 divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-4 divide-y divide-tone-line border-y border-tone-line">
             {stale.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3.5">
                 <div>
                   <p className="text-[15px]">{r.segment_name}</p>
-                  <p className="mt-0.5 text-sm text-ink-inverse/55">
+                  <p className="mt-0.5 text-sm text-tone-muted">
                     Due{" "}
                     {new Date(r.next_verification_due).toLocaleString("en-IN", {
                       dateStyle: "medium",
@@ -89,14 +89,14 @@ export default async function AdminOverview({ params }: PageProps<"/[locale]/adm
 
       {staleWeather.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-ink-inverse/55">
+          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-tone-muted">
             Weather out of date
           </h2>
-          <ul className="mt-4 divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-4 divide-y divide-tone-line border-y border-tone-line">
             {staleWeather.map((w) => (
               <li key={w.id} className="py-3.5 text-[15px]">
                 {w.place}
-                <span className="ml-3 text-sm text-ink-inverse/55">
+                <span className="ml-3 text-sm text-tone-muted">
                   last seen{" "}
                   {new Date(w.observed_at).toLocaleString("en-IN", {
                     dateStyle: "medium",
@@ -109,7 +109,7 @@ export default async function AdminOverview({ params }: PageProps<"/[locale]/adm
         </section>
       )}
 
-      <p className="mt-12 border-t border-white/10 pt-6 text-sm leading-relaxed text-ink-inverse/50">
+      <p className="mt-12 border-t border-tone-line pt-6 text-sm leading-relaxed text-tone-muted">
         Payments are disabled platform-wide until the operating partner, deposit and
         refund decisions (O2 to O4) are approved. Until then no departure can take
         money regardless of its state.

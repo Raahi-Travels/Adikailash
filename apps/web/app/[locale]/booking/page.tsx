@@ -148,13 +148,13 @@ export default async function BookingPage({
   return (
     <main
       id="main"
-      className="flex-1 register-dark px-4 py-16 text-ink-inverse sm:px-6 sm:py-20"
+      className="flex-1 register-dark px-4 py-16 text-tone-strong sm:px-6 sm:py-20"
     >
       <div className="mx-auto max-w-3xl">
         {!value && (
           <>
             <h1 className="font-serif text-4xl leading-tight">Your booking</h1>
-            <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+            <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
               This page opens from the private link we sent you. If you do not have it
               to hand, message the team and we will send a new one.
             </p>
@@ -164,7 +164,7 @@ export default async function BookingPage({
         {value && failed && (
           <>
             <h1 className="font-serif text-4xl leading-tight">Your booking</h1>
-            <p className="mt-6 rounded-lg bg-himalayan px-5 py-4 text-[15px] leading-relaxed ring-1 ring-white/10">
+            <p className="mt-6 rounded-lg bg-tone-raised px-5 py-4 text-[15px] leading-relaxed ring-1 ring-tone-line">
               This link is not valid. It may have expired. Please ask the team for a
               new one.
             </p>
@@ -180,7 +180,7 @@ export default async function BookingPage({
               {booking.journey_name ?? "Your journey"}
             </h1>
             {booking.start_date && (
-              <p className="mt-3 text-[15px] text-ink-inverse/70">
+              <p className="mt-3 text-[15px] text-tone-body">
                 {when(booking.start_date, locale)} to {when(booking.end_date, locale)}
                 {booking.gateway ? `, starting from ${booking.gateway}` : ""}
               </p>
@@ -199,7 +199,7 @@ export default async function BookingPage({
               }`}
             >
               <h2 className="text-lg">{booking.state_label}</h2>
-              <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/80">
+              <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                 {booking.state_meaning}
               </p>
             </section>
@@ -209,26 +209,26 @@ export default async function BookingPage({
                 <h2 className="font-serif text-2xl">From your coordinator</h2>
                 <div className="mt-4">
                   {booking.updates.map((u) => (
-                    <article key={u.id} className="border-t border-white/12 py-5">
+                    <article key={u.id} className="border-t border-tone-line py-5">
                       <div className="flex flex-wrap items-baseline gap-x-3">
                         <span
                           className={`text-sm ${
                             u.category === "route_change" || u.category === "incident"
                               ? "text-saffron"
-                              : "text-ink-inverse/45"
+                              : "text-tone-muted"
                           }`}
                         >
                           {UPDATE_LABEL[u.category] ?? "Update"}
                         </span>
-                        <span className="ml-auto text-sm text-ink-inverse/45">
+                        <span className="ml-auto text-sm text-tone-muted">
                           {when(u.created_at, locale)}
                         </span>
                       </div>
                       <h3 className="mt-1.5 text-[17px]">{u.title}</h3>
-                      <p className="mt-2 max-w-[62ch] whitespace-pre-line text-[15px] leading-relaxed text-ink-inverse/75">
+                      <p className="mt-2 max-w-[62ch] whitespace-pre-line text-[15px] leading-relaxed text-tone-body">
                         {u.body}
                       </p>
-                      <p className="mt-2 text-sm text-ink-inverse/40">
+                      <p className="mt-2 text-sm text-tone-muted">
                         {u.published_by}
                       </p>
                     </article>
@@ -242,14 +242,14 @@ export default async function BookingPage({
                 {booking.is_ready ? (
                   <Verified className="size-5 text-status-open" />
                 ) : (
-                  <Permit className="size-5 text-ink-inverse/45" />
+                  <Permit className="size-5 text-tone-muted" />
                 )}
                 <h2 className="font-serif text-2xl">
                   {booking.is_ready ? "Nothing outstanding" : "Still to do"}
                 </h2>
               </div>
               {booking.is_ready ? (
-                <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                   Everything we need is in place. We will be in touch before you travel.
                 </p>
               ) : (
@@ -257,7 +257,7 @@ export default async function BookingPage({
                   {booking.outstanding.map((item) => (
                     <li
                       key={item}
-                      className="flex gap-3 text-[15px] leading-relaxed text-ink-inverse/80"
+                      className="flex gap-3 text-[15px] leading-relaxed text-tone-body"
                     >
                       <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-gold" />
                       {item}
@@ -278,7 +278,7 @@ export default async function BookingPage({
             <section className="mt-10">
               <h2 className="font-serif text-2xl">Who is travelling</h2>
               {booking.travellers.length === 0 ? (
-                <p className="mt-3 text-[15px] text-ink-inverse/60">
+                <p className="mt-3 text-[15px] text-tone-body">
                   Nobody has been named yet. We need every traveller&apos;s name as it
                   appears on their identity document, because permits are issued
                   against them.
@@ -288,11 +288,11 @@ export default async function BookingPage({
                   {booking.travellers.map((t) => (
                     <li
                       key={t.full_name}
-                      className="flex flex-wrap items-center gap-x-4 border-t border-white/12 py-3 text-[15px]"
+                      className="flex flex-wrap items-center gap-x-4 border-t border-tone-line py-3 text-[15px]"
                     >
                       {t.full_name}
                       {t.role === "group_lead" && (
-                        <span className="text-sm text-ink-inverse/45">
+                        <span className="text-sm text-tone-muted">
                           main contact
                         </span>
                       )}
@@ -300,14 +300,14 @@ export default async function BookingPage({
                   ))}
                 </ul>
               )}
-              <p className="mt-3 text-sm text-ink-inverse/50">
+              <p className="mt-3 text-sm text-tone-muted">
                 {booking.travellers.length} of {booking.party_size} named
               </p>
             </section>
 
             <section className="mt-10">
               <h2 className="font-serif text-2xl">Payments</h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/70">
+              <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
                 {money(booking.amount_received, booking.currency)} received of{" "}
                 {money(booking.amount_due, booking.currency)}.
                 {Number(booking.balance_outstanding) > 0 && (
@@ -320,7 +320,7 @@ export default async function BookingPage({
                   {booking.payments.map((p, i) => (
                     <li
                       key={`${p.received_at}-${i}`}
-                      className="flex flex-wrap items-center gap-x-5 border-t border-white/12 py-3 text-[15px]"
+                      className="flex flex-wrap items-center gap-x-5 border-t border-tone-line py-3 text-[15px]"
                     >
                       <span
                         className={
@@ -332,15 +332,15 @@ export default async function BookingPage({
                         {p.direction === "refunded" ? "Refunded " : "Received "}
                         {money(p.amount, booking.currency)}
                       </span>
-                      <span className="text-ink-inverse/60">
+                      <span className="text-tone-body">
                         {METHOD_LABEL[p.method] ?? p.method}
                       </span>
                       {p.reference && (
-                        <span className="font-mono text-sm text-ink-inverse/45">
+                        <span className="font-mono text-sm text-tone-muted">
                           {p.reference}
                         </span>
                       )}
-                      <span className="ml-auto text-sm text-ink-inverse/45">
+                      <span className="ml-auto text-sm text-tone-muted">
                         {when(p.received_at, locale)}
                       </span>
                     </li>
@@ -353,7 +353,7 @@ export default async function BookingPage({
                 pay button. Saying so is better than a dead end.
               */}
               {!booking.online_payment_available && (
-                <p className="mt-5 rounded-lg bg-himalayan px-5 py-4 text-sm leading-relaxed ring-1 ring-white/10">
+                <p className="mt-5 rounded-lg bg-tone-raised px-5 py-4 text-sm leading-relaxed ring-1 ring-tone-line">
                   We do not take payment on this website. Anything to do with money
                   happens with a person, and every amount received is listed above with
                   its reference. If something is missing here, tell us before you send
@@ -365,7 +365,7 @@ export default async function BookingPage({
             <section className="mt-10">
               <h2 className="font-serif text-2xl">What you agreed to</h2>
               {booking.accepted_policies.length === 0 ? (
-                <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                   Nothing recorded yet. We will go through the terms and the
                   cancellation policy with you before anything is confirmed.
                 </p>
@@ -374,7 +374,7 @@ export default async function BookingPage({
                   {booking.accepted_policies.map((a) => (
                     <li
                       key={`${a.policy}-${a.version}`}
-                      className="flex flex-wrap items-center gap-x-4 border-t border-white/12 py-3 text-[15px]"
+                      className="flex flex-wrap items-center gap-x-4 border-t border-tone-line py-3 text-[15px]"
                     >
                       <Link
                         href={`/policies/${a.policy}`}
@@ -382,10 +382,10 @@ export default async function BookingPage({
                       >
                         {POLICY_LABEL[a.policy] ?? a.policy}
                       </Link>
-                      <span className="text-sm text-ink-inverse/45">
+                      <span className="text-sm text-tone-muted">
                         version {a.version}
                       </span>
-                      <span className="ml-auto text-sm text-ink-inverse/45">
+                      <span className="ml-auto text-sm text-tone-muted">
                         {a.accepted_by}
                         {a.accepted_at ? `, ${when(a.accepted_at, locale)}` : ""}
                       </span>
@@ -395,10 +395,10 @@ export default async function BookingPage({
               )}
             </section>
 
-            <section className="mt-10 border-t border-white/12 pt-8">
+            <section className="mt-10 border-t border-tone-line pt-8">
               <h2 className="font-serif text-2xl">Who is looking after you</h2>
               {booking.coordinator ? (
-                <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/75">
+                <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
                   {booking.coordinator} is your coordinator. Any question about this
                   journey reaches them.
                 </p>
@@ -413,16 +413,16 @@ export default async function BookingPage({
 
             <FamilyShares token={value} />
 
-            <div className="mt-10 border-t border-white/12 pt-8">
+            <div className="mt-10 border-t border-tone-line pt-8">
               <h2 className="font-serif text-2xl">Take it with you</h2>
-              <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+              <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                 There is no mobile network for long stretches above Dharchula. Print
                 this before you leave, or save it as a PDF.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
                   href={`/booking/pack?token=${encodeURIComponent(value)}`}
-                  className="inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                  className="inline-block rounded-full px-5 py-2.5 text-sm text-tone-strong ring-1 ring-tone-line transition-colors hover:ring-tone-line"
                 >
                   Open your trip pack
                 </Link>
@@ -433,14 +433,14 @@ export default async function BookingPage({
                 */}
                 <Link
                   href={`/trip?token=${encodeURIComponent(value)}`}
-                  className="inline-block rounded-full px-5 py-2.5 text-sm text-ink-inverse ring-1 ring-white/25 transition-colors hover:ring-white/50"
+                  className="inline-block rounded-full px-5 py-2.5 text-sm text-tone-strong ring-1 ring-tone-line transition-colors hover:ring-tone-line"
                 >
                   Open your journey page. Do this before you leave
                 </Link>
               </div>
             </div>
 
-            <p className="mt-10 text-sm leading-relaxed text-ink-inverse/50">
+            <p className="mt-10 text-sm leading-relaxed text-tone-muted">
               This page is live. It changes as your booking does, so it is worth
               checking rather than relying on an older message. We do not guarantee
               darshan, weather, visibility or route access.

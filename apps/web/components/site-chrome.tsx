@@ -39,7 +39,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   const wa = whatsappLink({ intent: "journey" });
 
   return (
-    <header data-site-chrome className="sticky top-0 z-30 border-b border-white/10 bg-midnight/95 backdrop-blur">
+    <header data-site-chrome className="register-dark sticky top-0 z-30 border-b border-tone-line bg-midnight/95 backdrop-blur">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-snow focus:px-3 focus:py-2 focus:text-ink"
@@ -49,7 +49,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2.5 text-ink-inverse"
+          className="flex shrink-0 items-center gap-2.5 text-tone-strong"
           aria-label={display(brand.identity.name)}
         >
           <Mark className="size-7 text-gold" />
@@ -63,7 +63,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-ink-inverse/75 transition-colors hover:text-ink-inverse"
+              className="text-sm text-tone-body transition-colors hover:text-tone-strong"
             >
               {t(item.key)}
             </Link>
@@ -74,7 +74,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <Link
             href="/"
             locale={other}
-            className="rounded px-2 py-1 text-sm text-ink-inverse/70 transition-colors hover:text-gold"
+            className="rounded px-2 py-1 text-sm text-tone-body transition-colors hover:text-gold"
             lang={other}
           >
             {tc("switchLanguage")}
@@ -98,14 +98,14 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       </div>
 
       <nav
-        className="flex items-center gap-5 overflow-x-auto border-t border-white/10 px-4 py-2.5 md:hidden"
+        className="flex items-center gap-5 overflow-x-auto border-t border-tone-line px-4 py-2.5 md:hidden"
         aria-label="Main"
       >
         {NAV.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="whitespace-nowrap text-sm text-ink-inverse/75"
+            className="whitespace-nowrap text-sm text-tone-body"
           >
             {t(item.key)}
           </Link>
@@ -120,9 +120,9 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   const operator = brand.legal.operatorDisclosure;
 
   return (
-    <footer data-site-chrome className="border-t border-white/10 bg-midnight px-4 py-12 text-ink-inverse/70 sm:px-6">
+    <footer data-site-chrome className="register-dark border-t border-tone-line px-4 py-12 text-tone-body sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
-        <div className="flex items-center gap-2.5 text-ink-inverse">
+        <div className="flex items-center gap-2.5 text-tone-strong">
           <Mark className="size-6 text-gold" />
           <span className="font-serif text-base tracking-wide">
             {display(brand.identity.name)}
@@ -138,7 +138,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             rather than a plausible-looking company name.
           */}
           <div>
-            <h2 className="text-ink-inverse">Who you contract with</h2>
+            <h2 className="text-tone-strong">Who you contract with</h2>
             <p className="mt-2">
               {isSettled(entity) ? entity.value : entity.placeholder}
             </p>
@@ -148,7 +148,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           </div>
 
           <div>
-            <h2 className="text-ink-inverse">Where we are</h2>
+            <h2 className="text-tone-strong">Where we are</h2>
             <p className="mt-2">{display(brand.contact.baseCity)}</p>
             <p className="mt-1">{display(brand.contact.supportHours)}</p>
           </div>
@@ -162,31 +162,31 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           step over them on the way to a journey.
         */}
         <nav
-          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm"
+          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-tone-line pt-6 text-sm"
           aria-label="More"
         >
-          <Link href="/private" className="hover:text-ink-inverse">
+          <Link href="/private" className="hover:text-tone-strong">
             Private groups and international travellers
           </Link>
-          <Link href="/partners" className="hover:text-ink-inverse">
+          <Link href="/partners" className="hover:text-tone-strong">
             Ground handling for agencies
           </Link>
         </nav>
 
         <nav
-          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm"
+          className="flex flex-wrap gap-x-6 gap-y-2 border-t border-tone-line pt-6 text-sm"
           aria-label="Policies"
         >
-          <Link href="/policies/terms" className="hover:text-ink-inverse">
+          <Link href="/policies/terms" className="hover:text-tone-strong">
             Terms
           </Link>
-          <Link href="/policies/cancellation" className="hover:text-ink-inverse">
+          <Link href="/policies/cancellation" className="hover:text-tone-strong">
             Cancellation and refunds
           </Link>
-          <Link href="/policies/privacy" className="hover:text-ink-inverse">
+          <Link href="/policies/privacy" className="hover:text-tone-strong">
             Privacy
           </Link>
-          <Link href="/policies/consent" className="hover:text-ink-inverse">
+          <Link href="/policies/consent" className="hover:text-tone-strong">
             Consent
           </Link>
         </nav>

@@ -93,6 +93,15 @@
   --color-tone-body: var(--tone-body);
   --color-tone-muted: var(--tone-muted);
   --color-tone-line: var(--tone-line);
+
+  /**
+   * The raised surface within a register: a panel that sits above the page ground
+   * without leaving it. `bg-himalayan` was doing this job on dark pages and is a
+   * legitimate palette value, but it is a fixed colour, so any component using it
+   * turned into a navy block the moment it appeared on a light page. This is the
+   * same idea expressed so it survives the move.
+   */
+  --color-tone-raised: var(--tone-raised);
 }
 
 /**
@@ -120,6 +129,7 @@
     --tone-body: oklch(0.87 0.008 90);
     --tone-muted: oklch(0.72 0.008 90);
     --tone-line: oklch(1 0 0 / 0.12);
+    --tone-raised: var(--color-himalayan);
 
     /**
      * Status colours, lifted for this background.
@@ -152,6 +162,7 @@
     --tone-body: oklch(0.38 0.014 240);
     --tone-muted: oklch(0.52 0.012 240);
     --tone-line: var(--color-border);
+    --tone-raised: var(--color-surface-raised);
 
     /* The doc 02 values, which are drawn for exactly this background. */
     --status-open: #2d5d5f;
@@ -176,6 +187,7 @@
   --tone-body: oklch(0.38 0.014 240);
   --tone-muted: oklch(0.52 0.012 240);
   --tone-line: var(--color-border);
+  --tone-raised: var(--color-surface-raised);
   --status-open: #2d5d5f;
   --status-limited: #a86632;
   --status-waitlist: #5a6770;

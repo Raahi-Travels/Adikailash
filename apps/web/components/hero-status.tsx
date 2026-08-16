@@ -38,7 +38,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <section
       aria-label="Live route status"
-      className="rounded-2xl bg-himalayan/85 p-5 ring-1 ring-white/10 backdrop-blur-md sm:p-6"
+      className="rounded-2xl bg-tone-raised/85 p-5 ring-1 ring-tone-line backdrop-blur-md sm:p-6"
     >
       {children}
     </section>
@@ -64,10 +64,10 @@ export function HeroStatus({
   if (data === null || !data.has_data) {
     return (
       <Shell>
-        <h2 className="text-[15px] font-medium text-ink-inverse">
+        <h2 className="text-[15px] font-medium text-tone-strong">
           Live route status
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-ink-inverse/65">
+        <p className="mt-3 text-sm leading-relaxed text-tone-body">
           {data === null
             ? "We cannot reach our status service from here, so we are not going to guess. Please speak to the team before making travel plans."
             : "Our coordinators publish conditions once the season opens and checks begin. Nothing is posted yet."}
@@ -103,7 +103,7 @@ export function HeroStatus({
   return (
     <Shell>
       <div className="flex items-baseline justify-between gap-4">
-        <h2 className="text-[15px] font-medium text-ink-inverse">
+        <h2 className="text-[15px] font-medium text-tone-strong">
           Live route status
         </h2>
         <Link
@@ -115,7 +115,7 @@ export function HeroStatus({
       </div>
 
       {notIssuing && (
-        <p className="mt-4 rounded-xl bg-status-suspended/15 px-3.5 py-3 text-sm leading-relaxed text-ink-inverse ring-1 ring-status-suspended/30">
+        <p className="mt-4 rounded-xl bg-status-suspended/15 px-3.5 py-3 text-sm leading-relaxed text-tone-strong ring-1 ring-status-suspended/30">
           <span className="font-medium">Permits are not being issued.</span> The
           district portal has suspended Inner Line Permits, so nobody is travelling
           above Chiyalekh at the moment, us included.
@@ -126,27 +126,27 @@ export function HeroStatus({
         {legs.map(({ station, status, state }) => (
           <li
             key={station.slug}
-            className="flex items-center gap-3 border-t border-white/[0.07] py-2.5 first:border-t-0 first:pt-0"
+            className="flex items-center gap-3 border-t border-tone-line py-2.5 first:border-t-0 first:pt-0"
           >
             <span
               aria-hidden="true"
               className="size-1.5 shrink-0 rounded-full"
               style={{ background: STATE_COLOUR[state] }}
             />
-            <span className="min-w-0 flex-1 truncate text-sm text-ink-inverse/90">
+            <span className="min-w-0 flex-1 truncate text-sm text-tone-body">
               {station.name}
             </span>
             <span className="shrink-0 text-sm" style={{ color: STATE_COLOUR[state] }}>
               {legLabel(status)}
             </span>
-            <span className="type-reading w-20 shrink-0 text-right text-xs text-ink-inverse/40">
+            <span className="type-reading w-20 shrink-0 text-right text-xs text-tone-muted">
               {status ? age(status.verified_at, locale) : "never"}
             </span>
           </li>
         ))}
       </ul>
 
-      <p className="mt-4 border-t border-white/[0.07] pt-4 text-xs leading-relaxed text-ink-inverse/50">
+      <p className="mt-4 border-t border-tone-line pt-4 text-xs leading-relaxed text-tone-muted">
         {confirmed} of {legs.length} legs confirmed recently. Above Tawaghat no
         official source reports road status, so anything not confirmed is genuinely
         unknown to us.
@@ -155,7 +155,7 @@ export function HeroStatus({
       {wa && (
         <a
           href={wa}
-          className="mt-4 flex items-center justify-between gap-3 rounded-full bg-white/[0.06] px-4 py-2.5 text-sm text-ink-inverse transition-colors hover:bg-white/[0.11]"
+          className="mt-4 flex items-center justify-between gap-3 rounded-full bg-white/[0.06] px-4 py-2.5 text-sm text-tone-strong transition-colors hover:bg-white/[0.11]"
         >
           Ask about your dates on WhatsApp
           <svg viewBox="0 0 16 16" className="size-4 shrink-0 text-gold" fill="none">

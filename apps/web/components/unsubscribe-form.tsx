@@ -31,9 +31,9 @@ export function UnsubscribeForm({ token }: { token: string }) {
 
   if (state === "done") {
     return (
-      <div role="status" className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
-        <p className="text-[15px] leading-relaxed text-ink-inverse/80">{message}</p>
-        <p className="mt-3 text-sm leading-relaxed text-ink-inverse/55">
+      <div role="status" className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line">
+        <p className="text-[15px] leading-relaxed text-tone-body">{message}</p>
+        <p className="mt-3 text-sm leading-relaxed text-tone-muted">
           The route status stays public either way. You can always read it on the
           status page without hearing from us.
         </p>

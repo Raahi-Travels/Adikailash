@@ -73,14 +73,14 @@ export default async function FeedbackPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Post-trip feedback</h1>
-      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
         Private, and it stays private. Anything a traveller flagged has to be settled,
         with a note saying what was actually done, before we ask them for anything
         public. That order is the whole point of collecting this first.
       </p>
 
       {rows.length === 0 && (
-        <p className="mt-8 text-[15px] text-ink-inverse/55">
+        <p className="mt-8 text-[15px] text-tone-muted">
           No feedback submitted yet.
         </p>
       )}
@@ -89,18 +89,18 @@ export default async function FeedbackPage() {
         {rows.map((f) => (
           <li
             key={f.id}
-            className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10"
+            className="rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <p className="text-lg">
                 {f.reservation_reference ?? `Feedback ${f.id}`}
                 {f.submitted_by && (
-                  <span className="ml-2 text-sm text-ink-inverse/50">
+                  <span className="ml-2 text-sm text-tone-muted">
                     from {f.submitted_by}
                   </span>
                 )}
               </p>
-              <p className="text-sm text-ink-inverse/50">
+              <p className="text-sm text-tone-muted">
                 {f.recommend_score !== null
                   ? `${f.recommend_score}/10 would recommend`
                   : "recommendation unanswered"}
@@ -113,7 +113,7 @@ export default async function FeedbackPage() {
               </p>
             )}
             {f.what_went_well && (
-              <p className="mt-3 text-[15px] leading-relaxed text-ink-inverse/70">
+              <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
                 {f.what_went_well}
               </p>
             )}
@@ -126,36 +126,36 @@ export default async function FeedbackPage() {
                     <form
                       key={c.id}
                       action={resolve}
-                      className="rounded-md bg-white/[0.03] px-4 py-3 ring-1 ring-white/10"
+                      className="rounded-md bg-white/[0.03] px-4 py-3 ring-1 ring-tone-line"
                     >
                       <input type="hidden" name="complaint_id" value={c.id} />
                       <p className="flex items-center gap-2 text-sm">
                         <Caution className="size-4 shrink-0 text-status-suspended" />
                         {c.dimension.replaceAll("_", " ")}
                         {c.rating !== null && (
-                          <span className="text-ink-inverse/45">rated {c.rating}/5</span>
+                          <span className="text-tone-muted">rated {c.rating}/5</span>
                         )}
                       </p>
                       {c.detail && (
-                        <p className="mt-1.5 text-sm leading-relaxed text-ink-inverse/60">
+                        <p className="mt-1.5 text-sm leading-relaxed text-tone-body">
                           {c.detail}
                         </p>
                       )}
                       <div className="mt-3 flex flex-wrap items-end gap-3">
                         <label className="min-w-64 flex-1">
-                          <span className="text-xs text-ink-inverse/50">
+                          <span className="text-xs text-tone-muted">
                             What was actually done
                           </span>
                           <input
                             name="resolution_note"
                             required
                             minLength={10}
-                            className="mt-1 w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold"
+                            className="mt-1 w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
                           />
                         </label>
                         <select
                           name="state"
-                          className="rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15"
+                          className="rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line"
                         >
                           <option value="resolved">Resolved</option>
                           <option value="acknowledged">Acknowledged</option>
@@ -172,15 +172,15 @@ export default async function FeedbackPage() {
             {f.review_request_blockers.length > 0 ? (
               /* No disabled button. A greyed control invites somebody to find the
                  way round it; this shows what has to happen instead. */
-              <div className="mt-5 border-t border-white/10 pt-4">
-                <p className="text-sm text-ink-inverse/50">
+              <div className="mt-5 border-t border-tone-line pt-4">
+                <p className="text-sm text-tone-muted">
                   Before we can ask for a public review:
                 </p>
                 <ul className="mt-2 space-y-1.5">
                   {f.review_request_blockers.map((b, i) => (
                     <li
                       key={i}
-                      className="max-w-[70ch] text-sm leading-relaxed text-ink-inverse/70"
+                      className="max-w-[70ch] text-sm leading-relaxed text-tone-body"
                     >
                       {b}
                     </li>
@@ -188,30 +188,30 @@ export default async function FeedbackPage() {
                 </ul>
               </div>
             ) : (
-              <form action={askForReview} className="mt-5 border-t border-white/10 pt-4">
+              <form action={askForReview} className="mt-5 border-t border-tone-line pt-4">
                 <input type="hidden" name="feedback_id" value={f.id} />
-                <p className="text-sm text-ink-inverse/50">
+                <p className="text-sm text-tone-muted">
                   Nothing outstanding. Ask separately for each permission. Agreeing to
                   write a sentence is not agreeing to a photograph.
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
                   <select
                     name="platform"
-                    className="rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15"
+                    className="rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line"
                   >
                     <option value="google">Google</option>
                     <option value="tripadvisor">TripAdvisor</option>
                     <option value="own_site">Our own site</option>
                   </select>
-                  <label className="flex items-center gap-2 text-ink-inverse/70">
+                  <label className="flex items-center gap-2 text-tone-body">
                     <input type="checkbox" name="written" className="size-4 accent-gold" />
                     Written review
                   </label>
-                  <label className="flex items-center gap-2 text-ink-inverse/70">
+                  <label className="flex items-center gap-2 text-tone-body">
                     <input type="checkbox" name="images" className="size-4 accent-gold" />
                     Images
                   </label>
-                  <label className="flex items-center gap-2 text-ink-inverse/70">
+                  <label className="flex items-center gap-2 text-tone-body">
                     <input type="checkbox" name="story" className="size-4 accent-gold" />
                     Their story
                   </label>

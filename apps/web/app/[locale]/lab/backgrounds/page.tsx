@@ -115,8 +115,8 @@ const SPECIMENS: Specimen[] = [
 
 function Specimen({ specimen }: { specimen: Specimen }) {
   return (
-    <section id={specimen.id} className="scroll-mt-16 border-t border-white/10">
-      <div className="relative isolate overflow-hidden bg-midnight px-6 py-16 text-ink-inverse">
+    <section id={specimen.id} className="scroll-mt-16 border-t border-tone-line">
+      <div className="relative isolate overflow-hidden register-dark px-6 py-16 text-tone-strong">
         {specimen.layers}
 
         <div className="relative mx-auto max-w-4xl">
@@ -126,7 +126,7 @@ function Specimen({ specimen }: { specimen: Specimen }) {
           <h2 className="mt-5 max-w-[22ch] font-serif text-[2.25rem] leading-[1.1] tracking-[-0.02em]">
             Some journeys begin with a plan. Others begin with a calling.
           </h2>
-          <p className="mt-5 max-w-[46ch] text-[15px] leading-relaxed text-ink-inverse/70">
+          <p className="mt-5 max-w-[46ch] text-[15px] leading-relaxed text-tone-body">
             Answer the call of Adi Kailash through a carefully guided journey rooted in
             the Himalaya.
           </p>
@@ -135,7 +135,7 @@ function Specimen({ specimen }: { specimen: Specimen }) {
             <span className="rounded-full bg-gold px-5 py-2.5 text-sm font-medium text-midnight">
               Explore the Journey
             </span>
-            <span className="rounded-full px-5 py-2.5 text-sm ring-1 ring-white/25">
+            <span className="rounded-full px-5 py-2.5 text-sm ring-1 ring-tone-line">
               Speak to a Journey Guide
             </span>
           </div>
@@ -147,8 +147,8 @@ function Specimen({ specimen }: { specimen: Specimen }) {
               ["Permits", "Permit pending"],
               ["Last verified", "8 Aug 2026, 11:28 pm IST"],
             ].map(([label, value]) => (
-              <div key={label} className="bg-himalayan/80 px-5 py-4">
-                <p className="text-xs uppercase tracking-[0.1em] text-ink-inverse/45">
+              <div key={label} className="bg-tone-raised/80 px-5 py-4">
+                <p className="text-xs uppercase tracking-[0.1em] text-tone-muted">
                   {label}
                 </p>
                 <p className="mt-1.5 text-sm">{value}</p>

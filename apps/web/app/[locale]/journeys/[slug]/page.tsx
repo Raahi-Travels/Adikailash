@@ -176,7 +176,7 @@ export default async function JourneyDetailPage({
                 <div key={tier.id} className="border-t border-tone-line pt-5">
                   <h3 className="font-serif text-xl">{tier.name}</h3>
                   {tier.is_private && (
-                    <p className="mt-1 text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4">Private departure</p>
+                    <p className="mt-1 text-sm text-tone-body">Private departure</p>
                   )}
                   <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-tone-body">
                     {tier.differentiators ?? "Details to be confirmed."}
@@ -200,7 +200,7 @@ export default async function JourneyDetailPage({
             <ol className="mt-9 space-y-8">
               {journey.stages.map((stage) => (
                 <li key={stage.id} className="grid gap-4 sm:grid-cols-[5rem_1fr]">
-                  <p className="text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4">Day {stage.day_number}</p>
+                  <p className="text-sm text-tone-body">Day {stage.day_number}</p>
                   <div>
                     <h3 className="font-serif text-xl">{stage.title}</h3>
                     {stage.travel_note && (
@@ -261,7 +261,7 @@ export default async function JourneyDetailPage({
                 <div key={stay.id}>
                   <h3 className="font-serif text-xl">{stay.name}</h3>
                   {stay.village && (
-                    <p className="mt-1 text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4">{stay.village}</p>
+                    <p className="mt-1 text-sm text-tone-body">{stay.village}</p>
                   )}
                   {stay.household_story && (
                     <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">

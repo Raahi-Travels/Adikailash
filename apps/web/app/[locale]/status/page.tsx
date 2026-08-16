@@ -75,26 +75,26 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
   return (
     <>
       {data && <StatusLd status={data} locale={locale} />}
-    <main id="main" className="flex-1 register-dark px-4 py-16 text-ink-inverse sm:px-6 sm:py-20">
+    <main id="main" className="flex-1 register-dark px-4 py-16 text-tone-strong sm:px-6 sm:py-20">
       <div className="mx-auto max-w-4xl">
         <h1 className="font-serif text-4xl leading-tight sm:text-5xl">
           Route and permit status
         </h1>
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/70">
+        <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
           What our coordinators have actually confirmed, and when. Anything past its
           re-check time is marked as not recently verified, which means unknown rather
           than open. Conditions in the high Himalaya change faster than any page can.
         </p>
 
         {data === null && (
-          <p className="mt-12 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
+          <p className="mt-12 rounded-lg bg-tone-raised px-5 py-4 text-[15px] ring-1 ring-tone-line">
             Status is unavailable right now. We cannot confirm conditions from here.
             Please speak to the team before travelling.
           </p>
         )}
 
         {data && !data.has_data && (
-          <p className="mt-12 rounded-lg bg-himalayan px-5 py-4 text-[15px] ring-1 ring-white/10">
+          <p className="mt-12 rounded-lg bg-tone-raised px-5 py-4 text-[15px] ring-1 ring-tone-line">
             Nothing has been published yet. Verified updates begin when the season opens
             and our coordinators start checking the road.
           </p>
@@ -131,7 +131,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                   </div>
 
                   {route.summary && (
-                    <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/75">
+                    <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                       {route.summary}
                     </p>
                   )}
@@ -139,7 +139,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                   <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-tone-muted">
                     <div className="flex gap-2">
                       <dt>Verified</dt>
-                      <dd className="text-ink-inverse/80">
+                      <dd className="text-tone-body">
                         <time dateTime={route.verified_at}>
                           {fmt(route.verified_at, locale)} IST
                         </time>
@@ -147,13 +147,13 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                     </div>
                     <div className="flex gap-2">
                       <dt>Source</dt>
-                      <dd className="text-ink-inverse/80">
+                      <dd className="text-tone-body">
                         {SOURCE_LABEL[route.source] ?? route.source}
                       </dd>
                     </div>
                     <div className="flex gap-2">
                       <dt>Next check due</dt>
-                      <dd className="text-ink-inverse/80">
+                      <dd className="text-tone-body">
                         <time dateTime={route.next_verification_due}>
                           {fmt(route.next_verification_due, locale)} IST
                         </time>
@@ -169,7 +169,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
         {data && data.weather.length > 0 && (
           <section className="mt-16">
             <h2 className="font-serif text-2xl">Weather</h2>
-            <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-ink-inverse/60">
+            <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-tone-body">
               A reading is not a forecast. Where it says our coordinator saw these
               conditions, a person was standing there. Where it says weather service,
               it came from a data feed and nobody has confirmed it on the ground.
@@ -180,7 +180,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3 className="text-lg">{w.place}</h3>
-                      <p className="mt-1 text-sm text-ink-inverse/70">
+                      <p className="mt-1 text-sm text-tone-body">
                         {CONDITION_LABEL[w.condition] ?? w.condition}
                         {w.temp_min_c !== null && w.temp_max_c !== null
                           ? `, ${w.temp_min_c}° to ${w.temp_max_c}°C`
@@ -199,7 +199,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                   </div>
 
                   {w.advisory && (
-                    <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/75">
+                    <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
                       {w.advisory}
                     </p>
                   )}
@@ -207,7 +207,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                   <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-tone-muted">
                     <div className="flex gap-2">
                       <dt>Observed</dt>
-                      <dd className="text-ink-inverse/80">
+                      <dd className="text-tone-body">
                         <time dateTime={w.observed_at}>
                           {fmt(w.observed_at, locale)} IST
                         </time>
@@ -215,7 +215,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]"> ) {
                     </div>
                     <div className="flex gap-2">
                       <dt>Source</dt>
-                      <dd className="text-ink-inverse/80">
+                      <dd className="text-tone-body">
                         {w.is_field_verified
                           ? "Seen by our coordinator"
                           : (SOURCE_LABEL[w.source] ?? w.source)}

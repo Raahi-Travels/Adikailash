@@ -32,8 +32,8 @@ import {
 export const dynamic = "force-dynamic";
 
 const FIELD =
-  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-ink-inverse ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "text-xs text-ink-inverse/50";
+  "w-full rounded-md bg-white/[0.06] px-2.5 py-1.5 text-sm text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "text-xs text-tone-muted";
 const BUTTON =
   "rounded-full bg-gold px-4 py-2 text-sm font-medium text-midnight transition-transform active:scale-[0.98]";
 
@@ -232,11 +232,11 @@ export default async function ReservationDetailPage({
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <h1 className="text-2xl font-medium">{r.reference}</h1>
         <span
-          className={`rounded-full px-3 py-0.5 text-sm ring-1 ${STATE_TONE[r.state] ?? "text-ink-inverse/70 ring-white/20"}`}
+          className={`rounded-full px-3 py-0.5 text-sm ring-1 ${STATE_TONE[r.state] ?? "text-tone-body ring-tone-line"}`}
         >
           {stateLabel(r.state)}
         </span>
-        <span className="ml-auto text-sm text-ink-inverse/50">
+        <span className="ml-auto text-sm text-tone-muted">
           {r.journey_name} · {when(r.start_date)}
         </span>
       </div>
@@ -248,18 +248,18 @@ export default async function ReservationDetailPage({
         >
           <Caution className="mt-0.5 size-5 shrink-0" />
           <span>
-            {error} <span className="text-ink-inverse/55">Nothing was saved.</span>
+            {error} <span className="text-tone-muted">Nothing was saved.</span>
           </span>
         </p>
       )}
 
       {token && (
-        <div className="mt-5 rounded-lg bg-himalayan px-5 py-4 ring-1 ring-gold/30">
+        <div className="mt-5 rounded-lg bg-tone-raised px-5 py-4 ring-1 ring-gold/30">
           <p className="text-sm text-gold">Access link, shown once</p>
-          <p className="mt-2 break-all font-mono text-sm text-ink-inverse">
+          <p className="mt-2 break-all font-mono text-sm text-tone-strong">
             /{locale}/booking?token={token}
           </p>
-          <p className="mt-2 text-sm text-ink-inverse/55">
+          <p className="mt-2 text-sm text-tone-muted">
             Send this to the group lead. It is stored only as a hash, so it cannot be
             shown again. If it is lost, issue a new one and revoke the old.
           </p>
@@ -267,12 +267,12 @@ export default async function ReservationDetailPage({
       )}
 
       {/* Readiness first. This is the answer to "where is this group up to". */}
-      <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-white/10">
+      <section className="mt-8 rounded-lg bg-white/[0.04] px-5 py-5 ring-1 ring-tone-line">
         <div className="flex items-center gap-2.5">
           {r.readiness.is_ready ? (
             <Verified className="size-5 text-status-open" />
           ) : (
-            <Permit className="size-5 text-ink-inverse/45" />
+            <Permit className="size-5 text-tone-muted" />
           )}
           <h2 className="text-lg">
             {r.readiness.is_ready ? "Nothing outstanding" : "Still outstanding"}
@@ -283,7 +283,7 @@ export default async function ReservationDetailPage({
             {r.readiness.outstanding.map((item) => (
               <li
                 key={item}
-                className="flex gap-3 text-[15px] leading-relaxed text-ink-inverse/75"
+                className="flex gap-3 text-[15px] leading-relaxed text-tone-body"
               >
                 <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-saffron" />
                 {item}
@@ -301,12 +301,12 @@ export default async function ReservationDetailPage({
           </h2>
           <ul className="mt-3 space-y-1.5">
             {r.confirmation_blockers.map((b) => (
-              <li key={b} className="text-[15px] leading-relaxed text-ink-inverse/80">
+              <li key={b} className="text-[15px] leading-relaxed text-tone-body">
                 {b}
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm leading-relaxed text-ink-inverse/50">
+          <p className="mt-4 text-sm leading-relaxed text-tone-muted">
             Confirmation is computed from these, not chosen. Money being received is
             one of them and is never enough on its own.
           </p>
@@ -377,11 +377,11 @@ export default async function ReservationDetailPage({
       <section className="mt-10">
         <div className="flex items-baseline gap-3">
           <h2 className="font-serif text-xl">The party</h2>
-          <span className="text-sm text-ink-inverse/50">
+          <span className="text-sm text-tone-muted">
             {r.travellers.length} of {r.party_size} named
           </span>
         </div>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Permits are issued against names and dates of birth as they appear on the
           identity document. Document numbers are never entered here: they belong in
           the upload path, where every access is logged.
@@ -392,9 +392,9 @@ export default async function ReservationDetailPage({
             {r.travellers.map((t) => (
               <div
                 key={t.id}
-                className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-white/12 py-3"
+                className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-tone-line py-3"
               >
-                <Group className="size-4 shrink-0 text-ink-inverse/35" />
+                <Group className="size-4 shrink-0 text-tone-muted" />
                 <span className="text-[15px]">{t.full_name}</span>
                 {t.role === "group_lead" && (
                   <span className="rounded px-2 py-0.5 text-xs text-gold ring-1 ring-gold/30">
@@ -402,15 +402,15 @@ export default async function ReservationDetailPage({
                   </span>
                 )}
                 {t.is_senior && (
-                  <span className="text-sm text-ink-inverse/55">Elder</span>
+                  <span className="text-sm text-tone-muted">Elder</span>
                 )}
                 {t.relationship_to_lead && (
-                  <span className="text-sm text-ink-inverse/45">
+                  <span className="text-sm text-tone-muted">
                     {t.relationship_to_lead}
                   </span>
                 )}
                 {t.date_of_birth && (
-                  <span className="text-sm text-ink-inverse/45">
+                  <span className="text-sm text-tone-muted">
                     {when(t.date_of_birth)}
                   </span>
                 )}
@@ -424,7 +424,7 @@ export default async function ReservationDetailPage({
                   <input type="hidden" name="traveller_id" value={t.id} />
                   <button
                     type="submit"
-                    className="text-sm text-ink-inverse/40 transition-colors hover:text-status-suspended"
+                    className="text-sm text-tone-muted transition-colors hover:text-status-suspended"
                   >
                     Remove
                   </button>
@@ -443,7 +443,7 @@ export default async function ReservationDetailPage({
           <label className="min-w-36">
             <span className={LABEL}>Role</span>
             <select name="role" className={`mt-1 ${FIELD}`} defaultValue="companion">
-              <option value="companion" className="bg-midnight">
+              <option value="companion" className="register-dark">
                 Companion
               </option>
               <option value="group_lead" className="bg-midnight">
@@ -463,11 +463,11 @@ export default async function ReservationDetailPage({
               className={`mt-1 ${FIELD}`}
             />
           </label>
-          <label className="flex items-center gap-2 pb-2 text-sm text-ink-inverse/70">
+          <label className="flex items-center gap-2 pb-2 text-sm text-tone-body">
             <input type="checkbox" name="is_senior" className="size-4 accent-gold" />
             Elder
           </label>
-          <label className="flex items-center gap-2 pb-2 text-sm text-ink-inverse/70">
+          <label className="flex items-center gap-2 pb-2 text-sm text-tone-body">
             <input type="checkbox" name="health" className="size-4 accent-gold" />
             Health info disclosed
           </label>
@@ -481,7 +481,7 @@ export default async function ReservationDetailPage({
 
       <section className="mt-10">
         <h2 className="font-serif text-xl">Documents</h2>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Creates a checklist per named traveller, not one for the party, because a
           permit is issued against a person. Returns a link for the group lead, shown
           once.
@@ -499,12 +499,12 @@ export default async function ReservationDetailPage({
       <section className="mt-10">
         <div className="flex flex-wrap items-baseline gap-3">
           <h2 className="font-serif text-xl">Payments</h2>
-          <span className="text-sm text-ink-inverse/50">
+          <span className="text-sm text-tone-muted">
             {money(r.amount_received, r.currency)} received of{" "}
             {money(r.agreed_amount, r.currency)}
           </span>
         </div>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Nothing is charged here. Record money that has already arrived, with its
           bank or UPI reference so finance can reconcile it against a statement. A
           mistake is corrected by recording a refund, which is also what happened.
@@ -515,7 +515,7 @@ export default async function ReservationDetailPage({
             {r.payments.map((p) => (
               <div
                 key={p.id}
-                className="flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-white/12 py-3 text-[15px]"
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-tone-line py-3 text-[15px]"
               >
                 <span
                   className={
@@ -527,18 +527,18 @@ export default async function ReservationDetailPage({
                   {p.direction === "refunded" ? "−" : "+"}
                   {money(p.amount, p.currency)}
                 </span>
-                <span className="text-ink-inverse/70">
+                <span className="text-tone-body">
                   {PAYMENT_METHODS.find(([v]) => v === p.method)?.[1] ?? p.method}
                 </span>
                 {p.reference && (
-                  <span className="font-mono text-sm text-ink-inverse/50">
+                  <span className="font-mono text-sm text-tone-muted">
                     {p.reference}
                   </span>
                 )}
-                <span className="text-sm text-ink-inverse/45">
+                <span className="text-sm text-tone-muted">
                   {when(p.received_at)}
                 </span>
-                <span className="ml-auto text-sm text-ink-inverse/40">
+                <span className="ml-auto text-sm text-tone-muted">
                   recorded by {p.recorded_by}
                 </span>
               </div>
@@ -598,7 +598,7 @@ export default async function ReservationDetailPage({
 
       <section className="mt-10">
         <h2 className="font-serif text-xl">Accepted terms</h2>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Record the version they actually saw. &ldquo;They agreed to the terms&rdquo;
           is not a defence once the terms have been edited. Terms and cancellation are
           both required before a reservation can be confirmed.
@@ -609,17 +609,17 @@ export default async function ReservationDetailPage({
             {r.acceptances.map((a) => (
               <div
                 key={a.id}
-                className="flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-white/12 py-3 text-[15px]"
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-tone-line py-3 text-[15px]"
               >
                 <span>{POLICIES.find(([v]) => v === a.policy)?.[1] ?? a.policy}</span>
-                <span className="font-mono text-sm text-ink-inverse/55">
+                <span className="font-mono text-sm text-tone-muted">
                   v{a.version}
                 </span>
-                <span className="text-sm text-ink-inverse/60">by {a.accepted_by}</span>
+                <span className="text-sm text-tone-body">by {a.accepted_by}</span>
                 {a.channel && (
-                  <span className="text-sm text-ink-inverse/45">via {a.channel}</span>
+                  <span className="text-sm text-tone-muted">via {a.channel}</span>
                 )}
-                <span className="ml-auto text-sm text-ink-inverse/40">
+                <span className="ml-auto text-sm text-tone-muted">
                   {when(a.accepted_at, true)}
                 </span>
               </div>
@@ -684,12 +684,12 @@ export default async function ReservationDetailPage({
 
       <section className="mt-10">
         <h2 className="font-serif text-xl">What we have told them</h2>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/55">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           Appears on their booking page immediately, and is marked as seen when they
           open it. There is no edit or delete: the record is only worth anything if it
           says what they actually saw, so a correction is a new update.
         </p>
-        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-ink-inverse/45">
+        <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-tone-muted">
           This does not send anything. Until a messaging provider is chosen (O9),
           somebody still picks up the phone.
         </p>
@@ -697,22 +697,22 @@ export default async function ReservationDetailPage({
         {updates.length > 0 && (
           <div className="mt-5">
             {updates.map((u) => (
-              <article key={u.id} className="border-t border-white/12 py-4">
+              <article key={u.id} className="border-t border-tone-line py-4">
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs ring-1 ${UPDATE_TONE[u.category] ?? "text-ink-inverse/60 ring-white/15"}`}
+                    className={`rounded-full px-2.5 py-0.5 text-xs ring-1 ${UPDATE_TONE[u.category] ?? "text-tone-body ring-tone-line"}`}
                   >
                     {updateCategoryLabel(u.category)}
                   </span>
                   <h3 className="text-[15px]">{u.title}</h3>
-                  <span className="ml-auto text-sm text-ink-inverse/40">
+                  <span className="ml-auto text-sm text-tone-muted">
                     {u.published_by}, {when(u.created_at, true)}
                   </span>
                 </div>
-                <p className="mt-2 max-w-[70ch] whitespace-pre-line text-[15px] leading-relaxed text-ink-inverse/75">
+                <p className="mt-2 max-w-[70ch] whitespace-pre-line text-[15px] leading-relaxed text-tone-body">
                   {u.body}
                 </p>
-                <p className="mt-2 text-sm text-ink-inverse/45">
+                <p className="mt-2 text-sm text-tone-muted">
                   {u.acknowledged_at
                     ? `Seen ${when(u.acknowledged_at, true)}`
                     : "Not opened yet"}
@@ -752,10 +752,10 @@ export default async function ReservationDetailPage({
 
       {/* ------------------------------------------------------------ lifecycle */}
 
-      <section className="mt-10 border-t border-white/12 pt-8">
+      <section className="mt-10 border-t border-tone-line pt-8">
         <h2 className="font-serif text-xl">Move this reservation</h2>
         {r.allowed_transitions.length === 0 ? (
-          <p className="mt-3 text-[15px] text-ink-inverse/60">
+          <p className="mt-3 text-[15px] text-tone-body">
             This reservation is in a final state. Nothing moves from here.
           </p>
         ) : (
@@ -781,7 +781,7 @@ export default async function ReservationDetailPage({
           </form>
         )}
         {r.cancellation_reason && (
-          <p className="mt-4 text-sm text-ink-inverse/55">
+          <p className="mt-4 text-sm text-tone-muted">
             Cancelled: {r.cancellation_reason}
           </p>
         )}

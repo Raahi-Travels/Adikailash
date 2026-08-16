@@ -14,7 +14,7 @@ export default function AssistPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Assistant</h1>
-      <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
         Paste a traveller&rsquo;s question. It answers only from our own published
         guides, journeys and verified route records, and refuses outright on anything
         medical, commercial or promissory. Nothing here reaches a traveller until you

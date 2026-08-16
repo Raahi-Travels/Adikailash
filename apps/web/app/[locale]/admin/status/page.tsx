@@ -33,8 +33,8 @@ const SOURCES = [
 ] as const;
 
 const FIELD =
-  "mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold";
-const LABEL = "block text-sm text-ink-inverse/85";
+  "mt-1.5 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold";
+const LABEL = "block text-sm text-tone-body";
 
 async function publish(formData: FormData) {
   "use server";
@@ -68,7 +68,7 @@ export default async function AdminStatusPage({
   return (
     <>
       <h1 className="text-2xl font-medium">Publish route status</h1>
-      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
         This publishes immediately to the public site under your name. State only what
         you have actually confirmed. If you are unsure, choose a shorter re-check
         window rather than a more confident status.
@@ -134,7 +134,7 @@ export default async function AdminStatusPage({
             यात्रियों के लिए जानकारी (हिन्दी)
           </label>
           <textarea id="summary_hi" name="summary_hi" rows={3} className={FIELD} lang="hi" />
-          <p className="mt-1.5 text-sm text-ink-inverse/50">
+          <p className="mt-1.5 text-sm text-tone-muted">
             Optional. Without it, Hindi readers see the English text.
           </p>
         </div>
@@ -155,7 +155,7 @@ export default async function AdminStatusPage({
             <option value="24">24 hours</option>
             <option value="48">48 hours</option>
           </select>
-          <p className="mt-1.5 text-sm text-ink-inverse/50">
+          <p className="mt-1.5 text-sm text-tone-muted">
             After this the public site marks the reading as not recently verified, and
             it stops counting as open.
           </p>
@@ -170,15 +170,15 @@ export default async function AdminStatusPage({
       </form>
 
       <section className="mt-14">
-        <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-ink-inverse/55">
+        <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-tone-muted">
           Currently published
         </h2>
-        <ul className="mt-4 divide-y divide-white/10 border-y border-white/10">
+        <ul className="mt-4 divide-y divide-tone-line border-y border-tone-line">
           {segments.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 py-3.5">
               <div>
                 <p className="text-[15px]">{s.segment_name}</p>
-                <p className="mt-0.5 text-sm text-ink-inverse/55">
+                <p className="mt-0.5 text-sm text-tone-muted">
                   {s.verified_by ?? "Unattributed"}
                 </p>
               </div>

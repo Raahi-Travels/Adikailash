@@ -26,7 +26,7 @@ export default async function AdminJourneysPage() {
   return (
     <>
       <h1 className="text-2xl font-medium">Journeys</h1>
-      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-ink-inverse/65">
+      <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-tone-body">
         A journey cannot be published until it has an essence and a duration. That rule
         is enforced by the database, not only here.
       </p>
@@ -34,7 +34,7 @@ export default async function AdminJourneysPage() {
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[46rem] border-collapse text-left text-[15px]">
           <thead>
-            <tr className="border-b border-white/15 text-sm text-ink-inverse/55">
+            <tr className="border-b border-tone-line text-sm text-tone-muted">
               <th scope="col" className="py-2.5 pr-4 font-medium">Journey</th>
               <th scope="col" className="py-2.5 pr-4 font-medium">Family</th>
               <th scope="col" className="py-2.5 pr-4 font-medium">Nights</th>
@@ -49,16 +49,16 @@ export default async function AdminJourneysPage() {
               if (!j.duration_nights) missing.push("duration");
 
               return (
-                <tr key={j.id} className="border-b border-white/10">
+                <tr key={j.id} className="border-b border-tone-line">
                   <td className="py-3.5 pr-4">{j.name}</td>
-                  <td className="py-3.5 pr-4 text-ink-inverse/65">
+                  <td className="py-3.5 pr-4 text-tone-body">
                     {j.family.replace(/_/g, " ")}
                   </td>
-                  <td className={`py-3.5 pr-4 ${j.duration_nights ? "" : "text-ink-inverse/40"}`}>
+                  <td className={`py-3.5 pr-4 ${j.duration_nights ? "" : "text-tone-muted"}`}>
                     {j.duration_nights ?? "not set"}
                   </td>
                   <td
-                    className={`py-3.5 pr-4 ${j.highest_altitude_m ? "" : "text-ink-inverse/40"}`}
+                    className={`py-3.5 pr-4 ${j.highest_altitude_m ? "" : "text-tone-muted"}`}
                   >
                     {j.highest_altitude_m ? `${j.highest_altitude_m} m` : "not set"}
                   </td>
@@ -66,11 +66,11 @@ export default async function AdminJourneysPage() {
                     {j.is_published ? (
                       <span className="text-status-open">Published</span>
                     ) : missing.length > 0 ? (
-                      <span className="text-ink-inverse/55">
+                      <span className="text-tone-muted">
                         Draft, needs {missing.join(" and ")}
                       </span>
                     ) : (
-                      <span className="text-ink-inverse/55">Draft, ready to publish</span>
+                      <span className="text-tone-muted">Draft, ready to publish</span>
                     )}
                   </td>
                 </tr>

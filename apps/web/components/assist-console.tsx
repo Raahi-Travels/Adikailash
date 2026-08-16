@@ -83,13 +83,13 @@ export function AssistConsole() {
     <div className="mt-8">
       <form onSubmit={ask} className="flex flex-wrap items-end gap-3">
         <label className="min-w-72 flex-1">
-          <span className="text-xs text-ink-inverse/50">Their question</span>
+          <span className="text-xs text-tone-muted">Their question</span>
           <input
             name="question"
             required
             minLength={3}
             placeholder="Where do I get the inner line permit?"
-            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-ink-inverse ring-1 ring-white/20 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="mt-1 w-full rounded-md bg-white/[0.06] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </label>
         <button
@@ -111,17 +111,17 @@ export function AssistConsole() {
         <div className="mt-8 space-y-6">
           {result.refusal ? (
             /* Same weight as an answer. This *is* the answer. */
-            <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-white/10">
-              <h2 className="text-sm text-ink-inverse/50">
+            <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-tone-line">
+              <h2 className="text-sm text-tone-muted">
                 {REFUSAL_LABEL[result.refusal] ?? result.refusal}
               </h2>
-              <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/85">
+              <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
                 {result.staff_guidance}
               </p>
             </section>
           ) : (
-            <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-white/10">
-              <h2 className="text-sm text-ink-inverse/50">
+            <section className="rounded-lg bg-white/[0.05] px-5 py-5 ring-1 ring-tone-line">
+              <h2 className="text-sm text-tone-muted">
                 Draft {result.model ? `· ${result.model}` : "· not generated"}
               </h2>
               {result.answer ? (
@@ -129,7 +129,7 @@ export function AssistConsole() {
                   {result.answer}
                 </p>
               ) : (
-                <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/70">
+                <p className="mt-3 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
                   {result.staff_guidance}
                 </p>
               )}
@@ -138,11 +138,11 @@ export function AssistConsole() {
 
           {result.quoted_status && (
             <section className="rounded-lg bg-status-limited/10 px-5 py-5 ring-1 ring-status-limited/25">
-              <h2 className="text-sm text-ink-inverse/60">Verified route record</h2>
-              <p className="mt-2 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/85">
+              <h2 className="text-sm text-tone-body">Verified route record</h2>
+              <p className="mt-2 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
                 {result.quoted_status}
               </p>
-              <p className="mt-2 text-xs text-ink-inverse/50">
+              <p className="mt-2 text-xs text-tone-muted">
                 Send this with its timestamp. Without it, it is a claim about now
                 rather than a record of a check.
               </p>
@@ -151,22 +151,22 @@ export function AssistConsole() {
 
           {result.passages.length > 0 && (
             <section>
-              <h2 className="text-sm text-ink-inverse/50">
+              <h2 className="text-sm text-tone-muted">
                 What it was allowed to use. Check the draft against these
               </h2>
               <ul className="mt-3 space-y-3">
                 {result.passages.map((p) => (
                   <li
                     key={p.source_ref}
-                    className="rounded-md bg-white/[0.03] px-4 py-3 ring-1 ring-white/10"
+                    className="rounded-md bg-white/[0.03] px-4 py-3 ring-1 ring-tone-line"
                   >
-                    <p className="text-sm text-ink-inverse/80">
+                    <p className="text-sm text-tone-body">
                       {p.title}
-                      <span className="ml-2 text-xs text-ink-inverse/35">
+                      <span className="ml-2 text-xs text-tone-muted">
                         {p.source_ref} · {p.score}
                       </span>
                     </p>
-                    <p className="mt-1.5 max-w-[70ch] text-[15px] leading-relaxed text-ink-inverse/65">
+                    <p className="mt-1.5 max-w-[70ch] text-[15px] leading-relaxed text-tone-body">
                       {p.text}
                     </p>
                   </li>
@@ -175,7 +175,7 @@ export function AssistConsole() {
             </section>
           )}
 
-          <p className="border-t border-white/12 pt-5 text-xs leading-relaxed text-ink-inverse/40">
+          <p className="border-t border-tone-line pt-5 text-xs leading-relaxed text-tone-muted">
             Read it before you send it. It answers only from our own published
             content, which means it is wrong whenever that content is, and it has no
             way of knowing that.

@@ -85,7 +85,7 @@ function Entry({ article }: { article: ArticleSummary }) {
           </Link>
         </h3>
         {article.is_pillar && (
-          <span className="text-xs uppercase tracking-[0.12em] text-tone-strong underline decoration-gold decoration-2 underline-offset-4/80">
+          <span className="text-xs uppercase tracking-[0.12em] text-tone-muted">
             Full guide
           </span>
         )}
@@ -146,7 +146,7 @@ export default async function GuidesPage({ params }: PageProps<"/[locale]">) {
             </p>
             <Link
               href="/status"
-              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 underline-offset-4 hover:underline"
+              className="mt-4 inline-block text-sm text-tone-strong underline decoration-gold decoration-2 underline-offset-4 hover:underline"
             >
               Meanwhile, the live route status is here
             </Link>
