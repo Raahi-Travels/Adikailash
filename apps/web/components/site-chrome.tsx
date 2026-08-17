@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/lib/api";
-import { brand, display, displayLocalized, isSettled, whatsappLink } from "@/lib/brand";
+import { brand, display, displayLocalized, whatsappLink } from "@/lib/brand";
 
 /** Mark: three peaks and a guiding star. One colour, legible at favicon size. */
 function Mark({ className = "" }: { className?: string }) {
@@ -134,17 +134,23 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
 
           {/*
             Doc 06: the site "must not imply that a partner's registration belongs to
-            the brand owner". Until O1 and O2 are decided these render as stated gaps
-            rather than a plausible-looking company name.
+            the brand owner". O1 and O2 settled on 17 Aug 2026 as the same entity, so
+            there is no partner to confuse it with; a per-departure disclosure still
+            overrides the second line when a journey is run by somebody else.
+
+            `display()` rather than a settled/placeholder branch: the compiler pointed
+            out the fallback had become unreachable, and this keeps working if either
+            value ever returns to undecided.
           */}
           <div>
             <h2 className="text-tone-strong">Who you contract with</h2>
-            <p className="mt-2">
-              {isSettled(entity) ? entity.value : entity.placeholder}
-            </p>
-            <p className="mt-1">
-              {isSettled(operator) ? operator.value : operator.placeholder}
-            </p>
+            <p className="mt-2">{display(entity)}</p>
+            {/* One line when one entity does both, which is the case today. Printing
+                the same name twice reads as a rendering fault rather than as the fact
+                that the seller and the operator are the same company. */}
+            {display(operator) !== display(entity) && (
+              <p className="mt-1">{display(operator)} operates this journey</p>
+            )}
           </div>
 
           <div>

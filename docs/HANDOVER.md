@@ -44,35 +44,41 @@ UI action, buys a silently broken pipeline later.
 
 ---
 
-## 2. Four decisions that block launch
+## 2. Point the domain at Vercel (was: four launch decisions)
 
-`isLaunchReady()` is false. These are the reasons, and all four are yours:
+**All four decisions are settled** as of 17 Aug 2026, so `isLaunchReady()` is now
+true: the entity is Sacrednorth, it both sells and operates, the domain is settled,
+and support hours are 9am to 7pm IST daily.
 
-| Decision | What it is | Owner |
-|---|---|---|
-| **O1** | Legal entity name | Brand founder + adviser |
-| **O2** | Operating entity disclosure (depends on O1) | Operations founder |
-| **O7** | Domain | Brand founder |
-| **O10** | Support hours | Operations founder |
+One thing remains, and it is DNS rather than a decision. **The settled domain had no
+DNS records at all** when it was set, so publishing under it would have pointed every
+canonical at a host that does not resolve and invited search engines to drop the URL
+that works.
 
-**Nothing technical is blocked.** The site is deployed, public and working. What is
-blocked is describing yourselves as a company somebody can contract with.
+The code now separates the two facts. `brand.web.domain` records the decision and
+publishes nothing on its own. `NEXT_PUBLIC_SITE_URL` asserts the deployment is
+actually served there, and that is what turns indexing on.
 
-**The code states each gap rather than guessing.** Verified: the footer reads "Legal
-entity to be confirmed" and "Operating entity to be confirmed before booking opens",
-`robots.txt` disallows the whole site because no domain is settled, `supportHours`
-renders as "Support hours to be confirmed", and payments are off.
+So when DNS resolves:
 
-**Why I did not fill these in.** A legal entity name sits under a footer heading that
-reads "Who you contract with". Writing one would be inventing a legal fact about your
-company on a page a customer relies on, which is a misrepresentation and the same
-class of fabrication that nine demo route verifications were deleted to prevent. I
-also cannot buy a domain or commit your brother to a support rota.
+1. Add the domain to the Vercel project and let it issue a certificate.
+2. Set `NEXT_PUBLIC_SITE_URL` to the origin in Vercel. Indexing turns on, canonicals
+   and `hreflang` start being emitted, and the staging notice disappears by itself.
+3. Set `PUBLIC_SITE_ORIGIN` to the same value in Coolify, which enables IndexNow
+   submissions from the API.
 
-O1 is the one on the critical path: O2 depends on it, and doc 09 treats a false or
-missing operator claim as a severity-one trust defect.
+Until then robots.txt disallows everything and says exactly why, which is correct.
 
----
+**Two things worth a second look**, neither of which I changed:
+
+- `Sacrednorth` was given as the registered legal entity name and is recorded
+  verbatim, as promised. It carries no entity suffix (Private Limited, LLP), which is
+  unusual for a registered Indian company and normal for a proprietorship trading
+  name. It sits under "Who you contract with", so if the registration reads
+  differently, correct it in `apps/web/lib/brand/config.ts`.
+- `registrationNumber` and `registeredAddress` remain undecided. A name was supplied
+  and those were not, they are not launch-critical, and inventing one to make a
+  footer look complete is what this config exists to prevent.
 
 ## Two smaller things, for completeness
 

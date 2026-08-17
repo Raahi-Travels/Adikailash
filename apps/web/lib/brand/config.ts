@@ -96,13 +96,24 @@ export const brand = {
    * resolved, these render as explicit gaps.
    */
   legal: {
-    entityName: undecided("O1", `${FOUNDER_BRAND} + adviser`, "Legal entity to be confirmed"),
-    /** Per-departure disclosure overrides this default. */
-    operatorDisclosure: undecided(
-      "O2",
-      FOUNDER_OPS,
-      "Operating entity to be confirmed before booking opens",
-    ),
+    /**
+     * Settled 17 Aug 2026 (O1). Recorded exactly as given, with no tidying: this
+     * appears under "Who you contract with" and has to match the registration rather
+     * than read well.
+     *
+     * `registrationNumber` and `registeredAddress` below stay undecided, because a
+     * name was supplied and those were not. They are not launch-critical, and
+     * inventing a number to make a form look complete is the one thing this file
+     * exists to prevent.
+     */
+    entityName: settled("Sacrednorth"),
+    /**
+     * Settled 17 Aug 2026 (O2): the same entity sells and operates. Doc 06 forbids
+     * implying a partner's registration belongs to the brand owner, and with one
+     * entity there is no partner to confuse it with. A per-departure disclosure
+     * still overrides this when a specific journey is run by somebody else.
+     */
+    operatorDisclosure: settled("Sacrednorth"),
     registrationNumber: undecided("O1", `${FOUNDER_BRAND} + adviser`, "not yet registered"),
     registeredAddress: undecided("O1", `${FOUNDER_BRAND} + adviser`, "Pithoragarh, Uttarakhand"),
     copyrightHolder: undecided("O1", FOUNDER_BRAND, "The Sacred North"),
@@ -126,12 +137,26 @@ export const brand = {
      * Doc 04: "It should not display a response promise that the team routinely
      * misses." Stays undecided until the founders commit to a rota.
      */
-    supportHours: undecided("O10", FOUNDER_OPS, "Support hours to be confirmed"),
+    /**
+     * Settled 17 Aug 2026 (O10). Doc 04: the site "should not display a response
+     * promise that the team routinely misses", so this is what two people sharing a
+     * phone can actually hold, not an aspiration.
+     */
+    supportHours: settled("9am to 7pm IST, every day"),
     baseCity: settled("Pithoragarh, Uttarakhand"),
   },
 
   web: {
-    domain: undecided("O7", FOUNDER_BRAND, "example.invalid"),
+    /**
+     * Settled 17 Aug 2026 (O7).
+     *
+     * **Deciding a domain is not the same as being reachable at one.** On the day
+     * this was settled, `sacrednorth.in` had no DNS records at all. So this value
+     * records the decision and deliberately does *not* turn indexing on; see
+     * `lib/site-url.ts`, where publishing waits for somebody to assert that the
+     * domain actually serves this site.
+     */
+    domain: settled("sacrednorth.in"),
     /** Appended to page titles: "Adi Kailash and Om Parvat — The Sacred North". */
     seoTitleSuffix: settled("The Sacred North"),
     defaultOgAlt: settled(

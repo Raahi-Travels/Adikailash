@@ -71,7 +71,14 @@ export function GET() {
   if (isProvisional) {
     return text(
       [
-        "# This origin is not the public site. Decision O7 has not settled a domain.",
+        // O7 settled the domain on 17 Aug 2026. What has not happened is DNS: the
+        // deployment is not being served at that origin yet, and until it is, this
+        // host is not the public site. Naming the reason accurately matters because
+        // the previous wording ("O7 has not settled a domain") became false the
+        // moment the decision landed, and a stale explanation in a file nobody reads
+        // is how a site stays unindexed for a month after it was ready.
+        "# This origin is not the public site. The settled domain does not serve this",
+        "# deployment yet; set NEXT_PUBLIC_SITE_URL once it does.",
         "User-agent: *",
         "Disallow: /",
         "",
