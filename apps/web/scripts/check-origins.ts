@@ -18,6 +18,10 @@
  * you press the button.
  */
 
+// Marks the file as a module so the top-level awaits below type-check. Without it
+// tsc rejects them, and `next build` runs tsc over `scripts/` too.
+export {};
+
 const LOCAL_API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
 const LIVE_API = "https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io";
 
