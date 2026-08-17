@@ -20,6 +20,7 @@ export function Scene({
   className = "",
   sizes = "(min-width: 1024px) 33vw, 100vw",
   overlay = false,
+  fill = false,
   priority,
 }: {
   name: SceneKey;
@@ -28,6 +29,16 @@ export function Scene({
   sizes?: string;
   /** Adds a bottom-up scrim, for images that sit under text. */
   overlay?: boolean;
+  /**
+   * Fill the parent instead of holding the slot's own aspect ratio.
+   *
+   * A real prop rather than passing `absolute inset-0` through `className`: that put
+   * both `relative` and `absolute` on one element, and which of two position
+   * utilities wins depends on their order in the generated stylesheet rather than on
+   * the order they were written. The wrapper stayed `relative`, collapsed to zero
+   * height, and the photograph simply did not appear.
+   */
+  fill?: boolean;
   /**
    * Overrides the slot's own `priority`. Set it where a slot is the largest thing
    * above the fold on one page but not on others, which is otherwise an
@@ -45,8 +56,12 @@ export function Scene({
   return (
     <div
       data-provisional="ai-generated"
-      className={`relative overflow-hidden rounded-lg bg-surface-raised ${className}`}
-      style={{ aspectRatio: scene.ratio }}
+      className={
+        fill
+          ? `absolute inset-0 overflow-hidden ${className}`
+          : `relative overflow-hidden rounded-lg bg-surface-raised ${className}`
+      }
+      style={fill ? undefined : { aspectRatio: scene.ratio }}
     >
       <Image
         src={src}
@@ -84,9 +99,16 @@ export function Scene({
 export function SceneBackdrop({
   name,
   className = "",
+  position = "object-center",
 }: {
   name: SceneKey;
   className?: string;
+  /**
+   * Where the interesting part of the photograph is. The hero panorama puts its
+   * peaks well right of centre, and `object-center` cropped them out entirely at
+   * desktop widths, leaving a hero backed by an empty sky.
+   */
+  position?: string;
 }) {
   const scene = SCENES[name];
   const src = sceneSrc(name);
@@ -104,19 +126,27 @@ export function SceneBackdrop({
           fill
           sizes="100vw"
           priority={scene.priority}
-          className="object-cover object-center"
+          className={`object-cover ${position}`}
         />
       ) : (
         <SceneArt seed={name} />
       )}
-      {/* Three scrims. The flat one guarantees a contrast floor whatever the image
-          turns out to be; the horizontal one keeps the headline on the darkest part
-          while letting the right side of the picture through; the bottom one blends
-          into the section below. Tuned against the darkest photograph in the set, so
-          swapping in a brighter one cannot break the headline. */}
-      <div className="absolute inset-0 bg-midnight/55" />
-      <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/70 to-midnight/20" />
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-midnight to-transparent" />
+      {/*
+        Two scrims, both directional, and deliberately none that covers the whole
+        frame.
+
+        There used to be three, opening with a flat `bg-midnight/55` over everything.
+        Stacked with the gradient beneath it and a third in the page, the photograph
+        was carrying maybe fifteen percent of its own luminance: a hero backed by a
+        thousand-metre dawn read as a dark blue rectangle with a smudge in one
+        corner. A contrast floor that costs the picture is not a floor, it is a lid.
+
+        So: a horizontal wash that is opaque exactly where the headline sits and gone
+        by the middle of the frame, and a short bottom fade to meet the section
+        below. Where nothing is written, nothing is covered.
+      */}
+      <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/75 via-45% to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight via-midnight/60 to-transparent" />
     </div>
   );
 }

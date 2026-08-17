@@ -54,13 +54,13 @@
    * colour of the word "Open" on the status page. The literal values live in
    * `.register-light` below, beside the lifted variants for dark.
    */
-  --color-status-open: var(--status-open);
-  --color-status-limited: var(--status-limited);
-  --color-status-waitlist: var(--status-waitlist);
-  --color-status-suspended: var(--status-suspended);
-  --color-status-changed: var(--status-changed);
-  --color-status-done: var(--status-done);
-  --color-status-unverified: var(--status-unverified);
+  --color-status-open: #2d5d5f;
+  --color-status-limited: #a86632;
+  --color-status-waitlist: #5a6770;
+  --color-status-suspended: #8c2f2f;
+  --color-status-changed: #6b4fa8;
+  --color-status-done: #4a5560;
+  --color-status-unverified: #7a7466;
 
   /**
    * Terrain hairlines. Gold is guidance, so the contour field has to sit well below
@@ -84,15 +84,15 @@
   --font-sans: var(--font-interface), system-ui, sans-serif;
 
   /**
-   * Register-relative colours. These resolve through `--tone-*`, which `.register-*`
-   * below sets, so `text-tone-body` means "body text in whichever register this
-   * section is" rather than a fixed colour. Components stop hardcoding the dark
-   * theme and can appear in either.
+   * Register-relative colours. The values here are the light register's, and
+   * `.register-dark` below overrides these same variables, so `text-tone-body`
+   * means "body text in whichever register this section is" rather than a fixed
+   * colour. Components stop hardcoding the dark theme and work in either.
    */
-  --color-tone-strong: var(--tone-strong);
-  --color-tone-body: var(--tone-body);
-  --color-tone-muted: var(--tone-muted);
-  --color-tone-line: var(--tone-line);
+  --color-tone-strong: var(--color-ink);
+  --color-tone-body: oklch(0.38 0.014 240);
+  --color-tone-muted: oklch(0.52 0.012 240);
+  --color-tone-line: var(--color-border);
 
   /**
    * The raised surface within a register: a panel that sits above the page ground
@@ -101,7 +101,7 @@
    * turned into a navy block the moment it appeared on a light page. This is the
    * same idea expressed so it survives the move.
    */
-  --color-tone-raised: var(--tone-raised);
+  --color-tone-raised: var(--color-surface-raised);
 }
 
 /**
@@ -119,83 +119,74 @@
  *
  * The muted tones are deliberately not the usual light grey. Doc 02 requires body
  * copy to stay comfortable for older travellers, and the commonest way to fail that
- * is a 3:1 grey that looked elegant on a designer's monitor. Both `--tone-body`
- * values clear 4.5:1 against their own surface, and `--tone-muted` clears it too, so
- * even the quietest text on the page is readable rather than decorative.
+ * is a 3:1 grey that looked elegant on a designer's monitor. Both body values clear
+ * 4.5:1 against their own surface, and both muted values clear it too, so even the
+ * quietest text on the page is readable rather than decorative.
  */
 @layer base {
+  /**
+   * The two registers, as direct overrides of the Tailwind colour variables.
+   *
+   * **They must set `--color-*` and not some `--tone-*` that `--color-*` points at.**
+   * That indirection was tried and is silently broken: `@theme` compiles to `:root`,
+   * so `--color-tone-strong: var(--tone-strong)` *resolves at the root*, taking the
+   * light value there, and the already-computed result inherits down. Redefining
+   * `--tone-strong` further down the tree cannot change it, because substitution
+   * happens where a custom property is declared, not where it is used.
+   *
+   * The symptom was a page whose markup was entirely correct: `register-dark` was on
+   * the section, the section's own `--tone-strong` read `#f7f6f2`, and the heading
+   * inside it still computed to `#16202a`. Dark ink on dark navy, invisible, with
+   * every build and test passing. Overriding the final variable is what actually
+   * cascades.
+   */
   .register-dark {
-    --tone-strong: var(--color-ink-inverse);
-    --tone-body: oklch(0.87 0.008 90);
-    --tone-muted: oklch(0.72 0.008 90);
-    --tone-line: oklch(1 0 0 / 0.12);
-    --tone-raised: var(--color-himalayan);
+    --color-tone-strong: var(--color-ink-inverse);
+    --color-tone-body: oklch(0.87 0.008 90);
+    --color-tone-muted: oklch(0.72 0.008 90);
+    --color-tone-line: oklch(1 0 0 / 0.12);
+    --color-tone-raised: var(--color-himalayan);
 
     /**
-     * Status colours, lifted for this background.
-     *
-     * The palette values are tuned for the light register and several of them are
-     * unreadable on navy: `#2d5d5f` open-teal measures **2.32:1** against
-     * `#0b1d2d`, less than half the 4.5:1 body minimum, and limited and unverified
-     * both land near 3.7:1. Every one of those was being used as the text of a
-     * status label, which is precisely the text a reader most needs.
-     *
-     * Each is the same hue at reduced chroma and raised lightness, taken to the
-     * first value clearing 4.6:1, so a segment reads as the same colour it does on
-     * a light page without being a decorative smudge on a dark one. The dot and the
-     * word therefore share a token and both stay legible.
+     * Status colours lifted for this background. The doc 02 values are drawn for a
+     * light page and several are unreadable on navy: open-teal `#2d5d5f` measures
+     * 2.32:1 against `#0b1d2d`, less than half the body minimum, and it was the
+     * colour of the word "Open". Each is the same hue at reduced chroma and raised
+     * lightness, taken to the first value clearing 4.6:1.
      */
-    --status-open: oklch(0.611 0.048 199);
-    --status-limited: oklch(0.623 0.099 56.5);
-    --status-waitlist: oklch(0.616 0.02 238);
-    --status-suspended: oklch(0.633 0.117 24);
-    --status-changed: oklch(0.63 0.127 295.5);
-    --status-done: oklch(0.619 0.021 248);
-    --status-unverified: oklch(0.615 0.02 87.6);
+    --color-status-open: oklch(0.611 0.048 199);
+    --color-status-limited: oklch(0.623 0.099 56.5);
+    --color-status-waitlist: oklch(0.616 0.02 238);
+    --color-status-suspended: oklch(0.633 0.117 24);
+    --color-status-changed: oklch(0.63 0.127 295.5);
+    --color-status-done: oklch(0.619 0.021 248);
+    --color-status-unverified: oklch(0.615 0.02 87.6);
 
     background-color: var(--color-midnight);
-    color: var(--tone-strong);
+    color: var(--color-tone-strong);
   }
 
   .register-light {
-    --tone-strong: var(--color-ink);
-    --tone-body: oklch(0.38 0.014 240);
-    --tone-muted: oklch(0.52 0.012 240);
-    --tone-line: var(--color-border);
-    --tone-raised: var(--color-surface-raised);
+    --color-tone-strong: var(--color-ink);
+    --color-tone-body: oklch(0.38 0.014 240);
+    --color-tone-muted: oklch(0.52 0.012 240);
+    --color-tone-line: var(--color-border);
+    --color-tone-raised: var(--color-surface-raised);
 
-    /* The doc 02 values, which are drawn for exactly this background. */
-    --status-open: #2d5d5f;
-    --status-limited: #a86632;
-    --status-waitlist: #5a6770;
-    --status-suspended: #8c2f2f;
-    --status-changed: #6b4fa8;
-    --status-done: #4a5560;
-    --status-unverified: #7a7466;
+    /* The doc 02 values, drawn for exactly this background. */
+    --color-status-open: #2d5d5f;
+    --color-status-limited: #a86632;
+    --color-status-waitlist: #5a6770;
+    --color-status-suspended: #8c2f2f;
+    --color-status-changed: #6b4fa8;
+    --color-status-done: #4a5560;
+    --color-status-unverified: #7a7466;
 
     background-color: var(--color-surface);
-    color: var(--tone-strong);
+    color: var(--color-tone-strong);
   }
 }
 
-/**
- * Fallback for anything rendering outside a register, so a status colour is never
- * undefined. Matches the light register, which is the page default.
- */
-:root {
-  --tone-strong: var(--color-ink);
-  --tone-body: oklch(0.38 0.014 240);
-  --tone-muted: oklch(0.52 0.012 240);
-  --tone-line: var(--color-border);
-  --tone-raised: var(--color-surface-raised);
-  --status-open: #2d5d5f;
-  --status-limited: #a86632;
-  --status-waitlist: #5a6770;
-  --status-suspended: #8c2f2f;
-  --status-changed: #6b4fa8;
-  --status-done: #4a5560;
-  --status-unverified: #7a7466;
-}
 
 /**
  * Type scale. One place, so a section cannot quietly invent a size.
@@ -234,23 +225,38 @@
   color-scheme: light;
 }
 
-body {
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  /* Readable for older travellers — doc 02 accessibility rule. */
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+/**
+ * Base element styling.
+ *
+ * **In `@layer base` so utilities can override it.** Unlayered, `background` here
+ * beat the `bg-midnight` utility on `<body>` no matter the specificity, because
+ * unlayered CSS wins over layered CSS in the cascade. The body rendered snow, and
+ * the staging notice that sits directly on it became light text on cream: an
+ * unreadable warning, which is worse than no warning.
+ *
+ * That is the third bug from the same misunderstanding on this page. The rule worth
+ * remembering: anything written outside a layer silently outranks everything Tailwind
+ * generates, so base styling belongs inside one.
+ */
+@layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* Readable for older travellers, doc 02 accessibility rule. */
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-h1,
-h2,
-h3 {
-  font-family: var(--font-serif);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
 }
 
 /* Doc 02: "Always support reduced-motion preferences." */

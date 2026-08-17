@@ -46,10 +46,12 @@ function since(iso: string | null | undefined, locale: string) {
 
 function Fact({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="border-t border-tone-line pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
-      <p className="text-sm text-tone-muted">{label}</p>
-      <p className="type-reading mt-1.5 text-lg text-tone-strong">{value}</p>
-      {note && <p className="mt-1 text-sm text-tone-muted">{note}</p>}
+    <div>
+      <dt className="text-sm text-tone-muted">{label}</dt>
+      <dd className="type-reading mt-1.5 text-[1.35rem] leading-none text-tone-strong">
+        {value}
+      </dd>
+      {note && <dd className="mt-1.5 text-sm text-tone-muted">{note}</dd>}
     </div>
   );
 }
@@ -90,16 +92,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         down the page.
       */}
       <section className="register-dark relative isolate overflow-hidden">
-        <SceneBackdrop name="hero" />
+        {/* The panorama's peaks sit right of centre; object-center cropped them out. */}
+        <SceneBackdrop name="hero" position="object-[68%_center]" />
         <TerrainField />
-        {/* Scrim. Reads the headline side down hard and leaves the right of the
-            frame open, so the photograph is visible where nothing sits on it. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight via-midnight/85 to-midnight/35"
-        />
-
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:min-h-[calc(100dvh-11rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
           <div>
             <p className="max-w-[24ch] font-serif text-[1.375rem] leading-snug text-tone-muted sm:text-2xl">
               {displayLocalized(campaign.headlineLead, locale)}
@@ -137,28 +133,27 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
           <HeroStatus data={status} live={live} locale={typed} />
         </div>
-      </section>
 
-      {/*
-        2. The hinge. Navy, overlapping the light section below it.
+        {/*
+          The four readings, inside the hero rather than in a band below it.
 
-        This is where the page changes register, and the band is the transition and
-        the argument at the same time: four readings, each one a thing we checked
-        rather than a thing we say about ourselves.
-      */}
-      <div className="register-light relative px-4 sm:px-6">
-        {/* `register-dark` rather than bare navy: it declares its own register, so
-            the tone and status variables resolve for anything placed inside it later
-            rather than inheriting the light values from the section it overlaps. */}
-        <div className="register-dark mx-auto -mt-px max-w-6xl rounded-2xl px-6 py-7 sm:px-8">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <p className="text-sm text-tone-muted">Highest ground</p>
-              <p className="type-reading mt-1.5 text-lg text-tone-strong">
-                about {HIGHEST.altitudeM.toLocaleString("en-IN")} m
-              </p>
-              <p className="mt-1 text-sm text-tone-muted">{HIGHEST.name}</p>
-            </div>
+          They were a separate slab between the hero and the journeys, which left the
+          hero ending in a stretch of empty navy and then interrupted the page with a
+          box before it had said anything. Here they do two jobs at once: they fill
+          the foot of the fold, and they give the headline the context it was missing.
+          "Others begin with a calling" says nothing about where you would be going;
+          4,570 m, four documents and a date do.
+
+          A hairline rather than a container, because the photograph is already the
+          surface and a second box on top of it would be one too many.
+        */}
+        <div className="relative mx-auto max-w-6xl px-4 pb-10 sm:px-6 lg:pb-14">
+          <dl className="grid gap-x-8 gap-y-6 border-t border-tone-line pt-7 sm:grid-cols-2 lg:grid-cols-4">
+            <Fact
+              label="Highest ground"
+              value={`about ${HIGHEST.altitudeM.toLocaleString("en-IN")} m`}
+              note={HIGHEST.name}
+            />
             <Fact
               label="Documents required"
               value={mandatory > 0 ? String(mandatory) : "Being confirmed"}
@@ -170,9 +165,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               note="Anything else is unknown to us"
             />
             <Fact label="Last checked" value={asOf} note="By a coordinator, on the ground" />
-          </div>
+          </dl>
         </div>
-      </div>
+      </section>
 
       {/*
         3. Journeys. Light register: this is what we are offering, not what we have
@@ -183,7 +178,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <h2 className="type-section max-w-[20ch]">Three ways into the sacred Kumaon</h2>
 
           {journeys && journeys.length > 0 ? (
-            <div className="mt-14 grid gap-14 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {journeys.map((journey) => (
                 <JourneyCard key={journey.id} journey={journey} />
               ))}
@@ -199,7 +194,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       </section>
 
       {/* 4. Homestay. Light register, split composition. Decision D5. */}
-      <section className="register-light border-t border-tone-line px-4 py-20 sm:px-6 sm:py-28">
+      <section className="register-light overflow-hidden border-t border-tone-line px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <h2 className="type-section max-w-[18ch]">
@@ -244,7 +239,18 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               </svg>
             </Link>
           </div>
-          <Scene name="homestay-kitchen" sizes="(min-width: 1024px) 50vw, 100vw" />
+          {/* Runs off the right edge rather than sitting in a rounded box beside the
+              text. A photograph bordered on all four sides reads as an illustration
+              dropped into an article; one that leaves the frame reads as the room the
+              paragraph is describing.
+
+              The bleed is done with a width that overshoots the column, not with a
+              `calc(50% - 50vw)` margin. That margin widened the document past the
+              viewport and put a gutter down the whole page, because nothing above it
+              clipped the overflow. This cannot: the section owns the clipping. */}
+          <div className="relative h-[24rem] w-full overflow-hidden rounded-l-2xl lg:h-[32rem] lg:w-[calc(100%+6rem)] lg:rounded-l-3xl">
+            <Scene name="homestay-kitchen" fill sizes="(min-width: 1024px) 55vw, 100vw" />
+          </div>
         </div>
       </section>
 
@@ -290,18 +296,27 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* 6. Close. */}
-      <section className="register-dark border-t border-tone-line px-4 py-20 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="font-serif text-2xl leading-snug text-tone-strong sm:text-3xl">
+      {/*
+        6. Close.
+
+        On a photograph rather than on bare navy. This was a centred paragraph in the
+        middle of an empty dark band, which is where a page goes to end rather than
+        where it asks for something. The picture is the checkpost barrier below
+        Chiyalekh: the actual gate this whole page has been describing, and the last
+        thing a traveller sees before the part we cannot promise anything about.
+      */}
+      <section className="register-dark relative isolate overflow-hidden">
+        <SceneBackdrop name="permits" position="object-[50%_40%]" />
+        <div className="mx-auto max-w-2xl px-4 py-28 text-center sm:px-6 sm:py-36">
+          <p className="font-serif text-[1.75rem] leading-snug text-tone-strong sm:text-[2.25rem]">
             {displayLocalized(brand.identity.promise, locale)}
           </p>
-          <p className="mt-5 text-tone-body">
+          <p className="mt-6 text-lg text-tone-body">
             Talk to someone who lives in Pithoragarh and has driven this road.
           </p>
           <Link
             href="/enquire"
-            className="mt-8 inline-block rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:translate-y-px"
+            className="mt-9 inline-block rounded-full bg-gold px-7 py-3.5 text-sm font-medium text-midnight transition-transform hover:brightness-105 active:translate-y-px"
           >
             {displayLocalized(campaign.secondaryCta, locale)}
           </Link>

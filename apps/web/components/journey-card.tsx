@@ -1,7 +1,10 @@
-import { Scene } from "@/components/scene";
+import Image from "next/image";
+
+import { PhotoSlot } from "@/components/photo-slot";
 import { Link } from "@/i18n/navigation";
 import type { JourneySummary } from "@/lib/api";
 import { journeyScene } from "@/lib/imagery";
+import { SCENES, sceneSrc } from "@/lib/imagery";
 
 /**
  * Journey card.
@@ -10,6 +13,14 @@ import { journeyScene } from "@/lib/imagery";
  * essence, duration and starting gateway, service tiers, next relevant departure, a
  * truthful difficulty or comfort cue, one primary action. Avoid cramming full
  * itineraries and every badge into cards."
+ *
+ * **The photograph is the card, rather than sitting in it.** The previous version put
+ * a small rounded image above a block of text, which is the shape of a search result:
+ * the picture reads as an illustration attached to an article, and on a page selling
+ * a mountain that is the wrong way round. Now the image fills the frame, the text
+ * sits on it over a gradient that starts from the image's own darkness, and there is
+ * no container edge anywhere. Nothing is placed on top of the photograph; the
+ * photograph becomes the surface.
  *
  * Facts that are not yet approved render as "to be confirmed" rather than being
  * quietly dropped, so an unfinished journey looks unfinished instead of looking like
@@ -26,21 +37,15 @@ const FAMILY_LABEL: Record<string, string> = {
   ground_services: "Ground services",
 };
 
-/**
- * Sentence case rather than the small uppercase tracked label this used to use.
- * Three facts on each of three cards made nine wide-tracked micro-labels on one
- * screen, which is the templated rhythm doc 02 warns against and which reads as
- * scaffolding rather than information.
- */
 function Fact({ label, value }: { label: string; value: string | null }) {
   return (
-    <div>
-      <dt className="text-sm text-tone-muted">{label}</dt>
+    <div className="min-w-0">
+      <dt className="text-[13px] text-ink-inverse/55">{label}</dt>
       <dd
         className={
           value
-            ? "type-reading mt-0.5 text-[15px] text-tone-strong"
-            : "mt-0.5 text-[15px] text-tone-muted"
+            ? "type-reading mt-0.5 truncate text-sm text-ink-inverse"
+            : "mt-0.5 truncate text-sm text-ink-inverse/50"
         }
       >
         {value ?? "To be confirmed"}
@@ -50,67 +55,72 @@ function Fact({ label, value }: { label: string; value: string | null }) {
 }
 
 export function JourneyCard({ journey }: { journey: JourneySummary }) {
+  const scene = journeyScene(journey.slug);
+  const src = sceneSrc(scene.key);
+  const meta = SCENES[scene.key];
+
   return (
-    // `relative` is load-bearing: the title link below spreads an ::after over the
-    // whole card to make it clickable, and that overlay resolves against the nearest
-    // positioned ancestor.
-    <article className="group relative flex flex-col">
-      <Scene
-        name={journeyScene(journey.slug).key}
-        className="mb-6 transition-transform duration-500 group-hover:scale-[1.01]"
-      />
-
-      {/* Was gold. Gold sits at roughly 2.3:1 on the light register, so as text it
-          fails the body minimum; it stays on this card as the link underline, where
-          it points without having to be read. */}
-      <p className="text-sm text-tone-muted">
-        {FAMILY_LABEL[journey.family] ?? journey.family}
-      </p>
-
-      <h3 className="mt-2 font-serif text-2xl leading-snug text-tone-strong">
-        <Link
-          href={`/journeys/${journey.slug}`}
-          className="after:absolute after:inset-0 focus-visible:outline-none"
-        >
-          {journey.name}
-        </Link>
-      </h3>
-
-      {journey.essence && (
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
-          {journey.essence}
-        </p>
+    <article className="group relative isolate flex min-h-[30rem] flex-col justify-end overflow-hidden rounded-2xl">
+      {src ? (
+        <>
+          <Image
+            src={src}
+            alt={meta.alt}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            // Slow, small, and only on hover. The picture should feel like it is
+            // being looked at rather than like it is animating.
+            className="-z-10 object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+          />
+          {/*
+            The gradient is deliberately tall and starts from fully transparent at
+            45%. A short, hard scrim reads as a bar laid across a picture; a long one
+            reads as the picture getting darker towards the bottom, which is what
+            photographs do anyway.
+          */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-gradient-to-t from-midnight via-midnight/80 via-30% to-transparent to-70%"
+          />
+        </>
+      ) : (
+        <PhotoSlot brief={meta.brief} ratio={meta.ratio} className="absolute inset-0 -z-10" />
       )}
 
-      <dl className="mt-6 grid grid-cols-3 gap-4">
-        <Fact
-          label="Nights"
-          value={journey.duration_nights ? String(journey.duration_nights) : null}
-        />
-        <Fact label="From" value={journey.gateway} />
-        <Fact
-          label="Highest point"
-          value={
-            journey.highest_altitude_m ? `${journey.highest_altitude_m} m` : null
-          }
-        />
-      </dl>
+      <div className="p-6 sm:p-7">
+        <p className="text-sm text-gold">
+          {FAMILY_LABEL[journey.family] ?? journey.family}
+        </p>
 
-      <Link
-        href={`/journeys/${journey.slug}`}
-        className="mt-6 inline-flex w-fit items-center gap-2 text-sm font-medium text-tone-strong underline decoration-gold decoration-2 underline-offset-4 transition-transform group-hover:translate-x-0.5"
-      >
-        Explore this journey
-        <svg viewBox="0 0 16 16" className="size-4" aria-hidden="true" fill="none">
-          <path
-            d="M3 8h9m0 0-3.2-3.2M12 8l-3.2 3.2"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <h3 className="mt-1.5 font-serif text-[1.75rem] leading-tight text-ink-inverse">
+          <Link
+            href={`/journeys/${journey.slug}`}
+            // Spreads the hit area over the whole card, so the image is the link
+            // rather than the small underlined phrase that used to sit beneath it.
+            className="after:absolute after:inset-0 focus-visible:outline-none"
+          >
+            {journey.name}
+          </Link>
+        </h3>
+
+        {journey.essence && (
+          <p className="mt-2.5 line-clamp-2 max-w-[46ch] text-[15px] leading-relaxed text-ink-inverse/75">
+            {journey.essence}
+          </p>
+        )}
+
+        <dl className="mt-5 grid grid-cols-3 gap-4 border-t border-white/15 pt-4">
+          <Fact
+            label="Nights"
+            value={journey.duration_nights ? String(journey.duration_nights) : null}
           />
-        </svg>
-      </Link>
+          <Fact label="From" value={journey.gateway} />
+          <Fact
+            label="Highest point"
+            value={journey.highest_altitude_m ? `${journey.highest_altitude_m} m` : null}
+          />
+        </dl>
+      </div>
     </article>
   );
 }

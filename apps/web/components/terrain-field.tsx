@@ -101,10 +101,14 @@ const FRAGMENT = /* glsl */ `
 
     // Fade out towards the top so the headline never sits on texture, and pull the
     // edges down so the field has no visible boundary.
-    float vertical = smoothstep(0.0, 0.62, 1.0 - vUv.y);
+    // Present only in the lower third and fading out well before the headline.
+    float vertical = smoothstep(0.0, 0.34, 1.0 - vUv.y) * smoothstep(0.72, 0.42, 1.0 - vUv.y);
     float edges = smoothstep(0.0, 0.14, vUv.x) * smoothstep(0.0, 0.14, 1.0 - vUv.x);
 
-    float alpha = line * vertical * edges * 0.42;
+    // 0.42 read as wallpaper: the contours were the loudest thing in the hero and
+    // the photograph behind them looked like a texture. This is a watermark under a
+    // picture, not a pattern over one.
+    float alpha = line * vertical * edges * 0.13;
     if (alpha < 0.002) discard;
     gl_FragColor = vec4(uColour, alpha);
   }

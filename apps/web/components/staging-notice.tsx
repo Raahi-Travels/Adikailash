@@ -38,7 +38,12 @@ export function StagingNotice() {
       // on a pale tint the moment a light-register page changed what was underneath
       // it. A warning nobody can read is worse than no warning, so it states its own
       // register instead of trusting whatever it lands on.
-      className="register-dark bg-status-limited/20 px-4 py-1.5 text-center text-xs leading-relaxed text-tone-body print:hidden"
+      // Explicit colours, deriving nothing from the register or from whatever it lands
+      // on. This strip spent a week as light text on cream, unreadable, because the
+      // body's background was being set by an unlayered rule that outranked the
+      // utility meant to control it. A warning is the last thing on a page that
+      // should depend on the cascade going the way you expected.
+      className="bg-[#2a1c10] px-4 py-2 text-center text-xs leading-relaxed text-[#e8dcc8] print:hidden"
     >
       Test site. No route status has been verified yet and the photographs are
       placeholders. Please do not plan travel from anything on this page.

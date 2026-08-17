@@ -129,8 +129,11 @@ export function RouteProfile({
         <svg viewBox="0 0 1000 300" className="w-full">
           <defs>
             <linearGradient id="terrain-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.16" />
-              <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
+              {/* Was 0.16 to 0, which on navy is a rumour rather than a shape. The
+                  profile is the one thing this section exists to show. */}
+              <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.34" />
+              <stop offset="55%" stopColor="var(--color-gold)" stopOpacity="0.10" />
+              <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.02" />
             </linearGradient>
           </defs>
 
@@ -143,16 +146,21 @@ export function RouteProfile({
                 x2="960"
                 y1={y(metres)}
                 y2={y(metres)}
-                stroke="var(--color-contour)"
+                stroke="currentColor"
+                strokeOpacity="0.16"
                 strokeWidth="1"
               />
+              {/* Right-hand edge, not the left. On the left they collided with the
+                  first station's name and altitude, which sit at the same height by
+                  definition: the profile starts there. */}
               <text
-                x="40"
+                x="962"
+                textAnchor="end"
                 y={y(metres) - 6}
                 className="type-reading"
                 fill="currentColor"
-                fillOpacity="0.3"
-                fontSize="11"
+                fillOpacity="0.5"
+                fontSize="11.5"
               >
                 {metres.toLocaleString("en-IN")} m
               </text>
@@ -167,7 +175,7 @@ export function RouteProfile({
               d={d}
               fill="none"
               stroke="currentColor"
-              strokeOpacity="0.18"
+              strokeOpacity="0.32"
               strokeWidth="1.5"
             />
           ))}
@@ -179,9 +187,9 @@ export function RouteProfile({
               d={LEG_PATH[station.slug]}
               fill="none"
               stroke={STATE_COLOUR[state]}
-              strokeWidth="2.5"
+              strokeWidth="3"
               strokeLinecap="round"
-              strokeDasharray={state === "unknown" ? "1 7" : undefined}
+              strokeDasharray={state === "unknown" ? "2 6" : undefined}
               initial={reduce ? false : { pathLength: 0 }}
               whileInView={{ pathLength: 1 }}
               viewport={{ once: true, amount: 0.4 }}
@@ -198,6 +206,8 @@ export function RouteProfile({
             const state = station.from
               ? (legStatus(routes, station)?.state ?? "unknown")
               : "open";
+            // Labels sit above their point except where the two fork arms converge, where
+            // the lower one would otherwise be written across the upper arm's fill.
             const above = station.slug !== "nabhidhang";
             return (
               <motion.g
@@ -220,8 +230,8 @@ export function RouteProfile({
                   y={above ? p.y - 16 : p.y + 26}
                   textAnchor="middle"
                   fill="currentColor"
-                  fontSize="13"
-                  fontWeight="500"
+                  fontSize="13.5"
+                  fontWeight="600"
                 >
                   {station.name}
                 </text>
@@ -231,8 +241,8 @@ export function RouteProfile({
                   textAnchor="middle"
                   className="type-reading"
                   fill="currentColor"
-                  fillOpacity="0.5"
-                  fontSize="11.5"
+                  fillOpacity="0.68"
+                  fontSize="12"
                 >
                   {station.confidence === "approximate" ? "~" : ""}
                   {station.altitudeM.toLocaleString("en-IN")} m
