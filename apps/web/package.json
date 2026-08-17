@@ -9,7 +9,8 @@
     "lint": "eslint",
     "check:imagery": "bun run scripts/check-imagery.ts",
     "check:brand": "bun run scripts/check-brand.ts",
-    "check:copy": "bun run scripts/check-copy.ts"
+    "check:copy": "bun run scripts/check-copy.ts",
+    "check:origins": "bun run scripts/check-origins.ts"
   },
   "dependencies": {
     "better-auth": "^1.6.26",
