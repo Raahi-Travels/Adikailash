@@ -51,13 +51,19 @@ export default async function PlanPage({ params }: PageProps<"/[locale]">) {
           there. Doc 03 wants preparation to feel concrete rather than administrative,
           and a barrier across a road does that better than another paragraph.
         */}
-        <Scene
-          name="permits"
-          className="mt-10"
-          sizes="(min-width: 896px) 896px, 100vw"
-          /* The largest thing above the fold on this page, so it is the LCP. */
-          priority
-        />
+        {/* Wider than the prose it interrupts, and with no rounded box on the outer
+            edges. A photograph set to exactly the text measure reads as a figure in a
+            document; one that breaks the column reads as the thing itself. The
+            section clips, so this cannot widen the page. */}
+        <div className="relative mt-10 h-[22rem] overflow-hidden rounded-xl sm:h-[28rem] lg:-mx-16 lg:h-[32rem]">
+          <Scene
+            name="permits"
+            fill
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            /* The largest thing above the fold on this page, so it is the LCP. */
+            priority
+          />
+        </div>
 
         <section className="mt-16">
           <h2 className="font-serif text-2xl">Documents</h2>

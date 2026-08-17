@@ -100,6 +100,7 @@ export function SceneBackdrop({
   name,
   className = "",
   position = "object-center",
+  scrim = "left",
 }: {
   name: SceneKey;
   className?: string;
@@ -109,6 +110,15 @@ export function SceneBackdrop({
    * desktop widths, leaving a hero backed by an empty sky.
    */
   position?: string;
+  /**
+   * Which way the darkness falls, which has to follow where the words are.
+   *
+   * `left` suits the hero, where the copy holds the left third and the mountain
+   * should stay visible on the right. `centre` suits a centred block, where a
+   * left-to-right wash leaves the bright side of the picture directly behind the
+   * text.
+   */
+  scrim?: "left" | "centre";
 }) {
   const scene = SCENES[name];
   const src = sceneSrc(name);
@@ -120,14 +130,23 @@ export function SceneBackdrop({
       className={`absolute inset-0 -z-10 ${className}`}
     >
       {src ? (
-        <Image
-          src={src}
-          alt=""
-          fill
-          sizes="100vw"
-          priority={scene.priority}
-          className={`object-cover ${position}`}
-        />
+        // Capped to the upper part of the frame on small screens.
+        //
+        // Stretched over the whole section, a 2.3:1 panorama covering a 390 by 1638
+        // box shows about a tenth of its width and upscales it ninefold: not a
+        // photograph any more, just a blur nobody can identify. Confining it to a
+        // band keeps the crop close to the picture's own proportions, and the
+        // gradient below carries it into the section rather than ending it on a line.
+        <div className="absolute inset-x-0 top-0 h-64 sm:inset-0 sm:h-auto">
+          <Image
+            src={src}
+            alt=""
+            fill
+            sizes="100vw"
+            priority={scene.priority}
+            className={`object-cover ${position}`}
+          />
+        </div>
       ) : (
         <SceneArt seed={name} />
       )}
@@ -145,7 +164,30 @@ export function SceneBackdrop({
         by the middle of the frame, and a short bottom fade to meet the section
         below. Where nothing is written, nothing is covered.
       */}
-      <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/75 via-45% to-transparent" />
+      {scrim === "left" ? (
+        <>
+          {/* On a phone the picture is a band at the top and the copy sits below it
+              on solid ground, so the only scrim needed is a short fade off the foot
+              of the band. Putting text over the photograph on a 390 px screen means
+              darkening the whole thing to keep it legible, which leaves a photograph
+              nobody can see and text that is only just readable: both halves worse
+              than either done properly.
+
+              From `sm` up the copy holds one side and the picture keeps the other,
+              so a horizontal wash works and the band is not needed. */}
+          <div className="absolute inset-x-0 top-40 h-24 bg-gradient-to-b from-transparent to-midnight sm:hidden" />
+          <div className="absolute inset-x-0 bottom-0 top-64 bg-midnight sm:hidden" />
+          <div className="absolute inset-0 hidden sm:block sm:bg-gradient-to-r sm:from-midnight sm:via-midnight/75 sm:via-45% sm:to-transparent" />
+        </>
+      ) : (
+        <>
+          {/* A flat wash plus a radial lift. Centred copy has bright picture on both
+              sides of it, so there is nowhere for a directional gradient to hide the
+              contrast it needs. */}
+          <div className="absolute inset-0 bg-midnight/72" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_50%_50%,var(--color-midnight)_0%,transparent_75%)]" />
+        </>
+      )}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight via-midnight/60 to-transparent" />
     </div>
   );

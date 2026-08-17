@@ -93,9 +93,16 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       */}
       <section className="register-dark relative isolate overflow-hidden">
         {/* The panorama's peaks sit right of centre; object-center cropped them out. */}
-        <SceneBackdrop name="hero" position="object-[68%_center]" />
+        {/* The panorama is 2.3:1 and its peaks sit right of centre and low. A phone
+            crops it to a tall slice, and centring that slice lands on empty sky, so
+            the mobile framing pulls right *and* down. The desktop framing takes over
+            at `sm`, where the frame is wide enough for the horizon to be the middle. */}
+        <SceneBackdrop
+          name="hero"
+          position="object-[68%_46%] sm:object-[68%_center]"
+        />
         <TerrainField />
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:min-h-[calc(100dvh-11rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-[17rem] sm:px-6 sm:pt-16 lg:min-h-[calc(100dvh-11rem)] lg:grid-cols-[1.2fr_minmax(0,23rem)] lg:gap-16 lg:pb-24 lg:pt-24">
           <div>
             <p className="max-w-[24ch] font-serif text-[1.375rem] leading-snug text-tone-muted sm:text-2xl">
               {displayLocalized(campaign.headlineLead, locale)}
@@ -306,7 +313,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         thing a traveller sees before the part we cannot promise anything about.
       */}
       <section className="register-dark relative isolate overflow-hidden">
-        <SceneBackdrop name="permits" position="object-[50%_40%]" />
+        <SceneBackdrop name="permits" position="object-[50%_40%]" scrim="centre" />
         <div className="mx-auto max-w-2xl px-4 py-28 text-center sm:px-6 sm:py-36">
           <p className="font-serif text-[1.75rem] leading-snug text-tone-strong sm:text-[2.25rem]">
             {displayLocalized(brand.identity.promise, locale)}
