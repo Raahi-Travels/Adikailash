@@ -57,14 +57,26 @@ echo "==> Turning publishing on"
 # robots.txt disallows everything, no canonical is emitted, and the staging notice
 # shows. Setting it before the domain resolved would have pointed every canonical at
 # a host that did not answer.
-for env in production preview; do
-  vercel env rm NEXT_PUBLIC_SITE_URL "$env" --yes >/dev/null 2>&1 || true
-  printf '%s' "$ORIGIN" | vercel env add NEXT_PUBLIC_SITE_URL "$env" >/dev/null
-  echo "    NEXT_PUBLIC_SITE_URL set for $env"
-done
+# Production only. A preview deployment that carries this variable stops being
+# provisional: it drops the staging notice and points every canonical at the real
+# domain, so a per-push URL starts claiming to be the live site. Previews must stay
+# provisional, which is the whole reason the signal is an origin rather than a flag.
+vercel env rm NEXT_PUBLIC_SITE_URL production --yes >/dev/null 2>&1 || true
+printf '%s' "$ORIGIN" | vercel env add NEXT_PUBLIC_SITE_URL production >/dev/null
+echo "    NEXT_PUBLIC_SITE_URL set for production"
 
 echo "==> Redeploying so the variable takes effect"
-vercel deploy --prod --yes 2>&1 | tail -3
+# Deploy from the repo root, not from apps/web. The Vercel project already has its
+# Root Directory set to apps/web, so uploading apps/web made it look for
+# apps/web/apps/web and the deploy failed with "Root Directory does not exist".
+# The link lives in apps/web/.vercel, so the ids are exported rather than moved:
+# that keeps `vercel env` working above and lets the deploy run from the root.
+VERCEL_ORG_ID="$(python3 -c 'import json;print(json.load(open(".vercel/project.json"))["orgId"])')"
+VERCEL_PROJECT_ID="$(python3 -c 'import json;print(json.load(open(".vercel/project.json"))["projectId"])')"
+export VERCEL_ORG_ID VERCEL_PROJECT_ID
+# NEXT_PUBLIC_* is inlined at build time, so this has to be a real build. Reusing the
+# existing one would redeploy the provisional bundle and change nothing.
+(cd ../.. && vercel deploy --prod --yes 2>&1 | tail -3)
 
 echo
 echo "==> Verifying"
