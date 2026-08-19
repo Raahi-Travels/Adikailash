@@ -119,12 +119,29 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       >
         <a
           href="#main"
-          /* `outline-offset-0` rather than the global 2px. This chip floats over
+          /* Two things, and the second is why the first was not enough.
+             `outline-offset-0` rather than the global 2px: this chip floats over
              the nav pill and whatever photograph is behind it, so at 2px the ring
-             sits in a gap showing the glass and measured as low as 1.02:1 against
-             it at 390. Flush to the chip, the ring's inner neighbour is the chip's
-             own snow, which is 4.39:1 and does not depend on the page underneath. */
-          className="type-meta pointer-events-auto sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-action focus:bg-snow focus:px-3 focus:py-2 focus:text-ink focus-visible:outline-offset-0"
+             sits in a gap showing the glass and measured as low as 1.02:1 there.
+             Flush to the chip, the ring's inner neighbour is the chip's own snow
+             rather than the page underneath.
+
+             That reasoning was right and the ring still failed, at 1.06:1 to
+             2.82:1 depending on the page. Snow is 4.39:1 against the *light*
+             register's focus gold, but this chip lives inside the header, which is
+             a dark register, so it inherited brand gold and measured 2.37:1 on its
+             own background. `register-light` is the fix: the chip paints itself
+             snow, so it has to ask for the focus colour that snow was measured
+             against. Hardcoding one register's surface while inheriting another's
+             tokens is the exact failure the register system exists to prevent.
+
+             The ring has two neighbours and both have to clear 3:1. `register-light`
+             fixed the inner one, snow at 4.39:1, and the outer one still measured
+             2.77 to 2.97 because it was whatever photograph happened to be behind
+             the chip. The snow halo settles it: the ring is sandwiched between its
+             own chip and its own halo, so the number no longer depends on the page
+             at all. This is the reason a ring alone is not a focus indicator. */
+          className="type-meta register-light pointer-events-auto sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-action focus:bg-snow focus:px-3 focus:py-2 focus:text-ink focus-visible:outline-offset-0 focus-visible:shadow-[0_0_0_4px_var(--color-snow)]"
         >
           {tc("skipToContent")}
         </a>
