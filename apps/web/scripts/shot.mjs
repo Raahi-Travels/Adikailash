@@ -31,9 +31,21 @@ const OUT =
 const [path = "/en", name = "shot", w = "1440", h = "900", mode = "", scrollTo = ""] =
   process.argv.slice(2);
 
+// `path` may be an absolute URL, so a deployed origin can be shot with the same
+// tool as the dev server. SHOT_RESOLVE pins a hostname to an address for the run:
+// after the domain moved to Vercel this machine kept answering with the old
+// registrar's parked IPs, and a screenshot of a parking page looks enough like a
+// broken deploy to send you debugging the wrong thing.
+const target = /^https?:\/\//.test(path) ? path : `http://localhost:3000${path}`;
+const resolve = process.env.SHOT_RESOLVE;
+
 const browser = await chromium.launch({
   channel: "chrome",
-  args: ["--ignore-gpu-blocklist", "--enable-gpu-rasterization"],
+  args: [
+    "--ignore-gpu-blocklist",
+    "--enable-gpu-rasterization",
+    ...(resolve ? [`--host-resolver-rules=MAP ${resolve}`] : []),
+  ],
 });
 
 try {
@@ -42,7 +54,7 @@ try {
     deviceScaleFactor: 1,
   });
 
-  await page.goto(`http://localhost:3000${path}`, {
+  await page.goto(target, {
     waitUntil: "domcontentloaded",
     timeout: 45_000,
   });

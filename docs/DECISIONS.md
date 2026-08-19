@@ -367,3 +367,26 @@ whole site because no domain is settled, and payments are off.
 Nothing is technically blocked. The site is deployed, public and working. What is
 blocked is describing ourselves as a company somebody can contract with, which is
 correct until somebody decides what that company is.
+
+## D48 — The site went public with the photographs still generated
+
+`sacrednorth.in` is live: DNS at the registrar points at Vercel, the certificate is
+issued, and `NEXT_PUBLIC_SITE_URL` is set for production only, which is what turned
+off `Disallow: /` and removed the staging notice.
+
+That notice made two claims. One has been resolved properly: there are zero route
+statuses in the database, so every leg renders "Never checked" and the page says "0 of
+6 legs confirmed recently" and that anything unconfirmed above Tawaghat is genuinely
+unknown. Nothing is asserted that nobody checked, which was the point.
+
+The other has not. The scene photographs are still AI-generated, several of them of
+Adi Kailash and Om Parvat, and they now sit on a public page with nothing marking them
+as such. This was put to the founder with the alternative of a standing image credit,
+and going live unmarked was chosen deliberately. Recording it because it is the one
+claim on the site that the site's own guardrails do not cover: `check-copy` polices
+prose, and there is no equivalent for imagery. Replacing them with real photographs
+retires this entry; until then it is a known, accepted gap rather than an oversight.
+
+**Preview stays provisional.** The variable is production-scoped on purpose. Setting it
+on preview makes every per-push URL drop the staging notice and claim the real domain
+in its canonicals, which is exactly what an origin-based signal exists to avoid.
