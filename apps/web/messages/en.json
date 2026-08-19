@@ -15,7 +15,9 @@
     "switchLanguage": "भाषा बदलें",
     "lastVerified": "Last verified {time}",
     "toBeConfirmed": "To be confirmed",
-    "draft": "Draft, not published"
+    "draft": "Draft, not published",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "status": {
     "open": "Open",

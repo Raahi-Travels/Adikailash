@@ -1,6 +1,53 @@
 @import "tailwindcss";
 
 /**
+ * ============================================================================
+ * READ THIS BEFORE YOU EDIT THIS FILE.
+ * ============================================================================
+ *
+ * Four bugs have been shipped from this file, all four from the same two
+ * misunderstandings. They are logged at the foot of this comment. The two rules:
+ *
+ * 1. **`@theme` compiles to `:root`.** A custom property declared there is
+ *    substituted *where it is declared*, not where it is used. So
+ *    `--a: var(--b)` in `@theme` takes `--b`'s value at the root, and
+ *    redefining `--b` on a descendant cannot change `--a`. If a register must
+ *    change a value, the register has to declare the *final* variable itself.
+ *    Every `--glass-*` and `--color-*` below that varies by register is
+ *    therefore repeated verbatim in both `.register-dark` and `.register-light`.
+ *
+ * 2. **Unlayered CSS beats layered CSS**, whatever the specificity. Anything
+ *    written outside `@layer` silently outranks everything Tailwind generates.
+ *    Base styling belongs in `@layer base`; component classes in
+ *    `@layer components`; anything that must beat a register belongs in
+ *    `@utility` (which lands in `@layer utilities`).
+ *
+ * ---------------------------------------------------------------------------
+ * The cascade-bug log. Four entries, all the same lesson.
+ * ---------------------------------------------------------------------------
+ *
+ * 1. `--color-tone-strong: var(--tone-strong)` in `@theme`, with `--tone-strong`
+ *    redefined in `.register-dark`. The heading computed to `#16202a` on navy.
+ *    Invisible text, green build. Fixed by having registers override `--color-*`
+ *    directly.
+ *
+ * 2. `body { background: ... }` written unlayered. It beat the `bg-midnight`
+ *    utility on `<body>`, the body rendered snow, and the staging notice became
+ *    light text on cream: an unreadable warning. Fixed by moving it into
+ *    `@layer base`.
+ *
+ * 3. The same again on a section ground, found by screenshot rather than by any
+ *    test. This is why `scripts/shot.mjs` exists.
+ *
+ * 4. `:lang(hi) { line-height: 1.75 }` written unlayered. It beat `.type-display`
+ *    in `@layer components` and inflated the Hindi hero leading by sixty-seven
+ *    percent, so every Devanagari headline set as three loose lines where the
+ *    English set as two. Fixed below: the base rule moved into `@layer base`, and
+ *    per-class Hindi leading now lives in `@layer components` beside the classes
+ *    it corrects.
+ */
+
+/**
  * Design tokens — doc 02, "Colour system" and "Typography".
  *
  * Usage rule from the doc, worth repeating because it is easy to violate:
@@ -11,9 +58,12 @@
  * There is deliberately no light/dark theme inversion. The brand uses dark navy as
  * an intentional *section* treatment (hero, nav, premium panels) against a snow
  * page, not as an alternate colour scheme. Inverting it would break that contrast.
+ *
+ * `@theme static` rather than `@theme`: several tokens below are referenced only
+ * from hand-written CSS and from inline styles, never from a generated utility, and
+ * Tailwind's usage detection would drop them.
  */
-
-@theme {
+@theme static {
   /* Palette — doc 02 working values. Do not introduce colours outside this set. */
   --color-midnight: #0b1d2d; /* primary dark background, nav, premium panels */
   --color-himalayan: #1b2638; /* secondary dark surface and overlays */
@@ -36,7 +86,39 @@
   --color-ink-inverse: var(--color-snow);
 
   --color-border: #e3ded3;
-  --color-focus: var(--color-gold);
+
+  /**
+   * The focus ring, and it is **not** register-relative. That is the whole point.
+   *
+   * WCAG 1.4.11 wants 3:1 for a focus indicator against what it sits on. Brand
+   * gold does not deliver it. Measured by screenshotting real tab stops and
+   * diffing the focused frame against one with `outline` suppressed, so the
+   * changed pixels are the ring and nothing else: **2.37:1 on snow, 2.56:1 on
+   * white, 1.72:1 on stone**, against 6.67:1 on midnight. Half the site shipped a
+   * focus indicator that was barely there.
+   *
+   * The obvious fix is to make this a register token like `--color-status-*`:
+   * gold on the dark register, something deeper on the light one. **It does not
+   * work, and the reason is worth keeping.** `outline-offset` draws the ring
+   * *outside* the element, so the ring lands on the parent's ground rather than
+   * its own. A journey card is `register-dark` sitting on a cream page, so a
+   * register-aware ring picks the dark register's gold and paints it onto snow.
+   * Measured after that attempt: the three journey cards on the home page came
+   * out at **2.12, 2.13 and 2.15:1**, worse than leaving it alone.
+   *
+   * So one value for every ground. Same hue and chroma as brand gold, taken down
+   * in lightness: gold with depth rather than a new colour. Measured against
+   * every ground a ring can land on:
+   *
+   *   snow 4.39   white 4.74   stone 3.18   midnight 3.61   himalayan 3.21
+   *
+   * `oklch(0.56 0.1 76)` is the optimum, not a preference. Clearing 3:1 on stone
+   * caps relative luminance at 0.185 and clearing it on midnight floors it at
+   * 0.134; this sits at 0.171, and a sweep of the whole hue-76 ramp maximises the
+   * worst of the five at 3.18. Moving it either way drops one of them below 3.
+   * A ring that must also clear a photograph needs two tones, not one colour.
+   */
+  --color-focus: oklch(0.56 0.1 76);
 
   /**
    * Status system — doc 02 requires a consistent set, and doc 03 requires that
@@ -102,6 +184,184 @@
    * same idea expressed so it survives the move.
    */
   --color-tone-raised: var(--color-surface-raised);
+
+  /**
+   * The ground a photograph dissolves *into*.
+   *
+   * Every scrim in the codebase used to hardcode midnight, so on the snow ground it
+   * created the seam it was meant to hide. Overridden in both registers below; a
+   * value defined only inside a register resolves to nothing at the root and the
+   * gradient silently renders as nothing at all.
+   */
+  --color-scrim: var(--color-surface);
+
+  /** Form-field boundary. WCAG 1.4.11 wants 3:1 for a component edge. */
+  --color-field-edge: oklch(0.62 0.012 240);
+
+  /* ------------------------------------------------------------------------
+   * TYPE SCALE.
+   *
+   * One place, so a section cannot quietly invent a size. Clamps are solved so
+   * the *minimum* is the rendered size at a 390px viewport and the maximum lands
+   * at 1440px, which means the small end is a real phone number rather than a
+   * guess. Nothing on this site renders below 15px, including the footer
+   * disclaimer and the staging notice.
+   *
+   * Desktop ratios: 84/56 = 1.50, 56/34 = 1.65, 34/24 = 1.42, 24/19 = 1.26,
+   * 19/15 = 1.27.
+   *
+   * Documented exception: at 390px, body (17) over meta (15) is 1.13. Holding
+   * 1.25 there would put meta at 13.6px, under the legibility floor this audience
+   * needs. The small end compresses on purpose. Do not "fix" it.
+   * ---------------------------------------------------------------------- */
+  --type-display: clamp(2.5rem, 1.48rem + 4.19vw, 5.25rem); /* 40 -> 84 */
+  --type-title-1: clamp(1.875rem, 1.27rem + 2.48vw, 3.5rem); /* 30 -> 56 */
+  --type-title-2: clamp(1.375rem, 1.1rem + 1.14vw, 2.125rem); /* 22 -> 34 */
+  --type-lead: clamp(1.1875rem, 1.07rem + 0.48vw, 1.5rem); /* 19 -> 24 */
+  --type-body: clamp(1.0625rem, 1.016rem + 0.19vw, 1.1875rem); /* 17 -> 19 */
+  --type-meta: 0.9375rem; /* 15, fixed */
+  --type-figure: clamp(2rem, 1.53rem + 1.9vw, 3rem); /* 32 -> 48 */
+
+  --lh-display: 1.05;
+  --lh-title-1: 1.12;
+  --lh-title-2: 1.22;
+  --lh-lead: 1.5;
+  --lh-body: 1.62;
+  --lh-meta: 1.35;
+
+  /* Eczar has enough stroke contrast that its counters close past -0.021em. */
+  --tr-display: -0.021em;
+  --tr-title-1: -0.016em;
+  --tr-title-2: -0.012em;
+  --tr-lead: -0.004em;
+  --tr-body: 0;
+  --tr-meta: 0.005em;
+
+  /* ------------------------------------------------------------------------
+   * SPACING AND RHYTHM. These are the only vertical section values on the site.
+   * ---------------------------------------------------------------------- */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+
+  --band-y: clamp(3.5rem, 7vw, 7.5rem); /* 56 -> 120, section padding */
+  --band-y-tight: clamp(2.5rem, 4.5vw, 4.5rem); /* 40 -> 72 */
+  --stack-title: clamp(1rem, 1.6vw, 1.5rem); /* title to lead */
+  --stack-block: clamp(2rem, 3.5vw, 3.5rem); /* lead to first content */
+  --gutter: clamp(1.25rem, 4vw, 2rem); /* 20 -> 32, page inset */
+
+  /* ------------------------------------------------------------------------
+   * RADIUS POLICY.
+   *
+   * **The 8 to 16px band is banned.** `rounded-md`, `rounded-lg` and
+   * `rounded-xl` are where every generated interface lives, and dropping that
+   * band is the single fastest fix for "looks generic". Clip media with
+   * `overflow: hidden` on the frame and give the child no radius of its own: two
+   * radii never line up.
+   * ---------------------------------------------------------------------- */
+  --radius-chip: 0.25rem; /* 4px, hairline chips only */
+  --radius-action: 1.25rem; /* 20px, buttons, inputs, small panels */
+  --radius-frame: clamp(1.25rem, 5vw, 2.5rem); /* 20 to 40px, media frames */
+  --radius-pill: 9999px; /* nav, badges, circular controls */
+
+  /* ------------------------------------------------------------------------
+   * DEPTH.
+   *
+   * Neutral black on warm cream reads as dirt, so shadows tint toward the
+   * ground's own hue and stack in layers. Every layer stays under 0.12 alpha:
+   * four at 0.10 composite to a soft foot, one at 0.35 looks like a template.
+   * ---------------------------------------------------------------------- */
+  --shadow-hue: 245;
+  --shadow-chroma: 0.04;
+
+  --lift-1:
+    0 1px 1px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.1),
+    0 2px 4px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.08);
+  --lift-2:
+    0 1px 1px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.1),
+    0 3px 6px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.09),
+    0 8px 18px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.09);
+  --lift-3:
+    0 1px 1px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.11),
+    0 4px 8px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.1),
+    0 12px 26px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.1),
+    0 28px 60px oklch(0.15 var(--shadow-chroma) var(--shadow-hue) / 0.12);
+
+  /* ------------------------------------------------------------------------
+   * GLASS.
+   *
+   * The founder's brief: "rounded edges, no borders, slightly glassmorphic but
+   * not too much because it's a travel website". Every value below is repeated
+   * verbatim in both registers, for the reason at the top of this file.
+   * ---------------------------------------------------------------------- */
+  --glass-tint-alpha: 0.72;
+  --glass-tint: oklch(0.985 0.004 90 / var(--glass-tint-alpha));
+  --glass-sheen: oklch(1 0 0 / 0.55);
+  --glass-shade: oklch(0.45 0.02 245 / 0.1);
+  --glass-ring: oklch(0.45 0.02 245 / 0.12);
+  --glass-blur: 18px;
+  --glass-sat: 155%;
+  --glass-bright: 1.04;
+  --color-tone-on-glass: var(--color-ink);
+  --color-tone-on-glass-muted: oklch(0.44 0.014 240);
+
+  /* ------------------------------------------------------------------------
+   * LUMINOSITY.
+   *
+   * "No vibrancy" without a single new hue: warm top right, cool bottom left, a
+   * wash at low chroma laid over the register's own ground. That temperature
+   * shift is the whole trick, because it is how the dawn photographs are already
+   * lit, so the page and the pictures agree. Both light stops stay inside snow's
+   * lightness band; ink on the warmest of them still clears 12:1.
+   * ---------------------------------------------------------------------- */
+  --ground-light:
+    radial-gradient(58% 42% at 88% -8%, oklch(0.92 0.045 74 / 0.85), transparent 66%),
+    radial-gradient(46% 40% at 4% 106%, oklch(0.9 0.022 196 / 0.75), transparent 70%);
+  --ground-dark:
+    radial-gradient(46% 38% at 78% 18%, oklch(0.72 0.11 76 / 0.22), transparent 68%),
+    radial-gradient(52% 44% at 8% 88%, oklch(0.52 0.06 196 / 0.26), transparent 70%);
+  --ground: var(--ground-light);
+
+  /**
+   * The bloom field: a deeper relative of the ground wash, for sections that want
+   * more than a tint. Rendered by `components/ui/bloom.tsx`, blurred and
+   * originating outside the visible box so that no circle is identifiable.
+   */
+  --bloom-light:
+    radial-gradient(46% 38% at 78% 18%, oklch(0.88 0.055 74 / 0.55), transparent 68%),
+    radial-gradient(52% 44% at 8% 88%, oklch(0.88 0.028 196 / 0.5), transparent 70%);
+  --bloom-dark:
+    radial-gradient(46% 38% at 78% 18%, oklch(0.72 0.11 76 / 0.26), transparent 68%),
+    radial-gradient(52% 44% at 8% 88%, oklch(0.52 0.06 196 / 0.3), transparent 70%),
+    radial-gradient(70% 50% at 50% 118%, oklch(0.2 0.03 245 / 0.85), transparent 72%);
+  --bloom: var(--bloom-light);
+
+  /* ------------------------------------------------------------------------
+   * MOTION.
+   * ---------------------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* UI state changes */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1); /* entrances, sheet, reveal */
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1); /* long ambient loops */
+
+  --dur-press: 120ms;
+  --dur-fast: 180ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+  --dur-image: 1200ms;
+  --dur-ambient: 32s;
+
+  /* ------------------------------------------------------------------------
+   * CHROME GEOMETRY. Consumed by the nav pill and by the layout offset below.
+   * `--chrome-top` is measured at runtime by `components/nav-register.tsx` so the
+   * pill clears the staging notice while that notice still exists.
+   * ---------------------------------------------------------------------- */
+  --chrome-top: 0px;
+  --nav-inset: 0.75rem;
+  --nav-h: 3.5rem;
 }
 
 /**
@@ -113,32 +373,22 @@
  * reading are light. This is why the home page opens dark and turns light, and why
  * the route instrument at its foot returns to navy. It is not alternation for
  * variety, it is the same line the API already draws between a timestamped reading
- * and a piece of marketing copy, made visible. It also settles which page gets which
- * treatment: `/status` and `/trip` are dark throughout, `/journeys` and `/plan` are
- * light throughout.
+ * and a piece of marketing copy, made visible.
  *
  * The muted tones are deliberately not the usual light grey. Doc 02 requires body
  * copy to stay comfortable for older travellers, and the commonest way to fail that
  * is a 3:1 grey that looked elegant on a designer's monitor. Both body values clear
- * 4.5:1 against their own surface, and both muted values clear it too, so even the
- * quietest text on the page is readable rather than decorative.
+ * 4.5:1 against their own surface, and both muted values clear it too.
  */
 @layer base {
   /**
    * The two registers, as direct overrides of the Tailwind colour variables.
    *
    * **They must set `--color-*` and not some `--tone-*` that `--color-*` points at.**
-   * That indirection was tried and is silently broken: `@theme` compiles to `:root`,
-   * so `--color-tone-strong: var(--tone-strong)` *resolves at the root*, taking the
-   * light value there, and the already-computed result inherits down. Redefining
-   * `--tone-strong` further down the tree cannot change it, because substitution
-   * happens where a custom property is declared, not where it is used.
-   *
-   * The symptom was a page whose markup was entirely correct: `register-dark` was on
-   * the section, the section's own `--tone-strong` read `#f7f6f2`, and the heading
-   * inside it still computed to `#16202a`. Dark ink on dark navy, invisible, with
-   * every build and test passing. Overriding the final variable is what actually
-   * cascades.
+   * See cascade-bug 1 at the top of this file. Every register-varying value is
+   * repeated in full in both blocks, including in `.register-light`, so that a
+   * light island nested inside a dark section re-establishes all of them rather
+   * than inheriting half a set.
    */
   .register-dark {
     --color-tone-strong: var(--color-ink-inverse);
@@ -162,6 +412,36 @@
     --color-status-done: oklch(0.619 0.021 248);
     --color-status-unverified: oklch(0.615 0.02 87.6);
 
+    /* Brand gold: a ring on this register lands on navy, where gold measures
+       6.67:1. See the `--color-focus` note in `@theme` for why this is set by the
+       ground a ring lands on rather than by the element that owns it. */
+    --color-focus: var(--color-gold);
+
+    /* A photograph dissolves into navy here. */
+    --color-scrim: var(--color-midnight);
+    --color-field-edge: oklch(0.52 0.02 245); /* 3.2:1 on midnight */
+
+    /* Glass. Measured: tint 0.62 plus brightness(0.85) gives snow 5.34:1 on this
+       ground. Without the brightness step it is 4.34:1 and fails, so that step is
+       mandatory rather than a taste call. */
+    --glass-tint-alpha: 0.62;
+    --glass-tint: oklch(0.24 0.035 245 / var(--glass-tint-alpha));
+    --glass-sheen: oklch(1 0 0 / 0.34);
+    --glass-shade: oklch(0.18 0.03 245 / 0.5);
+    --glass-ring: oklch(1 0 0 / 0.14);
+    --glass-sat: 165%;
+    --glass-bright: 0.85;
+    --color-tone-on-glass: var(--color-ink-inverse);
+    --color-tone-on-glass-muted: oklch(0.8 0.008 90);
+
+    /* On a dark ground a black shadow does nothing; depth comes from the inner
+       highlight instead. Kept slightly warmer in chroma so the little that shows
+       is not a neutral smear. */
+    --shadow-chroma: 0.05;
+
+    --ground: var(--ground-dark);
+    --bloom: var(--bloom-dark);
+
     background-color: var(--color-midnight);
     color: var(--color-tone-strong);
   }
@@ -182,36 +462,159 @@
     --color-status-done: #4a5560;
     --color-status-unverified: #7a7466;
 
+    /* Gold with depth: 4.39:1 on snow, 3.18:1 on stone. Brand gold is 2.37:1
+       and 1.72:1 here. */
+    --color-focus: oklch(0.56 0.1 76);
+
+    --color-scrim: var(--color-surface);
+    --color-field-edge: oklch(0.62 0.012 240); /* 3.1:1 on snow */
+
+    --glass-tint-alpha: 0.72;
+    --glass-tint: oklch(0.985 0.004 90 / var(--glass-tint-alpha));
+    --glass-sheen: oklch(1 0 0 / 0.55);
+    --glass-shade: oklch(0.45 0.02 245 / 0.1);
+    --glass-ring: oklch(0.45 0.02 245 / 0.12);
+    --glass-sat: 155%;
+    --glass-bright: 1.04;
+    --color-tone-on-glass: var(--color-ink);
+    --color-tone-on-glass-muted: oklch(0.44 0.014 240);
+
+    /* Warm toward dawn, so a shadow on cream is a shadow rather than dirt. */
+    --shadow-hue: 70;
+    --shadow-chroma: 0.03;
+
+    --ground: var(--ground-light);
+    --bloom: var(--bloom-light);
+
     background-color: var(--color-surface);
     color: var(--color-tone-strong);
   }
+
+  /**
+   * The luminosity wash.
+   *
+   * Applied to every register block, because a flat `#f7f6f2` field is the single
+   * most "very basic" surface on the site. This is a wash at 0.045 chroma *on top
+   * of* snow, not a new surface colour: the body background stays snow.
+   *
+   * Anything that must sit on bare ground (a photo card whose photograph is the
+   * card, an `<option>` in a native select) opts out with the `ground-none`
+   * utility, which lands in `@layer utilities` and therefore wins.
+   */
+  .register-dark,
+  .register-light {
+    background-image: var(--ground);
+    background-attachment: fixed;
+  }
+
+  /* iOS Safari treats `fixed` attachment as `scroll` and janks while deciding.
+     Coarse pointers get the honest version. */
+  @media (hover: none) and (pointer: coarse) {
+    .register-dark,
+    .register-light {
+      background-attachment: scroll;
+    }
+  }
 }
 
-
-/**
- * Type scale. One place, so a section cannot quietly invent a size.
+/* ==========================================================================
+ * TYPE CLASSES.
  *
- * The display ceiling is 5.5rem rather than the 4rem the page used before, and the
- * tracking floor is -0.02em. Eczar has enough stroke contrast that tighter tracking
- * closes its counters at hero size.
- */
+ * Seven classes, and nothing else. `text-xs`, `text-sm`, `text-4xl`,
+ * `text-5xl` and every raw `text-[13px]` are banned across `app/` and
+ * `components/`; each replaced instance goes to one of these. The default for
+ * anything that was `text-sm`: `.type-meta` for a label or a timestamp,
+ * `.type-body` for a sentence.
+ *
+ * Heading levels do not choose sizes. `h1` is `.type-display` or
+ * `.type-title-1`; `h2` is `.type-title-1` or `.type-title-2`; `h3` is
+ * `.type-title-2`. A heading is never body-sized.
+ * ======================================================================== */
 @layer components {
   .type-display {
     font-family: var(--font-serif);
     font-weight: 600;
-    font-size: clamp(2.75rem, 6vw, 5.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    font-size: var(--type-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tr-display);
     text-wrap: balance;
   }
 
-  .type-section {
+  /** Page titles and major section heads. */
+  .type-title-1 {
     font-family: var(--font-serif);
     font-weight: 500;
-    font-size: clamp(1.875rem, 3.5vw, 3rem);
-    line-height: 1.15;
-    letter-spacing: -0.015em;
+    font-size: var(--type-title-1);
+    line-height: var(--lh-title-1);
+    letter-spacing: var(--tr-title-1);
     text-wrap: balance;
+  }
+
+  /** Card titles, subsection heads, panel heads. */
+  .type-title-2 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: var(--type-title-2);
+    line-height: var(--lh-title-2);
+    letter-spacing: var(--tr-title-2);
+    text-wrap: balance;
+  }
+
+  /** The one paragraph under a display or a title-1. Short by design. */
+  .type-lead {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--type-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tr-lead);
+    max-inline-size: 44ch;
+    text-wrap: pretty;
+  }
+
+  /** Every paragraph. 66ch at 17 to 19px is 620 to 700px. */
+  .type-body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--type-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tr-body);
+    max-inline-size: 66ch;
+    text-wrap: pretty;
+  }
+
+  /** Labels, dl values, timestamps, footer, provenance. The 15px floor. */
+  .type-meta {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--type-meta);
+    line-height: var(--lh-meta);
+    letter-spacing: var(--tr-meta);
+  }
+
+  /** One measured number, given weight. */
+  .type-figure {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--type-figure);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /**
+   * The wordmark, in the pill and in the footer.
+   *
+   * Its own size because it is neither a heading nor a label: 19px holds its own
+   * beside a 28px mark inside a 56px pill, and any of the seven classes above is
+   * either too loud or below the floor at that size.
+   */
+  .wordmark {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 1.1875rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
   }
 
   /* Readings, altitudes and timestamps sit in columns and must not jitter. */
@@ -219,33 +622,957 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
+
+  /**
+   * Deprecated alias for one commit. `.type-section` is `.type-title-1`.
+   * Delete once every page has moved.
+   */
+  .type-section {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: var(--type-title-1);
+    line-height: var(--lh-title-1);
+    letter-spacing: var(--tr-title-1);
+    text-wrap: balance;
+  }
+
+  /**
+   * Hindi.
+   *
+   * Devanagari needs more leading than Latin because of its ascenders and the
+   * matra above the headline, but the flat 1.75 that used to apply to everything
+   * turned a two-line English hero into a three-line Hindi one. Per class, and in
+   * this layer so it lands beside the class it corrects rather than above it.
+   * Tracking goes to zero: negative tracking collides Devanagari conjuncts.
+   */
+  :lang(hi) .type-display {
+    line-height: 1.28;
+    letter-spacing: 0;
+  }
+  :lang(hi) .type-title-1,
+  :lang(hi) .type-section {
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+  :lang(hi) .type-title-2 {
+    line-height: 1.42;
+    letter-spacing: 0;
+  }
+  :lang(hi) .type-lead {
+    line-height: 1.72;
+  }
+  :lang(hi) .type-body {
+    line-height: 1.78;
+  }
+  :lang(hi) .type-meta {
+    line-height: 1.6;
+  }
+  :lang(hi) .type-figure {
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+}
+
+/* ==========================================================================
+ * GRID.
+ *
+ * One grid, declared once, used everywhere. Named lines let content escape the
+ * reading column without `100vw`: `margin-inline: calc(50% - 50vw)` counts the
+ * scrollbar and causes horizontal page scroll on Windows, so it is never used
+ * here.
+ * ======================================================================== */
+@layer components {
+  /*
+   * The named-line grid.
+   *
+   * `content` is 75rem **minus two gutters**, and that subtraction is the whole
+   * point of this comment. `<Content>` is a 75rem box with `--gutter` of padding
+   * *inside* it, so its text begins one gutter in from the box edge. A `content`
+   * column of a bare 75rem therefore started 32px to the left of every column on
+   * the site laid out the other way, and the two primitives are freely mixed: the
+   * home page ran its hero and "Three ways into the sacred Kumaon" at one margin
+   * and "The room is the point" at another, 32px apart, on the same page. Same
+   * jog between /guides and /status. Subtracting the gutters makes the two
+   * primitives agree at every width, and moves `pop-left` and `pop-right` to start
+   * on the type they sit under rather than beside it.
+   */
+  .bleed-grid {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(var(--gutter), 1fr)
+      [content-start] minmax(0, calc(75rem - var(--gutter) * 2)) [content-end]
+      minmax(var(--gutter), 1fr) [full-end];
+  }
+  .bleed-grid > * {
+    grid-column: content;
+  }
+  .bleed-grid > .full {
+    grid-column: full;
+  }
+  .bleed-grid > .pop-left {
+    grid-column: full-start / content-end;
+  }
+  .bleed-grid > .pop-right {
+    grid-column: content-start / full-end;
+  }
+
+  .band {
+    padding-block: var(--band-y);
+  }
+  .band--tight {
+    padding-block: var(--band-y-tight);
+  }
+
+  /**
+   * The constellation, for lists of three or more.
+   *
+   * Three equal boxes in a row is banned site-wide: it is the fastest way to make
+   * a page read as generated. Items take unequal spans and unequal vertical
+   * offsets instead, so each photograph gets a different crop and the row stops
+   * reading as one template repeated.
+   *
+   * Test at 1, 2, 4 and 7 items before shipping anything that uses this.
+   */
+  .constellation {
+    display: grid;
+    gap: var(--stack-block);
+  }
+  @media (min-width: 64rem) {
+    .constellation {
+      grid-template-columns: repeat(12, 1fr);
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: start;
+    }
+    .constellation > :nth-child(3n + 1) {
+      grid-column: 1 / 8;
+    }
+    .constellation > :nth-child(3n + 2) {
+      grid-column: 8 / 13;
+      margin-block-start: 5rem;
+    }
+    .constellation > :nth-child(3n + 3) {
+      grid-column: 3 / 11;
+    }
+    /* A lone trailing item should not sit in a half-width column looking
+       abandoned; it takes the wide middle span instead. */
+    .constellation > :nth-child(3n + 1):last-child {
+      grid-column: 3 / 11;
+    }
+  }
+}
+
+/* ==========================================================================
+ * MEASURE.
+ *
+ * No text run anywhere exceeds 72ch or falls under 45ch, except deliberate
+ * one-line meta pairs. `.type-body` and `.type-lead` cap themselves; these are
+ * for the cases where the cap has to sit on a container.
+ * ======================================================================== */
+@utility measure-body {
+  max-inline-size: 66ch;
+}
+@utility measure-lead {
+  max-inline-size: 44ch;
+}
+@utility measure-card {
+  min-inline-size: 0;
+  max-inline-size: 60ch;
+}
+@utility measure-meta {
+  max-inline-size: 72ch;
+}
+@utility measure-none {
+  max-inline-size: none;
+}
+
+/* ==========================================================================
+ * DEPTH UTILITIES.
+ * ======================================================================== */
+@utility lift-1 {
+  box-shadow: var(--lift-1);
+}
+@utility lift-2 {
+  box-shadow: var(--lift-2);
+}
+@utility lift-3 {
+  box-shadow: var(--lift-3);
+}
+
+/**
+ * The material: an inner highlight plus a hairline ring.
+ *
+ * This is the difference between a div with a background and a panel. The founder
+ * said "no borders", and an inset highlight with a ring at 0.12 to 0.14 alpha
+ * gives an edge without one. Measured on midnight: white at 0.05 alpha is a
+ * 1.14:1 step, at 0.12 it is 1.42:1. Above 0.20 on the ring it looks like a
+ * border and he will say so.
+ *
+ * Never add this *and* a Tailwind `ring-1` or `border`: you get a 2px double edge
+ * at some zoom levels. Inset shadows paint above the background but below
+ * content, so they are hidden by any child with an opaque background, which is
+ * one more reason nested cards are banned.
+ */
+@utility surface {
+  background:
+    linear-gradient(to bottom, var(--glass-sheen), transparent 42%),
+    var(--color-tone-raised);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-sheen),
+    inset 0 -1px 0 0 var(--glass-shade),
+    0 0 0 1px var(--glass-ring),
+    var(--lift-2);
+  color: var(--color-tone-strong);
+}
+
+/**
+ * Glass.
+ *
+ * **Allowed in exactly three places:** the nav pill; the hero status panel, which
+ * genuinely floats over a photograph; and a caption or status chip sitting
+ * directly on a photograph, at most one per photograph. Not on cards in a list,
+ * not on form fields, not on the footer, not on section panels over a flat
+ * ground. Glass is legibility over imagery, not decoration.
+ *
+ * Four rules that are not negotiable:
+ *
+ * 1. `@utility`, never `@layer components`. `@utility` output lands in
+ *    `@layer utilities`, so it outranks the `.register-*` rules in `@layer base`
+ *    (which set `background-color`), and it gets variants for free.
+ * 2. Both `-webkit-backdrop-filter` and `backdrop-filter` are typed out.
+ *    Tailwind's own utilities emit the prefix; a hand-written one does not, and
+ *    Safari still needs it.
+ * 3. The `@supports not` guard tests plain *and* prefixed joined by `or`.
+ *    Chrome reports false for the prefixed property alone and would take the
+ *    no-backdrop branch.
+ * 4. The reduced-transparency block comes *after* the supports block, so a user
+ *    preference beats a capability guess.
+ *
+ * Budget: at most three backdrop-filter elements on screen at once. Measured,
+ * eight solid panels produce four compositor layers and eight glass panels
+ * produce twelve: one extra layer each, every one holding a backdrop snapshot at
+ * device pixel ratio.
+ */
+@utility glass {
+  /**
+   * A ring on glass lands on glass, and glass is the one surface whose backdrop
+   * is a photograph rather than a known colour. `--color-tone-on-glass` is the
+   * tone this utility already guarantees legible against its own tint, so the
+   * focus ring borrows it instead of guessing at a fixed gold. Measured on the
+   * hero panel: brand gold 2.35:1 and the deepened gold 1.27:1, both failures;
+   * this is 5.2:1, the same figure the panel's own body copy makes.
+   */
+  --color-focus: var(--color-tone-on-glass);
+
+  background:
+    linear-gradient(to bottom, var(--glass-sheen), transparent 42%),
+    var(--glass-tint);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat))
+    brightness(var(--glass-bright));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat))
+    brightness(var(--glass-bright));
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-sheen),
+    inset 0 -1px 0 0 var(--glass-shade),
+    0 0 0 1px var(--glass-ring),
+    var(--lift-3);
+  color: var(--color-tone-on-glass);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background: color-mix(in oklab, var(--color-tone-raised) 94%, transparent);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--color-tone-raised);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-sheen),
+      0 0 0 1px var(--glass-ring),
+      var(--lift-2);
+  }
+
+  @media (prefers-reduced-data: reduce) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--color-tone-raised);
+  }
+}
+
+/** Opt a register block out of the luminosity wash. */
+@utility ground-none {
+  background-image: none;
+}
+
+/** Opt any element *into* the wash without carrying a register. */
+@utility ground {
+  background-image: var(--ground);
+}
+
+/* Variants for opting out in JSX. */
+@custom-variant no-backdrop (@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))));
+@custom-variant flat (@media (prefers-reduced-transparency: reduce));
+
+/* Low-end escape hatch. Costs nothing and is the difference between a smooth
+   pill and a stuttering one on a three-year-old Android. */
+@media (hover: none) and (pointer: coarse) {
+  :root {
+    --glass-blur: 12px;
+    --glass-sat: 140%;
+  }
+}
+
+/* ==========================================================================
+ * GOLD AS EMITTED LIGHT, NEVER AS PAINT.
+ *
+ * Measured: gold on midnight 6.67:1 and midnight on gold 6.67:1, so a gold fill
+ * with a midnight label is safe in both registers. Gold *text* on snow is
+ * 2.37:1 and on glass over a photograph is 2.87:1 to 3.13:1. Gold is never body
+ * text, never link text on light, never a status colour, never a border, never
+ * across an icon set.
+ *
+ * Budget: at most one gold fill per viewport, plus the focus ring.
+ * ======================================================================== */
+@utility cta-gold {
+  background: linear-gradient(180deg, oklch(0.78 0.1 76), var(--color-gold));
+  color: var(--color-midnight);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.45),
+    0 1px 2px oklch(0.25 0.06 60 / 0.35),
+    0 10px 30px oklch(0.62 0.12 76 / 0.3);
+}
+
+@layer components {
+  /* On cream the third shadow drops or it leaves a yellow smudge on the page. */
+  .register-light .cta-gold {
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.45),
+      0 1px 2px oklch(0.25 0.06 60 / 0.35),
+      0 10px 30px oklch(0.62 0.12 76 / 0.2);
+  }
+
+  /**
+   * One lit edge, not a gold border.
+   *
+   * Both prefixed and unprefixed `mask-composite`, with *different* keywords
+   * (`xor` against `exclude`). Miss one and Safari paints a solid gold slab where
+   * the rim should be. Keep the opaque run under half the perimeter.
+   */
+  .rim-gold {
+    position: relative;
+  }
+  .rim-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    background: linear-gradient(
+      145deg,
+      oklch(0.78 0.1 76 / 0.55),
+      oklch(0.78 0.1 76 / 0) 38%,
+      oklch(1 0 0 / 0.1)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  /** Hero display type only, never body copy. */
+  .glow-display {
+    text-shadow:
+      0 1px 0 oklch(0.78 0.1 76 / 0.14),
+      0 0 44px oklch(0.72 0.11 76 / 0.1);
+  }
+}
+
+/* ==========================================================================
+ * THE NAV PILL.
+ *
+ * **Unlayered, deliberately.** `.glass` is an `@utility`, so it lands in
+ * `@layer utilities`; a rule in `@layer components` cannot turn its backdrop
+ * filter off for the at-rest state. This is the second and last place on the
+ * site where unlayered CSS is the right answer, and it is confined to two
+ * attribute selectors that only the header ever carries.
+ *
+ * Two states, switched by an IntersectionObserver sentinel rather than by a
+ * scroll handler, so nothing runs per frame.
+ *
+ * State A, "rest": hero pages above 24px of scroll. The pill is barely there and
+ * legibility is carried by the page-level top scrim the header renders beside
+ * it. Measured on the real hero rather than guessed: hiding the glyphs, taking
+ * the p99.9 luminance of the composited backdrop (not the maximum, which picks
+ * up the corner radius and the shadow and reports a bogus 1.000) and computing
+ * the ratio against snow gives **7.6:1 at rest** and 5.6:1 lifted over the
+ * brightest sunlit peak the pill can travel across. The floor is 4.5:1.
+ *
+ * State B, "lifted": everywhere else. Full glass, 5.34:1 on the dark register.
+ *
+ * The transition names `transform` and `opacity` and nothing else. Transitioning
+ * blur radius, tint alpha or box-shadow re-rasterises the backdrop snapshot every
+ * frame, which is the one reliable way to make this jank.
+ * ======================================================================== */
+[data-nav-pill] {
+  transition:
+    transform var(--dur-base) var(--ease-standard),
+    opacity var(--dur-base) var(--ease-standard);
+  will-change: transform;
+}
+
+[data-nav-pill][data-nav-state="rest"] {
+  --glass-tint-alpha: 0.58;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-sheen),
+    0 0 0 1px var(--glass-ring);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [data-nav-pill][data-nav-state="rest"] {
+    --glass-tint-alpha: 1;
+  }
+}
+
+/* The permanent top scrim that makes state A legible. Always rendered on a hero
+   page, never animated, and it costs one paint. A navy wash across the top of a
+   cream page is a bruise, so pages with no hero do not get one: the pill is
+   already fully lifted there and carries its own contrast. */
+body:not(:has([data-hero-page])) [data-nav-scrim] {
+  display: none;
+}
+
+[data-nav-scrim] {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-midnight) 62%, transparent),
+    color-mix(in oklab, var(--color-midnight) 22%, transparent) 62%,
+    transparent
+  );
+}
+
+/* The mobile sheet. Slides on transform only. */
+[data-nav-sheet] {
+  animation: sn-sheet-in var(--dur-slow) var(--ease-out-soft) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-nav-sheet] {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+ * IMAGE TREATMENT.
+ *
+ * No hard-edged photo rectangle survives this system. Three rules govern all of
+ * it:
+ *
+ * **Ramp length.** A mask ramp must be at least 40% of the masked dimension and
+ * at least 200 real pixels. `ramp px = (100 - from%) / 100 * boxDimension`.
+ * Under about 120px a feather reads as a defect, visibly worse than the hard
+ * edge it replaced: `mask-b-from-45%` on a 460px box is a 253px ramp and reads
+ * as mist lifting off a valley, `mask-b-from-88%` is 55px and reads as a smudge.
+ *
+ * **Mask and scrim ship together, never one alone.** A mask changes alpha only,
+ * so a dark photograph fading to alpha 0 over snow passes through mid-grey and
+ * goes muddy. A scrim alone leaves the hard edge.
+ *
+ * **Never mask an element containing text**, and drop the radius on any edge a
+ * feather lands on: a radius clips at full opacity while the mask is already
+ * partly transparent, which leaves a visible quarter-circle notch.
+ * ======================================================================== */
+@layer components {
+  /** The dissolve that carries a photograph into whichever ground it sits on. */
+  .scrim-bottom {
+    background: linear-gradient(
+      to top,
+      var(--color-scrim) 0%,
+      color-mix(in oklab, var(--color-scrim) 62%, transparent) 30%,
+      color-mix(in oklab, var(--color-scrim) 18%, transparent) 58%,
+      transparent 82%
+    );
+  }
+
+  /**
+   * Focal point, applied from `lib/imagery.ts` data through two variables.
+   *
+   * A class rather than `[object-position:var(--focus,50%_50%)]`, because an
+   * arbitrary-property candidate containing commas is not reliably extracted from
+   * source by Tailwind's scanner: it compiles if you hand it to the compiler and
+   * is never generated from a `.tsx` file, so the utility does not exist and the
+   * crop silently stays centred.
+   */
+  .focus-point {
+    object-position: var(--focus, 50% 50%);
+  }
+  @media (min-width: 40rem) {
+    .focus-point {
+      object-position: var(--focus-sm, var(--focus, 50% 50%));
+    }
+  }
+
+  /**
+   * The centred hero scrim: a flat wash plus a radial lift. Centred copy has
+   * bright picture on both sides of it, so there is nowhere for a directional
+   * gradient to hide the contrast it needs.
+   */
+  .scrim-centre {
+    background:
+      radial-gradient(ellipse 60% 55% at 50% 50%, var(--color-scrim) 0%, transparent 75%);
+  }
+
+  .scrim-top {
+    background: linear-gradient(
+      to bottom,
+      var(--color-scrim) 0%,
+      color-mix(in oklab, var(--color-scrim) 55%, transparent) 34%,
+      transparent 76%
+    );
+  }
+
+  /**
+   * The hero grade: a directional wash rather than a flat box over the picture.
+   *
+   * There used to be three flat scrims stacked, and the photograph was carrying
+   * about fifteen percent of its own luminance: a hero backed by a thousand-metre
+   * dawn read as a dark blue rectangle with a smudge in one corner. A contrast
+   * floor that costs the picture is not a floor, it is a lid.
+   *
+   * The dawn radial is the sanctioned way to add warmth. It uses `--color-dawn`,
+   * already in the token set.
+   */
+  .photo-ground {
+    position: relative;
+    isolation: isolate;
+  }
+  /**
+   * `.photo-ground` is for a *section* whose photograph is a `-z-10` background
+   * layer: the pseudo-element at `z-index: -1` then sits above the picture and
+   * below the type. `.hero-wash` is the same gradient as a real element, for the
+   * case where the wash is a sibling of the picture and document order already
+   * puts it on top. They are separated because a `z-index: -1` on the sibling
+   * form would drop it *behind* the photograph, which is exactly the bug this
+   * pair exists to avoid.
+   */
+  .photo-ground::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        to top,
+        color-mix(in oklab, var(--color-scrim) 94%, transparent) 0%,
+        color-mix(in oklab, var(--color-scrim) 55%, transparent) 30%,
+        transparent 66%
+      ),
+      radial-gradient(
+        120% 80% at 72% 8%,
+        color-mix(in oklab, var(--color-dawn) 16%, transparent),
+        transparent 60%
+      );
+  }
+
+  .hero-wash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        to top,
+        color-mix(in oklab, var(--color-scrim) 94%, transparent) 0%,
+        color-mix(in oklab, var(--color-scrim) 55%, transparent) 30%,
+        transparent 66%
+      ),
+      radial-gradient(
+        120% 80% at 72% 8%,
+        color-mix(in oklab, var(--color-dawn) 16%, transparent),
+        transparent 60%
+      );
+  }
+
+  /**
+   * Grading, for mood imagery only.
+   *
+   * Duotone is rejected: it reads as an Instagram filter, and on a brand whose
+   * proposition is "we tell the truth about this road" a heavily processed
+   * photograph reads as stock. This pulls hue toward navy and keeps luminance.
+   *
+   * **Never grade an evidence image.** The checkpost photograph shows what the
+   * barrier actually looks like. Grade mood, leave information alone.
+   *
+   * The wrapper must be `isolate` or the blend tints the page behind it.
+   */
+  .grade-brand {
+    position: relative;
+    isolation: isolate;
+  }
+  .grade-brand::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--color-midnight);
+    mix-blend-mode: color;
+    opacity: 0.38; /* 0.30 subtle, 0.45 strong, 0.55 is a filter */
+  }
+  .grade-brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(
+      90% 70% at 70% 18%,
+      oklch(0.72 0.09 76 / 0.22),
+      transparent 62%
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* No compositing cost, for the phones that need it. */
+  @media (max-width: 47.99rem) {
+    .grade-brand::after,
+    .grade-brand::before {
+      display: none;
+    }
+    .grade-brand > img,
+    .grade-brand img {
+      filter: saturate(0.85) contrast(1.05);
+    }
+  }
+}
+
+/* ==========================================================================
+ * FORM FIELDS.
+ *
+ * The boundary before this measured 1.24:1 and the fill 1.00:1. WCAG 1.4.11
+ * wants 3:1 for a component boundary, and this audience is largely reading on a
+ * phone in daylight.
+ * ======================================================================== */
+@layer components {
+  .field {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 3rem;
+    border: 0;
+    border-radius: var(--radius-action);
+    background: color-mix(in oklab, var(--color-tone-strong) 4%, var(--color-tone-raised));
+    box-shadow:
+      inset 0 1px 2px oklch(0.15 0.02 245 / 0.06),
+      0 0 0 1px var(--color-field-edge);
+    font-family: var(--font-sans);
+    font-size: var(--type-body);
+    line-height: 1.4;
+    padding-inline: 1rem;
+    padding-block: 0.75rem;
+    color: var(--color-tone-strong);
+  }
+
+  /* Not `--color-tone-muted`: that measures 4.30:1 here and fails. */
+  .field::placeholder {
+    color: var(--color-tone-body);
+    opacity: 1;
+  }
+
+  /* `--color-focus`, not `--color-gold`: on a light page the gold ring measured
+     2.37:1 against snow, under the 3:1 WCAG 1.4.11 wants for an indicator. The
+     token carries the register's own value. */
+  .field:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    box-shadow:
+      inset 0 1px 2px oklch(0.15 0.02 245 / 0.06),
+      0 0 0 1px var(--color-focus);
+  }
+
+  textarea.field {
+    min-block-size: 7rem;
+    line-height: var(--lh-body);
+  }
+
+  /* The select matches every other field: same height, same edge, one chevron
+     drawn in the body tone rather than the platform's own. */
+  select.field {
+    appearance: none;
+    padding-inline-end: 2.75rem;
+    background-image: linear-gradient(
+        45deg,
+        transparent 50%,
+        currentColor 50%,
+        currentColor 58%,
+        transparent 58%
+      ),
+      linear-gradient(
+        -45deg,
+        transparent 50%,
+        currentColor 50%,
+        currentColor 58%,
+        transparent 58%
+      );
+    background-position:
+      calc(100% - 1.35rem) 55%,
+      calc(100% - 1rem) 55%;
+    background-size: 0.4rem 0.4rem;
+    background-repeat: no-repeat;
+  }
+
+  /**
+   * Long-form reading, for `/policies/[policy]`, `/guides/[slug]` and the plan
+   * page's prose sections.
+   *
+   * A class rather than a component prop because the content is often rendered
+   * from data and the elements are not ours to put classes on. Everything here is
+   * one of the seven type classes expressed as an element rule, so a heading
+   * inside prose and a heading outside it are the same size.
+   *
+   * Deliberately absent: any rule, any accent bar, any tracked-caps label. The
+   * plainness of these pages is the design rather than an omission.
+   */
+  .prose-sn {
+    font-family: var(--font-sans);
+    font-size: var(--type-body);
+    line-height: var(--lh-body);
+    color: var(--color-tone-body);
+  }
+  .prose-sn > * {
+    max-inline-size: 72ch;
+  }
+  .prose-sn p,
+  .prose-sn li {
+    max-inline-size: 72ch;
+    text-wrap: pretty;
+  }
+  .prose-sn > * + * {
+    margin-block-start: var(--space-md);
+  }
+  .prose-sn h2 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: var(--type-title-2);
+    line-height: var(--lh-title-2);
+    letter-spacing: var(--tr-title-2);
+    color: var(--color-tone-strong);
+    margin-block-start: var(--space-2xl);
+    text-wrap: balance;
+  }
+  .prose-sn h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: var(--type-lead);
+    line-height: var(--lh-lead);
+    color: var(--color-tone-strong);
+    margin-block-start: var(--space-xl);
+  }
+  .prose-sn > :first-child {
+    margin-block-start: 0;
+  }
+  .prose-sn strong {
+    font-weight: 600;
+    color: var(--color-tone-strong);
+  }
+  .prose-sn ul,
+  .prose-sn ol {
+    padding-inline-start: 1.4em;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  .prose-sn ul {
+    list-style: disc;
+  }
+  .prose-sn ol {
+    list-style: decimal;
+  }
+  .prose-sn a {
+    color: var(--color-tone-strong);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--color-tone-line);
+  }
+  .prose-sn a:hover {
+    text-decoration-color: currentColor;
+  }
+  :lang(hi) .prose-sn {
+    line-height: 1.78;
+  }
+
+  .field-hint {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--type-meta);
+    line-height: var(--lh-meta);
+    color: var(--color-tone-body);
+    max-inline-size: 60ch;
+  }
+}
+
+/* ==========================================================================
+ * MOTION.
+ *
+ * What never animates: `filter`, `backdrop-filter`, blur radius, tint alpha,
+ * `background-position`, `width`, `height`, `top`/`left`, gradient stops, and
+ * `box-shadow` on anything except a card on hover. Animating a glass element's
+ * blur or tint re-rasterises its backdrop snapshot every frame and is the one
+ * reliable way to make this jank.
+ * ======================================================================== */
+@keyframes sn-rise {
+  from {
+    opacity: 0.4;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sn-parallax {
+  from {
+    transform: translate3d(0, -6%, 0);
+  }
+  to {
+    transform: translate3d(0, 6%, 0);
+  }
+}
+
+@keyframes sn-ken-burns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.13) translate3d(-1.5%, -1%, 0);
+  }
+}
+
+@keyframes sn-bloom-drift {
+  from {
+    transform: translate3d(-1.5%, 0.8%, 0) scale(1.04);
+  }
+  to {
+    transform: translate3d(1.5%, -0.8%, 0) scale(1.06);
+  }
+}
+
+@keyframes sn-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@layer components {
+  /**
+   * Reveal on scroll, **visible by default**.
+   *
+   * Content is never gated behind a scroll-triggered class. The default state is
+   * painted; the animation only runs where the browser has scroll-driven
+   * animation and the reader has not asked for less motion. It never starts
+   * below 0.4 opacity, because a keyboard user tabbing to an element mid-range
+   * must not meet invisible text.
+   */
+  .reveal {
+    opacity: 1;
+  }
+
+  .depth-plane {
+    will-change: transform;
+  }
+
+  .ken-burns {
+    transform: scale(1.04);
+  }
+
+  .bloom-drift {
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .reveal {
+        animation: sn-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 45%;
+      }
+      .depth-plane {
+        animation: sn-parallax linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+    }
+
+    .ken-burns {
+      animation: sn-ken-burns var(--dur-ambient) var(--ease-in-out) infinite alternate;
+      will-change: transform;
+    }
+
+    .bloom-drift {
+      animation: sn-bloom-drift 38s var(--ease-in-out) infinite alternate;
+      will-change: transform;
+    }
+  }
+}
+
+/**
+ * The reduced-motion hole, closed.
+ *
+ * The global block further down forces `animation-duration: 0.01ms`, and **a
+ * scroll-driven animation has no duration**: it is progress-mapped, so that
+ * block does not stop it. Without these three lines a reduced-motion reader gets
+ * the full parallax. Every `animation-timeline: view()` rule on this site needs
+ * an explicit `animation: none !important` here.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .depth-plane,
+  .ken-burns,
+  .bloom-drift {
+    animation: none !important;
+    transform: none !important;
+  }
+  .ken-burns {
+    transform: scale(1.04) !important;
+  }
 }
 
 :root {
   color-scheme: light;
+  /* The pill floats and heroes run under it, so the offset is applied to the
+     page shell rather than to the body. */
+  scroll-padding-block-start: calc(var(--chrome-top) + 7rem);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --nav-inset: 1.25rem;
+    --nav-h: 4rem;
+  }
 }
 
 /**
  * Base element styling.
  *
- * **In `@layer base` so utilities can override it.** Unlayered, `background` here
- * beat the `bg-midnight` utility on `<body>` no matter the specificity, because
- * unlayered CSS wins over layered CSS in the cascade. The body rendered snow, and
- * the staging notice that sits directly on it became light text on cream: an
- * unreadable warning, which is worse than no warning.
- *
- * That is the third bug from the same misunderstanding on this page. The rule worth
- * remembering: anything written outside a layer silently outranks everything Tailwind
- * generates, so base styling belongs inside one.
+ * **In `@layer base` so utilities can override it.** See cascade-bug 2 at the top
+ * of this file.
  */
 @layer base {
   body {
     background: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    /* Readable for older travellers, doc 02 accessibility rule. */
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    /* Readable for older travellers, doc 02 accessibility rule. The old 17px
+       fixed value is now the *floor* of a clamp that reaches 19px on a desktop. */
+    font-size: var(--type-body);
+    line-height: var(--lh-body);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -257,6 +1584,65 @@
     letter-spacing: -0.01em;
     text-wrap: balance;
   }
+
+  /* Hindi should not render as a smaller subtitle beneath English (doc 02).
+     In `@layer base` so the per-class corrections above can reach it. */
+  :lang(hi) {
+    line-height: 1.78;
+    letter-spacing: 0;
+  }
+
+}
+
+/**
+ * The layout offset for the floating nav.
+ *
+ * The pill is `fixed`, so it takes no space and heroes run under it. Pages whose
+ * first section is a full-bleed hero opt out with `data-hero-page` on their
+ * `<main>`; everything else gets the clearance here, once, rather than repeating
+ * a `pt-24` on twenty pages.
+ *
+ * **Unlayered, deliberately, and this is the one place on the site where that is
+ * correct.** Almost every page already carries a `py-16`, and a utility sets
+ * `padding-block` on *both* sides from `@layer utilities`, which would beat this
+ * rule in `@layer base` and leave the pill sitting on top of the page's own h1.
+ * The clearance is not a page decision, so it is not page-overridable: a page
+ * that wants the hero treatment says `data-hero-page`, and a page that wants
+ * *more* room sets `--page-top` (the `max()` below honours it). Nothing else
+ * changes it.
+ */
+main:not([data-hero-page]):not([data-quiet-page]):not([data-lead-band]),
+[data-page-shell]:not([data-hero-page]):not([data-quiet-page]):not([data-lead-band]) {
+  padding-block-start: max(
+    var(--page-top, 0px),
+    calc(var(--chrome-top) + var(--nav-h) + var(--nav-inset) * 2 + 1.25rem)
+  );
+}
+
+/**
+ * The lead band: the clearance moved *inside* the first section.
+ *
+ * The rule above pads `<main>`, and `<main>` has no ground of its own. On a page
+ * whose first section carries a gradient (every dark masthead, and the bloom on a
+ * cream one) that produced two visible faults at once: a flat strip of body colour
+ * under the pill, and then a hard horizontal seam where the section's gradient
+ * started. Screenshots of /status, /plan and /documents all showed the same 110px
+ * bar and the same edge.
+ *
+ * So a page can instead say `data-lead-band` on `<main>`, which opts out of the
+ * padding above, and `lead` on its first `<Band>`, which takes the clearance on as
+ * its own `padding-block-start`. The gradient now begins at the top of the
+ * viewport and runs under the pill, and the doubled gap (clearance *plus* a full
+ * band rhythm) collapses to one.
+ *
+ * Unlayered for the same reason as the rule above: `.band` lives in
+ * `@layer components`, and this has to beat it.
+ */
+.band--lead {
+  padding-block-start: max(
+    var(--page-top, 0px),
+    calc(var(--chrome-top) + var(--nav-h) + var(--nav-inset) * 2 + var(--band-y-tight))
+  );
 }
 
 /* Doc 02: "Always support reduced-motion preferences." */
@@ -271,14 +1657,29 @@
   }
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-/* Hindi should not render as a smaller subtitle beneath English (doc 02). */
-:lang(hi) {
-  line-height: 1.75;
+/**
+ * The focus ring.
+ *
+ * **In `@layer base`, and that is cascade-bug 2 again.** Written unlayered, this
+ * rule beat every Tailwind utility, so `focus-visible:outline-none` was inert
+ * everywhere it was written. The journey card relied on it: the card draws its own
+ * ring around the whole stretched-link target, and the opt-out on the title link
+ * did nothing, so a focused card wore two concentric gold rectangles.
+ *
+ * From `@layer base` a utility can override it, which is the point. Every opt-out
+ * in the codebase supplies its own indicator and there are only three:
+ * `components/journey-card.tsx` (ring moves to the `<article>`), the staff and
+ * admin fields (`focus:ring-2 focus:ring-gold`), and the enquiry form's result
+ * panel, which is `tabIndex={-1}` and announced rather than tabbed to.
+ *
+ * Anything that opts out and does *not* replace the indicator is a WCAG 2.4.7
+ * failure. `scripts/audit-a11y.mjs` pixel-diffs every tab stop for exactly this.
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
 }
 
 /**
@@ -326,6 +1727,10 @@ body:has([data-quiet-page]) [data-site-chrome] {
     background: #fff;
     color: #000;
     font-size: 10.5pt;
+  }
+
+  main:not([data-hero-page]) {
+    padding-block-start: 0 !important;
   }
 
   /* Never break a traveller's row or a coordinator's message across two sheets. */

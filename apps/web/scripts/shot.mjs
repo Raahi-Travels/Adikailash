@@ -54,6 +54,29 @@ try {
     deviceScaleFactor: 1,
   });
 
+  /*
+   * `mode` doubles as a media-emulation switch, because the two settings this
+   * design most needs to be checked under are the two a screenshot cannot show
+   * you by accident.
+   *
+   *   flat    -> prefers-reduced-transparency: reduce   (the glass fallback)
+   *   still   -> prefers-reduced-motion: reduce         (parallax and ken burns off)
+   *
+   * Playwright's `emulateMedia` does not expose reduced-transparency at all, so
+   * that one goes through CDP. Both are set before navigation so a load-time
+   * media query sees them.
+   */
+  if (mode === "flat" || mode === "still") {
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Emulation.setEmulatedMedia", {
+      features: [
+        mode === "flat"
+          ? { name: "prefers-reduced-transparency", value: "reduce" }
+          : { name: "prefers-reduced-motion", value: "reduce" },
+      ],
+    });
+  }
+
   await page.goto(target, {
     waitUntil: "domcontentloaded",
     timeout: 45_000,

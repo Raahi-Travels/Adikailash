@@ -1,10 +1,7 @@
-import Image from "next/image";
-
-import { PhotoSlot } from "@/components/photo-slot";
+import { Scene } from "@/components/scene";
 import { Link } from "@/i18n/navigation";
 import type { JourneySummary } from "@/lib/api";
 import { journeyScene } from "@/lib/imagery";
-import { SCENES, sceneSrc } from "@/lib/imagery";
 
 /**
  * Journey card.
@@ -14,19 +11,54 @@ import { SCENES, sceneSrc } from "@/lib/imagery";
  * truthful difficulty or comfort cue, one primary action. Avoid cramming full
  * itineraries and every badge into cards."
  *
- * **The photograph is the card, rather than sitting in it.** The previous version put
- * a small rounded image above a block of text, which is the shape of a search result:
- * the picture reads as an illustration attached to an article, and on a page selling
- * a mountain that is the wrong way round. Now the image fills the frame, the text
- * sits on it over a gradient that starts from the image's own darkness, and there is
- * no container edge anywhere. Nothing is placed on top of the photograph; the
- * photograph becomes the surface.
+ * **The photograph is the card, rather than sitting in it.** There is no container
+ * edge, no ring and no chrome: the picture runs the full width of the card, its
+ * foot dissolves through a mask into the card's own midnight ground, and the words
+ * continue on that ground as if the photograph had simply faded into them.
  *
- * Facts that are not yet approved render as "to be confirmed" rather than being
- * quietly dropped, so an unfinished journey looks unfinished instead of looking like
- * it has no altitude.
+ * **The words do not sit on the picture, and that is a legibility decision rather
+ * than a taste one.** An earlier version put the whole text block over a
+ * full-bleed photograph. Measured on the Kumaon circuit card, whose picture is a
+ * sunlit temple, the family label at the top of that block was landing on a
+ * backdrop still 64% opaque and came out at roughly 1.6:1. A mask that reaches
+ * zero at the very bottom of a box cannot make the middle of that box dark. So the
+ * picture gets its own height, the mask spends its whole ramp inside it, and the
+ * text starts below where the ramp ends.
+ *
+ * **Nothing truncates.** The previous version carried `line-clamp-2` on the essence
+ * and `truncate` on every fact, which turned the site's most important phrase into
+ * "To be confirm..." and a gateway into "Kathgodam / ...". On a site whose whole
+ * proposition is that it says when a detail is not yet settled, clipping the words
+ * that say so is the one thing this card must not do. The meta row is a wrapping
+ * two-line stack instead of three fixed columns, so a long value takes the room it
+ * needs and the card grows rather than losing its ending.
+ *
+ * Two shapes, so a list of these never reads as one template repeated:
+ *
+ * - `emphasis="lead"` is the tall one with the title at `.type-title-1`.
+ * - `emphasis="quiet"` is shorter, at `.type-title-2`.
+ *
+ * **It is a plate, not a transparency.** `register-dark` carries its own midnight
+ * fill, `ground-none` strips the luminosity wash off that fill so it is flat, and
+ * the picture's mask dissolves straight into it. That is why there is no scrim
+ * here and why that does not break the mask-and-scrim pair: the pair exists so a
+ * photograph fading to alpha zero never passes through mid-grey on its way to the
+ * page, and the ground this one fades into is already the exact colour a scrim
+ * would have painted. Adding one as well would only bury the lower half of the
+ * photograph under a gradient nobody asked for.
+ *
+ * The card is built to stand on the **light** register, where it reads as a dark
+ * island with `lift-2` under it. On a dark band, put the photograph in the band
+ * itself rather than reaching for this.
  */
 
+/**
+ * Family names, from the database enum.
+ *
+ * A journey whose family is not listed here renders the raw value rather than
+ * nothing: an unlabelled card hides that somebody added a family and forgot the
+ * front end, which is exactly the sort of silence this site is built against.
+ */
 const FAMILY_LABEL: Record<string, string> = {
   sacred_flagship: "Flagship pilgrimage",
   kumaon_circuit: "Kumaon circuit",
@@ -37,15 +69,26 @@ const FAMILY_LABEL: Record<string, string> = {
   ground_services: "Ground services",
 };
 
+export function familyLabel(family: string): string {
+  return FAMILY_LABEL[family] ?? family;
+}
+
+/**
+ * One label over one value.
+ *
+ * `min-w-0` rather than a fixed column: the pair is a flex item in a wrapping row,
+ * so "Kathgodam / Pithoragarh" wraps inside its own pair instead of squeezing its
+ * neighbours or losing its tail.
+ */
 function Fact({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[13px] text-ink-inverse/55">{label}</dt>
+      <dt className="type-meta text-tone-muted">{label}</dt>
       <dd
         className={
           value
-            ? "type-reading mt-0.5 truncate text-sm text-ink-inverse"
-            : "mt-0.5 truncate text-sm text-ink-inverse/50"
+            ? "type-meta type-reading mt-1 font-normal text-tone-strong"
+            : "type-meta mt-1 font-normal text-tone-muted"
         }
       >
         {value ?? "To be confirmed"}
@@ -54,62 +97,118 @@ function Fact({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-export function JourneyCard({ journey }: { journey: JourneySummary }) {
+export function JourneyCard({
+  journey,
+  emphasis = "quiet",
+}: {
+  journey: JourneySummary;
+  /** The tall shape for the one journey that leads a list. */
+  emphasis?: "lead" | "quiet";
+}) {
   const scene = journeyScene(journey.slug);
-  const src = sceneSrc(scene.key);
-  const meta = SCENES[scene.key];
+  const lead = emphasis === "lead";
 
   return (
-    <article className="group relative isolate flex min-h-[30rem] flex-col justify-end overflow-hidden rounded-2xl">
-      {src ? (
-        <>
-          <Image
-            src={src}
-            alt={meta.alt}
+    <article
+      className={[
+        "group relative isolate flex flex-col overflow-hidden",
+        // `register-dark` carries the midnight fill and flips every tone token, so
+        // the words read exactly as they would on any dark band. `ground-none`
+        // takes the luminosity wash back off that fill: the picture's mask has to
+        // dissolve into one flat colour, and a gradient underneath it turns the
+        // foot of every photograph into a visible rectangle.
+        "register-dark ground-none",
+        // Every edge of this card is solid fill rather than a feather, so all four
+        // corners take the radius. A radius only notches an edge a mask has
+        // already made transparent.
+        "rounded-frame lift-2 transition-shadow duration-[var(--dur-base)] ease-out-soft hover:lift-3",
+        // The focus ring for the stretched link below.
+        //
+        // The link's `::after` spreads the hit area over the whole card, so the
+        // thing a keyboard user is actually targeting is the card, not the four
+        // words of the title. An outline on the link alone would ring the title
+        // and leave the real target unmarked, which is why the link opts out and
+        // this carries the indicator instead.
+        //
+        // It has to sit on the `<article>` rather than inside it: this element is
+        // `overflow-hidden`, so any ring drawn on a child is clipped away at the
+        // card edge. An element's own outline is not clipped by its own overflow,
+        // so drawn from here it survives. Same 2px at 2px offset as the global
+        // `:focus-visible`, so a card focuses like everything else.
+        //
+        // The colour is overridden because this card is the one place where the
+        // register lies about the ground. `outline-offset` draws the ring outside
+        // the element, and this element is `register-dark` sitting on a cream
+        // page, so the ring lands on snow rather than on the card's own midnight.
+        // Inheriting the dark register's gold measured 2.15:1 there. This is the
+        // light register's value, 4.39:1 on snow, chosen by where the ring lands.
+        "[--color-focus:oklch(0.56_0.1_76)]",
+        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
+      ].join(" ")}
+    >
+      {/*
+        The picture, and nothing else in here, so the slow hover scale moves the
+        photograph without moving a single word.
+
+        Ramp check, the rule that decides whether a feather reads as mist or as a
+        defect: `mask-b-from-45%` spends 55% of this box, which is 202px at the
+        shortest height below and 281px at the tallest. Both clear the 200px floor.
+      */}
+      <div
+        className={`relative w-full overflow-hidden ${
+          lead ? "h-[26rem] sm:h-[32rem]" : "h-[23rem] sm:h-[26rem]"
+        }`}
+      >
+        <div className="absolute inset-0 transition-transform duration-[var(--dur-image)] ease-out-soft group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
+          <Scene
+            name={scene.key}
             fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-            // Slow, small, and only on hover. The picture should feel like it is
-            // being looked at rather than like it is animating.
-            className="-z-10 object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+            grade
+            feather="bottom"
+            scrim={false}
+            radius="none"
+            sizes={
+              lead
+                ? "(min-width: 1024px) 58vw, (min-width: 768px) 92vw, calc(100vw * 1.35)"
+                : "(min-width: 1024px) 40vw, (min-width: 768px) 92vw, calc(100vw * 1.35)"
+            }
           />
-          {/*
-            The gradient is deliberately tall and starts from fully transparent at
-            45%. A short, hard scrim reads as a bar laid across a picture; a long one
-            reads as the picture getting darker towards the bottom, which is what
-            photographs do anyway.
-          */}
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 bg-gradient-to-t from-midnight via-midnight/80 via-30% to-transparent to-70%"
-          />
-        </>
-      ) : (
-        <PhotoSlot brief={meta.brief} ratio={meta.ratio} className="absolute inset-0 -z-10" />
-      )}
+        </div>
+      </div>
 
-      <div className="p-6 sm:p-7">
-        <p className="text-sm text-gold">
-          {FAMILY_LABEL[journey.family] ?? journey.family}
-        </p>
+      {/*
+        Deliberately not `relative`. The link's `::after` spreads the hit area over
+        the whole card, and `inset-0` resolves against the nearest positioned
+        ancestor: put `relative` here and the tap target silently shrinks to the
+        text block while nothing looks any different.
 
-        <h3 className="mt-1.5 font-serif text-[1.75rem] leading-tight text-ink-inverse">
+        Barely any top padding, because the last fifth of the picture above is
+        already almost transparent: the words start inside the fade rather than
+        below a gap, without ever landing on anything bright enough to fight them.
+      */}
+      <div className="px-6 pb-6 pt-1 sm:px-8 sm:pb-8 sm:pt-2">
+        <p className="type-meta text-tone-muted">{familyLabel(journey.family)}</p>
+
+        <h3
+          className={`${lead ? "type-title-1" : "type-title-2"} mt-2 text-tone-strong`}
+        >
           <Link
             href={`/journeys/${journey.slug}`}
-            // Spreads the hit area over the whole card, so the image is the link
-            // rather than the small underlined phrase that used to sit beneath it.
-            className="after:absolute after:inset-0 focus-visible:outline-none"
+            /* `outline-none` only because the `<article>` above draws the ring for
+               the whole card. Never remove it there without putting one back here. */
+            className="underline-offset-[0.3em] after:absolute after:inset-0 group-hover:underline group-hover:decoration-gold/70 group-hover:decoration-1 focus-visible:outline-none"
           >
             {journey.name}
           </Link>
         </h3>
 
         {journey.essence && (
-          <p className="mt-2.5 line-clamp-2 max-w-[46ch] text-[15px] leading-relaxed text-ink-inverse/75">
+          <p className="type-body measure-card mt-4 text-tone-body">
             {journey.essence}
           </p>
         )}
 
-        <dl className="mt-5 grid grid-cols-3 gap-4 border-t border-white/15 pt-4">
+        <dl className="mt-7 flex flex-wrap gap-x-8 gap-y-4">
           <Fact
             label="Nights"
             value={journey.duration_nights ? String(journey.duration_nights) : null}
@@ -117,7 +216,11 @@ export function JourneyCard({ journey }: { journey: JourneySummary }) {
           <Fact label="From" value={journey.gateway} />
           <Fact
             label="Highest point"
-            value={journey.highest_altitude_m ? `${journey.highest_altitude_m} m` : null}
+            value={
+              journey.highest_altitude_m
+                ? `${journey.highest_altitude_m.toLocaleString("en-IN")} m`
+                : null
+            }
           />
         </dl>
       </div>

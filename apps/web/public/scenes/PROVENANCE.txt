@@ -30,3 +30,4 @@ journeys/homestay-immersion.webp             ai_generated
 journeys/homestay-immersion-detail.webp      ai_generated
 journeys/kumaon-spiritual-circuit.webp       ai_generated
 journeys/kumaon-spiritual-circuit-detail.webp ai_generated
+departures.webp                              ai_generated

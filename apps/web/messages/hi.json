@@ -15,7 +15,9 @@
     "switchLanguage": "Switch to English",
     "lastVerified": "अंतिम पुष्टि {time}",
     "toBeConfirmed": "पुष्टि होना बाकी",
-    "draft": "प्रारूप, प्रकाशित नहीं"
+    "draft": "प्रारूप, प्रकाशित नहीं",
+    "openMenu": "मेन्यू खोलें",
+    "closeMenu": "मेन्यू बंद करें"
   },
   "status": {
     "open": "खुला",

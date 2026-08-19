@@ -1,91 +1,159 @@
-"use client";
-
-import { motion, useReducedMotion } from "motion/react";
-
 import {
   HIGHEST,
   legLabel,
   legStatus,
-  STATE_COLOUR,
+  STATE_LABEL,
   STATIONS,
   type LegState,
   type Station,
 } from "@/lib/route-profile";
 
 /**
- * The road as elevation, with live status on each leg.
+ * The road as elevation, with whatever we have verified drawn onto it.
  *
- * This replaces the four-cell bordered grid that used to carry route status. That
- * version answered "is something open" with a badge; this one answers the question a
- * traveller is actually asking, which is "how high does this go and where does it
- * stop being fine". Altitude is the risk on this route, and a number in a table does
- * not communicate 910 m to 4,570 m the way a line does.
+ * This is the instrument the status page is built around. Altitude is the risk on
+ * this route, and 910 m to 4,570 m is not a fact a table communicates: a reader
+ * scanning numbers does not feel the drop into the Kali gorge before the climb, and
+ * does not see that the whole gain happens in the last quarter of the drive.
  *
- * **Motion is the argument, not decoration.** The legs draw in order of travel, so
- * the reveal traces the climb. That is the one thing this diagram has to say.
+ * **It now draws at every width.** The previous version was `hidden md:block`, which
+ * meant most of this audience, who are on a phone on mobile data, never saw the one
+ * thing worth seeing. A 1,000-unit-wide diagram genuinely does not work at 390 px, so
+ * below `md` the same profile is drawn rotated: altitude runs left to right, the road
+ * runs top to bottom, the ground fills the low side, and every station keeps its
+ * name and its altitude beside it. Same data, same shapes, same fork above Gunji.
  *
- * **The diagram degrades before it disappears.** The terrain fill and the grey
- * baseline are plain SVG with no motion attached, so a reader with JavaScript off,
- * or on a headless renderer, still sees the profile. The coloured legs animate over
- * a shape that is already there rather than gating it behind a transition. Below
- * `md` the drawing is hidden entirely and the list underneath carries everything:
- * a 1,000-unit-wide diagram on a 390 px phone is a picture of a diagram, not a
- * diagram, and most of this audience is on a phone.
+ * **No script.** The earlier version animated the legs in with `motion/react`, which
+ * gated the station labels behind `whileInView` and left a keyboard user tabbing into
+ * a diagram of invisible text. Everything here is static SVG rendered on the server;
+ * the only motion is the page-level `.reveal`, which is opacity-1 by default and
+ * behind a `prefers-reduced-motion` guard.
+ *
+ * **Colour is never the only signal.** Each leg carries a written state in the ledger
+ * below the drawing, a glyph whose shape differs per state, and a dashed stroke where
+ * nothing has been confirmed. Right now every leg reads "Never checked", because zero
+ * segments have been verified. That is the true answer and the diagram says it in
+ * full rather than drawing a hopeful green line.
  */
 
-/* Plot geometry. Altitudes map to y, stations to x. Trunk stations are evenly
-   spaced rather than spaced by road distance: the entire altitude gain happens in
-   the last quarter of the drive, so true distance spacing crushes five of the seven
-   stations into a corner and makes the diagram unreadable. The x axis is therefore
-   sequence, and no distance is claimed anywhere in the labels. */
-const PLOT_TOP = 60;
-const PLOT_BOTTOM = 280;
-const ALT_MIN = 700;
-const ALT_MAX = 4800;
+/* --------------------------------------------------------------------------
+   State presentation. Colour, stroke and glyph shape, all three.
 
-const X: Record<string, number> = {
-  pithoragarh: 40,
-  dharchula: 190,
-  tawaghat: 340,
-  budhi: 490,
-  gunji: 640,
-  nabhidhang: 830,
-  jyolingkong: 960,
+   These resolve through `--color-status-*`, which `.register-dark` and
+   `.register-light` both set, so the diagram is legible on either ground. Note
+   these are NOT the exported `STATE_COLOUR` from lib/route-profile.ts: that map
+   points at `var(--status-open)`, a variable which does not exist anywhere in
+   globals.css, so every stroke using it fell back to inherited colour and the
+   whole diagram drew in one tone. Flagged for the owner of that file.
+   -------------------------------------------------------------------------- */
+const STATE_INK: Record<LegState, string> = {
+  open: "var(--color-status-open)",
+  caution: "var(--color-status-limited)",
+  closed: "var(--color-status-suspended)",
+  unknown: "var(--color-status-unverified)",
 };
 
-function y(altitudeM: number) {
-  const t = (altitudeM - ALT_MIN) / (ALT_MAX - ALT_MIN);
-  return PLOT_BOTTOM - t * (PLOT_BOTTOM - PLOT_TOP);
-}
+/** Unconfirmed ground is drawn as a broken line. Shape, not just hue. */
+const STATE_DASH: Record<LegState, string | undefined> = {
+  open: undefined,
+  caution: "10 5",
+  closed: "2 7",
+  unknown: "3 7",
+};
 
-function point(station: Station) {
-  return { x: X[station.slug], y: y(station.altitudeM) };
+const ALT_MIN = 700;
+const ALT_MAX = 4800;
+const GRID = [1000, 2000, 3000, 4000];
+/** A phone gets two, both labelled. Four unlabelled lines read as arbitrary. */
+const GRID_V = [2000, 4000];
+
+/* ---------------------------------------------------------------- horizontal */
+
+const H_TOP = 66;
+const H_BOTTOM = 286;
+
+const HX: Record<string, number> = {
+  pithoragarh: 60,
+  dharchula: 196,
+  tawaghat: 330,
+  budhi: 470,
+  gunji: 610,
+  nabhidhang: 800,
+  jyolingkong: 930,
+};
+
+function hy(altitudeM: number) {
+  const t = (altitudeM - ALT_MIN) / (ALT_MAX - ALT_MIN);
+  return H_BOTTOM - t * (H_BOTTOM - H_TOP);
 }
 
 /**
- * Hand-authored control points, one per leg.
+ * Hand-authored, because two shapes here are load-bearing rather than cosmetic.
  *
- * Two shapes here are load-bearing rather than cosmetic. The first leg *descends*:
- * Pithoragarh sits at 1,645 m and the road drops to 910 m in the Kali gorge before
- * climbing at all. Every operator map draws this as a continuous ascent and it
- * misrepresents the drive. And the Gunji arms leave at visibly different angles
- * because the route genuinely forks there, the Kuti valley holding a moderate
- * gradient for a long stretch before the final climb to Jyolingkong, the Nabhidhang
- * arm climbing more evenly.
+ * The first leg *descends*: Pithoragarh sits at 1,645 m and the road drops to 910 m
+ * in the Kali gorge before it climbs at all. Every operator map draws a continuous
+ * ascent and misrepresents the drive. And the two arms leave Gunji at visibly
+ * different angles because the route genuinely forks there, the Nabhidhang arm
+ * climbing evenly, the Kuti arm holding its height for a long stretch before the
+ * final pull to Jyolingkong.
  */
-const LEG_PATH: Record<string, string> = {
-  dharchula: "M40,229 Q115,241 190,269",
-  tawaghat: "M190,269 Q265,268 340,258",
-  budhi: "M340,258 Q415,236 490,172",
-  gunji: "M490,172 Q565,155 640,148",
-  nabhidhang: "M640,148 Q730,112 830,89",
-  jyolingkong: "M640,148 Q800,142 960,72",
+const H_LEG: Record<string, string> = {
+  dharchula: "M60,235 C114,235 142,275 196,275",
+  tawaghat: "M196,275 C241,275 285,265 330,265",
+  budhi: "M330,265 C377,265 423,178 470,178",
+  gunji: "M470,178 C517,178 563,154 610,154",
+  nabhidhang: "M610,154 C660,140 740,104 800,95",
+  jyolingkong: "M610,154 C690,156 845,148 930,78",
 };
 
-/** The full trunk plus the higher arm, used for the static terrain fill. */
-const TERRAIN =
-  "M40,229 Q115,241 190,269 Q265,268 340,258 Q415,236 490,172 " +
-  "Q565,155 640,148 Q800,142 960,72 L960,300 L40,300 Z";
+/**
+ * The ground under the road, run out to both edges of the frame.
+ *
+ * It closes at x=0 and x=1000 rather than at the first and last station, because a
+ * fill that stops where the data stops draws two vertical seams and turns the
+ * instrument into a chart box. The seams are then dissolved by `rp-h-edge`.
+ */
+const H_TERRAIN =
+  "M0,235 L60,235 C114,235 142,275 196,275 C241,275 285,265 330,265 " +
+  "C377,265 423,178 470,178 C517,178 563,154 610,154 " +
+  "C690,156 845,148 930,78 L1000,70 L1000,320 L0,320 Z";
+
+/* ------------------------------------------------------------------ vertical */
+
+const V_LEFT = 24;
+const V_RIGHT = 176;
+
+const VY: Record<string, number> = {
+  pithoragarh: 44,
+  dharchula: 126,
+  tawaghat: 208,
+  budhi: 290,
+  gunji: 372,
+  nabhidhang: 454,
+  jyolingkong: 536,
+};
+
+function vx(altitudeM: number) {
+  const t = (altitudeM - ALT_MIN) / (ALT_MAX - ALT_MIN);
+  return V_LEFT + t * (V_RIGHT - V_LEFT);
+}
+
+/** The same profile turned a quarter turn: altitude across, the road downward. */
+const V_LEG: Record<string, string> = {
+  dharchula: "M59,44 C59,71 32,99 32,126",
+  tawaghat: "M32,126 C32,153 39,181 39,208",
+  budhi: "M39,208 C39,235 98,263 98,290",
+  gunji: "M98,290 C98,317 115,345 115,372",
+  nabhidhang: "M115,372 C115,399 156,427 156,454",
+  jyolingkong: "M115,372 C108,450 150,500 168,536",
+};
+
+const V_TERRAIN =
+  "M59,0 L59,44 C59,71 32,99 32,126 C32,153 39,181 39,208 " +
+  "C39,235 98,263 98,290 C98,317 115,345 115,372 " +
+  "C108,450 150,500 168,536 L168,592 L0,592 L0,0 Z";
+
+/* ---------------------------------------------------------------------------- */
 
 type RouteLike = {
   segment_name: string;
@@ -105,6 +173,66 @@ function age(iso: string, locale: string) {
   return rtf.format(-Math.round(mins / 1440), "day");
 }
 
+function metres(n: number, approximate: boolean) {
+  return `${approximate ? "~" : ""}${n.toLocaleString("en-IN")} m`;
+}
+
+/**
+ * The state glyph.
+ *
+ * A ring for ground nobody has confirmed, a filled disc for ground somebody has.
+ * The shape carries the distinction on a greyscale screen and for a reader who
+ * cannot separate the hues, which is the whole reason it is not just a dot.
+ */
+function StateGlyph({ state }: { state: LegState }) {
+  const ink = STATE_INK[state];
+  if (state === "unknown") {
+    return (
+      <svg viewBox="0 0 14 14" className="size-3.5 shrink-0" aria-hidden="true">
+        <circle
+          cx="7"
+          cy="7"
+          r="5"
+          fill="none"
+          stroke={ink}
+          strokeWidth="1.8"
+          strokeDasharray="2.6 2.6"
+        />
+      </svg>
+    );
+  }
+  if (state === "closed") {
+    return (
+      <svg viewBox="0 0 14 14" className="size-3.5 shrink-0" aria-hidden="true">
+        <path
+          d="M3.4 3.4l7.2 7.2M10.6 3.4l-7.2 7.2"
+          stroke={ink}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+  if (state === "caution") {
+    return (
+      <svg viewBox="0 0 14 14" className="size-3.5 shrink-0" aria-hidden="true">
+        <path
+          d="M7 2.2l5.2 9.2H1.8z"
+          fill="none"
+          stroke={ink}
+          strokeWidth="1.6"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 14 14" className="size-3.5 shrink-0" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.4" fill={ink} />
+    </svg>
+  );
+}
+
 export function RouteProfile({
   routes,
   locale,
@@ -112,191 +240,343 @@ export function RouteProfile({
   routes: RouteLike[];
   locale: string;
 }) {
-  const reduce = useReducedMotion();
-
-  const legs = STATIONS.filter((s) => s.from).map((station, index) => {
+  const legs = STATIONS.filter((s) => s.from).map((station) => {
     const status = legStatus(routes, station);
     const state: LegState = status?.state ?? "unknown";
-    return { station, status, state, index };
+    return { station, status, state };
   });
 
-  return (
-    <div>
-      {/* The drawing. Decorative in the accessibility tree because the list below
-          carries the same facts in a form a screen reader can actually work with;
-          duplicating them would read every station twice. */}
-      <div className="hidden md:block" aria-hidden="true">
-        <svg viewBox="0 0 1000 300" className="w-full">
-          <defs>
-            <linearGradient id="terrain-fill" x1="0" y1="0" x2="0" y2="1">
-              {/* Was 0.16 to 0, which on navy is a rumour rather than a shape. The
-                  profile is the one thing this section exists to show. */}
-              <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.34" />
-              <stop offset="55%" stopColor="var(--color-gold)" stopOpacity="0.10" />
-              <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.02" />
-            </linearGradient>
-          </defs>
+  const stateOf = (station: Station): LegState =>
+    station.from ? (legStatus(routes, station)?.state ?? "unknown") : "open";
 
-          {/* Elevation grid. Four lines, labelled, so the vertical axis means
-              something instead of being a decorative rise. */}
-          {[1000, 2000, 3000, 4000].map((metres) => (
-            <g key={metres}>
-              <line
-                x1="40"
-                x2="960"
-                y1={y(metres)}
-                y2={y(metres)}
-                stroke="currentColor"
-                strokeOpacity="0.16"
-                strokeWidth="1"
+  return (
+    <div className="reveal">
+      {/* ---------------------------------------------------------------
+          The drawing. Decorative in the accessibility tree, both orientations:
+          the ledger underneath carries every one of these facts in a form a
+          screen reader can work with, and announcing them twice would read the
+          whole road out before the reader reaches the verification detail.
+          --------------------------------------------------------------- */}
+
+      {/* Phone: altitude runs across, the road runs down. */}
+      <svg
+        viewBox="0 0 350 592"
+        className="w-full max-w-[27rem] text-tone-strong lg:hidden"
+        aria-hidden="true"
+        role="presentation"
+      >
+        <defs>
+          <linearGradient id="rp-v-fill" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
+            <stop offset="52%" stopColor="var(--color-gold)" stopOpacity="0.14" />
+            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.42" />
+          </linearGradient>
+          {/* The ground and the grid leave the frame by dissolving, not by
+              stopping on a line. Same rule the photographs follow. */}
+          <linearGradient id="rp-v-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0" />
+            <stop offset="9%" stopColor="#fff" stopOpacity="1" />
+            <stop offset="90%" stopColor="#fff" stopOpacity="1" />
+            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="rp-v-base" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
+            <stop offset="26%" stopColor="var(--color-gold)" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.08" />
+          </linearGradient>
+          <mask id="rp-v-edge" maskUnits="userSpaceOnUse" x="0" y="0" width="350" height="592">
+            <rect width="350" height="592" fill="url(#rp-v-fade)" />
+          </mask>
+        </defs>
+
+        <g mask="url(#rp-v-edge)">
+          <path d={V_TERRAIN} fill="url(#rp-v-base)" />
+          <path d={V_TERRAIN} fill="url(#rp-v-fill)" />
+          {GRID_V.map((m) => (
+            <line
+              key={m}
+              x1={vx(m)}
+              x2={vx(m)}
+              y1="0"
+              y2="592"
+              stroke="currentColor"
+              strokeOpacity="0.16"
+              strokeWidth="1"
+            />
+          ))}
+        </g>
+        {GRID_V.map((m) => (
+          <text
+            key={m}
+            x={vx(m)}
+            y="14"
+            textAnchor="middle"
+            className="type-reading"
+            fill="currentColor"
+            fillOpacity="0.62"
+            fontSize="15"
+          >
+            {m.toLocaleString("en-IN")} m
+          </text>
+        ))}
+
+        {Object.values(V_LEG).map((d) => (
+          <path
+            key={d}
+            d={d}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity="0.3"
+            strokeWidth="1.5"
+          />
+        ))}
+        {legs.map(({ station, state }) => (
+          <path
+            key={station.slug}
+            d={V_LEG[station.slug]}
+            fill="none"
+            stroke={STATE_INK[state]}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray={STATE_DASH[state]}
+          />
+        ))}
+
+        {STATIONS.map((station) => {
+          const x = vx(station.altitudeM);
+          const y = VY[station.slug];
+          return (
+            <g key={station.slug}>
+              <circle
+                cx={x}
+                cy={y}
+                r="5.5"
+                fill="var(--color-tone-raised)"
+                stroke={STATE_INK[stateOf(station)]}
+                strokeWidth="2.5"
               />
-              {/* Right-hand edge, not the left. On the left they collided with the
-                  first station's name and altitude, which sit at the same height by
-                  definition: the profile starts there. */}
               <text
-                x="962"
-                textAnchor="end"
-                y={y(metres) - 6}
+                x={x + 15}
+                y={y - 2}
+                fill="currentColor"
+                fontSize="16"
+                fontWeight="600"
+              >
+                {station.name}
+              </text>
+              <text
+                x={x + 15}
+                y={y + 19}
                 className="type-reading"
                 fill="currentColor"
-                fillOpacity="0.5"
-                fontSize="11.5"
+                fillOpacity="0.66"
+                fontSize="15"
               >
-                {metres.toLocaleString("en-IN")} m
+                {metres(station.altitudeM, station.confidence === "approximate")}
               </text>
             </g>
-          ))}
+          );
+        })}
+      </svg>
 
-          {/* Static terrain. Present before any script runs. */}
-          <path d={TERRAIN} fill="url(#terrain-fill)" />
-          {Object.values(LEG_PATH).map((d) => (
-            <path
-              key={d}
-              d={d}
-              fill="none"
+      {/* Desktop: the conventional elevation profile, with room for the fork. */}
+      <svg
+        viewBox="0 0 1000 320"
+        className="hidden w-full text-tone-strong lg:block"
+        aria-hidden="true"
+        role="presentation"
+      >
+        <defs>
+          <linearGradient id="rp-h-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.34" />
+            <stop offset="55%" stopColor="var(--color-gold)" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="rp-h-fade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0" />
+            <stop offset="6%" stopColor="#fff" stopOpacity="1" />
+            <stop offset="95%" stopColor="#fff" stopOpacity="1" />
+            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          {/* The base mass, faded out at the foot so the fill does not end on a
+              horizontal line at the bottom of the box. */}
+          <linearGradient id="rp-h-base" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.09" />
+            <stop offset="62%" stopColor="var(--color-gold)" stopOpacity="0.075" />
+            <stop offset="88%" stopColor="var(--color-gold)" stopOpacity="0.03" />
+            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
+          </linearGradient>
+          <mask id="rp-h-edge" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="320">
+            <rect width="1000" height="320" fill="url(#rp-h-fade)" />
+          </mask>
+        </defs>
+
+        {/* Ground and grid together inside the edge mask. */}
+        <g mask="url(#rp-h-edge)">
+          {/* Two passes. The flat base gives the ground a consistent mass at any
+              altitude; the gradient on top is brightest where the ridge is highest,
+              which is where the eye should end up. One pass alone either washes the
+              whole plot or leaves the low half of the road sitting on nothing. */}
+          <path d={H_TERRAIN} fill="url(#rp-h-base)" />
+          <path d={H_TERRAIN} fill="url(#rp-h-fill)" />
+          {GRID.map((m) => (
+            <line
+              key={m}
+              x1="0"
+              x2="1000"
+              y1={hy(m)}
+              y2={hy(m)}
               stroke="currentColor"
-              strokeOpacity="0.32"
-              strokeWidth="1.5"
+              strokeOpacity="0.15"
+              strokeWidth="1"
             />
           ))}
+        </g>
+        {/* Labelled on the right-hand edge, outside the mask so they stay at full
+            strength. On the left they collided with the first station's own
+            altitude, which by definition sits at the same height: the profile
+            starts there. */}
+        {GRID.map((m) => (
+          <text
+            key={m}
+            x="998"
+            textAnchor="end"
+            y={hy(m) - 7}
+            className="type-reading"
+            fill="currentColor"
+            fillOpacity="0.58"
+            fontSize="15.7"
+          >
+            {m.toLocaleString("en-IN")} m
+          </text>
+        ))}
 
-          {/* Live legs, drawn in order of travel so the reveal traces the climb. */}
-          {legs.map(({ station, state, index }) => (
-            <motion.path
-              key={station.slug}
-              d={LEG_PATH[station.slug]}
-              fill="none"
-              stroke={STATE_COLOUR[state]}
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeDasharray={state === "unknown" ? "2 6" : undefined}
-              initial={reduce ? false : { pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{
-                duration: 0.7,
-                delay: index * 0.13,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            />
-          ))}
+        {Object.values(H_LEG).map((d) => (
+          <path
+            key={d}
+            d={d}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity="0.3"
+            strokeWidth="1.5"
+          />
+        ))}
+        {legs.map(({ station, state }) => (
+          <path
+            key={station.slug}
+            d={H_LEG[station.slug]}
+            fill="none"
+            stroke={STATE_INK[state]}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray={STATE_DASH[state]}
+          />
+        ))}
 
-          {STATIONS.map((station, index) => {
-            const p = point(station);
-            const state = station.from
-              ? (legStatus(routes, station)?.state ?? "unknown")
-              : "open";
-            // Labels sit above their point except where the two fork arms converge, where
-            // the lower one would otherwise be written across the upper arm's fill.
-            const above = station.slug !== "nabhidhang";
-            return (
-              <motion.g
-                key={station.slug}
-                initial={reduce ? false : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.35, delay: 0.1 + index * 0.13 }}
+        {STATIONS.map((station) => {
+          const x = HX[station.slug];
+          const y = hy(station.altitudeM);
+          return (
+            <g key={station.slug}>
+              <circle
+                cx={x}
+                cy={y}
+                r="5.5"
+                fill="var(--color-tone-raised)"
+                stroke={STATE_INK[stateOf(station)]}
+                strokeWidth="2.5"
+              />
+              <text
+                x={x}
+                y={y - 20}
+                textAnchor="middle"
+                fill="currentColor"
+                fontSize="17.5"
+                fontWeight="600"
               >
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r="5"
-                  fill="var(--color-midnight)"
-                  stroke={STATE_COLOUR[state]}
-                  strokeWidth="2.5"
-                />
-                <text
-                  x={p.x}
-                  y={above ? p.y - 16 : p.y + 26}
-                  textAnchor="middle"
-                  fill="currentColor"
-                  fontSize="13.5"
-                  fontWeight="600"
-                >
-                  {station.name}
-                </text>
-                <text
-                  x={p.x}
-                  y={above ? p.y - 32 : p.y + 42}
-                  textAnchor="middle"
-                  className="type-reading"
-                  fill="currentColor"
-                  fillOpacity="0.68"
-                  fontSize="12"
-                >
-                  {station.confidence === "approximate" ? "~" : ""}
-                  {station.altitudeM.toLocaleString("en-IN")} m
-                </text>
-              </motion.g>
-            );
-          })}
-        </svg>
+                {station.name}
+              </text>
+              <text
+                x={x}
+                y={y - 40}
+                textAnchor="middle"
+                className="type-reading"
+                fill="currentColor"
+                fillOpacity="0.62"
+                fontSize="15.7"
+              >
+                {metres(station.altitudeM, station.confidence === "approximate")}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* ---------------------------------------------------------------
+          The ledger. Six legs, and what we know about each one.
+
+          Two lines on a phone and one row from `md`, using `display: contents`
+          so the meta values drop into the outer grid on the wide layout rather
+          than needing a second markup tree. The old single-row version put a
+          name, an altitude, a state and an age on one 390 px line and they
+          overlapped each other.
+          --------------------------------------------------------------- */}
+      {/* Column heads, wide layout only: on a phone the values are stacked under
+          the leg name and a header row would label nothing. */}
+      <div
+        aria-hidden="true"
+        className="mt-12 hidden grid-cols-[auto_minmax(0,1fr)_7rem_12rem_8rem] gap-x-6 pb-3 lg:grid"
+      >
+        <span className="size-3.5" />
+        <span className="type-meta text-tone-muted">Leg</span>
+        <span className="type-meta text-tone-muted text-right">Ends at</span>
+        <span className="type-meta text-tone-muted">State</span>
+        <span className="type-meta text-tone-muted text-right">Last checked</span>
       </div>
 
-      {/* The list. On a phone this is the whole component; on a desktop it carries
-          the verification detail the drawing has no room for. Hairlines and space,
-          no boxes: the thing this redesign is removing is exactly the bordered grid
-          that used to live here. */}
-      <ul className="mt-2 md:mt-10">
+      <ul className="mt-8 lg:mt-0">
         {legs.map(({ station, status, state }) => (
           <li
             key={station.slug}
-            className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-tone-line py-3.5"
+            className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-2 border-t border-tone-line py-4 lg:grid-cols-[auto_minmax(0,1fr)_7rem_12rem_8rem] lg:gap-x-6 lg:gap-y-0 lg:py-5"
           >
-            <span
-              aria-hidden="true"
-              className="size-2 shrink-0 self-center rounded-full"
-              style={{ background: STATE_COLOUR[state] }}
-            />
-            <span className="min-w-0 flex-1 text-[15px]">
+            <span className="translate-y-px">
+              <StateGlyph state={state} />
+            </span>
+            <span className="type-body text-tone-strong measure-none">
               {station.from ? stationName(station.from) : ""} to {station.name}
             </span>
-            <span className="type-reading text-sm text-tone-muted">
-              {station.confidence === "approximate" ? "~" : ""}
-              {station.altitudeM.toLocaleString("en-IN")} m
-            </span>
-            <span
-              className="w-28 shrink-0 text-sm"
-              style={{ color: STATE_COLOUR[state] }}
-            >
-              {legLabel(status)}
-            </span>
-            <span className="type-reading w-24 shrink-0 text-right text-sm text-tone-muted">
-              {status ? age(status.verified_at, locale) : "never"}
-            </span>
+            <div className="col-start-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 lg:contents">
+              <span className="type-meta type-reading text-tone-muted lg:text-right">
+                {metres(station.altitudeM, station.confidence === "approximate")}
+              </span>
+              {/* Two separate facts, kept separate. The state is what the road
+                  is doing; the age is how long ago anybody looked. Collapsing
+                  them into one string is how "open" ends up outliving its check. */}
+              <span
+                className="type-meta font-medium"
+                style={{ color: STATE_INK[state] }}
+              >
+                {status ? legLabel(status) : STATE_LABEL.unknown}
+              </span>
+              <span className="type-meta type-reading text-tone-muted lg:text-right">
+                {status ? age(status.verified_at, locale) : "Never checked"}
+              </span>
+            </div>
           </li>
         ))}
       </ul>
 
-      <p className="mt-6 max-w-[68ch] text-sm leading-relaxed text-tone-muted">
+      <p className="type-body measure-meta mt-8 text-tone-muted">
         The highest ground on this journey is {HIGHEST.name} at about{" "}
         <span className="type-reading">
           {HIGHEST.altitudeM.toLocaleString("en-IN")} m
         </span>
-        . Altitudes marked with a tilde come from a single source and we have not been
-        able to confirm them against a second one. A leg we have not checked recently
-        shows as not confirmed rather than keeping its last reading, because an old
-        yes is not a yes.
+. Above Gunji the road forks: one arm climbs to Nabhidhang for the Om Parvat
+        viewpoint, the other up the Kuti valley to Jyolingkong. Altitudes marked with a
+        tilde come from a single source and we have not been able to confirm them
+        against a second one. A leg we have not checked recently shows as not confirmed
+        rather than keeping its last reading, because an old yes is not a yes.
       </p>
     </div>
   );

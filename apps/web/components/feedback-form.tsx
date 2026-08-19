@@ -1,19 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import {
+  Field,
+  FormAlert,
+  FormGroup,
+  FormSuccess,
+  Submit,
+} from "@/components/enquiry-form";
 
 /**
  * The private post-trip form (doc 07 step 1).
  *
- * **Nothing here is published, and the form says so at the top.** Doc 07's whole
- * sequence depends on somebody telling us about a problem before they tell the
- * internet, and that bargain only holds if the page is explicit about which one this
- * is. A form that looks like it might become a public review gets sanitised answers.
+ * **Nothing here is published, and the page says so before it asks anything.**
+ * Doc 07's whole sequence depends on somebody telling us about a problem before
+ * they tell the internet, and that bargain only holds if the page is explicit
+ * about which one this is. A form that looks like it might become a public review
+ * gets sanitised answers.
  *
- * Ratings start unset rather than at 5. A pre-filled positive default is a thumb on
- * the scale, and doc 03 rules out dark patterns — but it is also just bad data: it
- * makes "didn't answer" indistinguishable from "was happy", and the API treats those
- * very differently.
+ * Ratings start unset rather than at 5. A pre-filled positive default is a thumb
+ * on the scale, and doc 03 rules out dark patterns, but it is also just bad data:
+ * it makes "did not answer" indistinguishable from "was happy", and the API
+ * treats those very differently.
+ *
+ * The scales were `<button aria-pressed>` with a hidden input behind them, at
+ * 32px. They are now real radio groups: arrow keys move through a scale for free,
+ * a screen reader announces "3 of 5" rather than "pressed", and every target is
+ * 44px. Unsetting a radio is the one thing a radio group cannot do from the
+ * keyboard alone, so each row keeps an explicit Clear, which appears only once
+ * there is something to clear.
  */
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
@@ -28,46 +44,105 @@ const DIMENSIONS: { key: string; label: string }[] = [
   { key: "spiritual_and_cultural", label: "The experience itself" },
 ];
 
-function Stars({ name }: { name: string }) {
-  const [value, setValue] = useState<number | null>(null);
+/**
+ * One option on a scale.
+ *
+ * The input is `sr-only` and the visible chip is its `peer`, so the whole 44px
+ * chip is the label, the tick is the browser's own radio semantics, and the focus
+ * ring is the site's gold at the same offset as every other control.
+ */
+function ScaleOption({
+  name,
+  value,
+  checked,
+  onSelect,
+}: {
+  name: string;
+  value: number;
+  checked: boolean;
+  onSelect: (value: number) => void;
+}) {
   return (
-    <div className="flex items-center gap-1.5">
-      {/* Unset by default. `null` posts as unanswered, not as a 1. */}
-      <input type="hidden" name={name} value={value ?? ""} />
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button
-          key={n}
-          type="button"
-          onClick={() => setValue(n === value ? null : n)}
-          aria-label={`${n} out of 5`}
-          aria-pressed={value === n}
-          className={`size-8 rounded-md text-sm transition-colors ${
-            value !== null && n <= value
-              ? "bg-gold text-midnight"
-              : "bg-ink/[0.04] text-tone-muted ring-1 ring-tone-line hover:bg-ink/[0.04]"
-          }`}
-        >
-          {n}
-        </button>
-      ))}
-      {value !== null && (
+    <label className="cursor-pointer">
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={checked}
+        onChange={() => onSelect(value)}
+        className="peer sr-only"
+      />
+      <span
+        className="type-meta flex size-11 items-center justify-center rounded-pill text-tone-body tabular-nums shadow-[0_0_0_1px_var(--color-field-edge)] peer-checked:bg-tone-strong peer-checked:text-tone-raised peer-checked:shadow-none peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
+      >
+        {value}
+      </span>
+    </label>
+  );
+}
+
+function ScaleRow({
+  name,
+  label,
+  options,
+  /** The eleven-point scale needs the full width, so its question is the legend. */
+  labelHidden = false,
+}: {
+  name: string;
+  label: string;
+  options: number[];
+  labelHidden?: boolean;
+}) {
+  const [value, setValue] = useState<number | null>(null);
+  const groupId = `scale-${name}`;
+
+  return (
+    <div
+      className={
+        labelHidden
+          ? "py-1"
+          : "grid gap-3 py-1 md:grid-cols-[1fr_auto] md:items-center md:gap-8"
+      }
+    >
+      <span id={groupId} className={labelHidden ? "sr-only" : "type-body measure-card text-tone-body"}>
+        {label}
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="radiogroup" aria-labelledby={groupId} className="flex flex-wrap gap-2">
+          {options.map((n) => (
+            <ScaleOption
+              key={n}
+              name={name}
+              value={n}
+              checked={value === n}
+              onSelect={setValue}
+            />
+          ))}
+        </div>
+        {/* Always in the layout, so choosing a value does not shunt the scale
+            sideways; only hidden from sight and from the tab order until there
+            is something for it to clear. */}
         <button
           type="button"
           onClick={() => setValue(null)}
-          className="ml-1 text-xs text-tone-strong/35 underline underline-offset-2"
+          tabIndex={value === null ? -1 : undefined}
+          aria-hidden={value === null ? true : undefined}
+          className={`type-meta min-h-11 rounded-pill px-3 text-tone-body underline underline-offset-4 hover:text-tone-strong ${
+            value === null ? "invisible" : ""
+          }`}
         >
-          clear
+          Clear
         </button>
-      )}
+      </div>
     </div>
   );
 }
 
 export function FeedbackForm({ token }: { token: string }) {
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const [result, setResult] = useState<{ message: string; will_follow_up: boolean } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [recommend, setRecommend] = useState<number | null>(null);
+  const [result, setResult] = useState<{ message: string } | null>(null);
+  const [failure, setFailure] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -82,6 +157,7 @@ export function FeedbackForm({ token }: { token: string }) {
     };
 
     setState("sending");
+    setFailure(null);
     try {
       const res = await fetch(`${BASE}/feedback?token=${encodeURIComponent(token)}`, {
         method: "POST",
@@ -89,121 +165,98 @@ export function FeedbackForm({ token }: { token: string }) {
         body: JSON.stringify({
           submitted_by: str("submitted_by"),
           ...Object.fromEntries(DIMENSIONS.map((d) => [d.key, num(d.key)])),
-          recommend_score: recommend,
+          recommend_score: num("recommend_score"),
           what_went_well: str("what_went_well"),
           what_went_wrong: str("what_went_wrong"),
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.detail ?? "We could not send that. Please try again.");
+        setFailure(data.detail ?? "We could not send that. Please try again.");
         setState("error");
         return;
       }
       setResult(data);
       setState("done");
     } catch {
-      setError("We could not reach the server. Please try again.");
+      setFailure("We could not reach the server. Please try again.");
       setState("error");
     }
   }
 
   if (state === "done" && result) {
     return (
-      <div role="status" className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
-        <h2 className="font-serif text-2xl">Thank you</h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-tone-body">
-          {result.message}
-        </p>
-      </div>
+      <FormSuccess title="Thank you.">
+        <p>{result.message}</p>
+      </FormSuccess>
     );
   }
 
+  const busy = state === "sending";
+
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-ink/[0.04] px-6 py-7 ring-1 ring-tone-line">
-      <label className="block">
-        <span className="text-xs text-tone-muted">Your name</span>
-        <input
-          name="submitted_by"
-          className="mt-1 w-full max-w-xs rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
-        />
-      </label>
+    <form
+      ref={formRef}
+      onSubmit={onSubmit}
+      aria-busy={busy}
+      noValidate
+      className="space-y-[var(--space-xl)]"
+    >
+      <FormGroup legend="Who is writing">
+        <div className="sm:max-w-[24rem]">
+          <Field name="submitted_by" label="Your name" optional autoComplete="name" />
+        </div>
+      </FormGroup>
 
-      <div className="mt-8 space-y-5 border-t border-tone-line pt-7">
-        {DIMENSIONS.map((d) => (
-          <div key={d.key} className="flex flex-wrap items-center justify-between gap-3">
-            <span className="max-w-[38ch] text-[15px] leading-relaxed text-tone-body">
-              {d.label}
-            </span>
-            <Stars name={d.key} />
-          </div>
-        ))}
-        <p className="text-xs text-tone-strong/35">
-          Leave anything blank that you would rather not answer. Blank is not a low
-          score, we record it as unanswered.
-        </p>
-      </div>
-
-      <div className="mt-8 border-t border-tone-line pt-7">
-        <span className="text-[15px] leading-relaxed text-tone-body">
-          Would you tell somebody else to travel with us?
-        </span>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {Array.from({ length: 11 }, (_, n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setRecommend(n === recommend ? null : n)}
-              aria-pressed={recommend === n}
-              className={`size-9 rounded-md text-sm transition-colors ${
-                recommend === n
-                  ? "bg-gold text-midnight"
-                  : "bg-ink/[0.04] text-tone-muted ring-1 ring-tone-line hover:bg-ink/[0.04]"
-              }`}
-            >
-              {n}
-            </button>
+      <FormGroup
+        legend="How it went"
+        note="One is poor and five is excellent. Leave anything blank that you would rather not answer: blank is not a low score, we record it as unanswered."
+      >
+        <div className="grid gap-7">
+          {DIMENSIONS.map((d) => (
+            <ScaleRow
+              key={d.key}
+              name={d.key}
+              label={d.label}
+              options={[1, 2, 3, 4, 5]}
+            />
           ))}
         </div>
-        <p className="mt-2 text-xs text-tone-strong/35">0 = definitely not · 10 = without hesitation</p>
-      </div>
+      </FormGroup>
 
-      <div className="mt-8 grid gap-5 border-t border-tone-line pt-7">
-        <label className="block">
-          <span className="text-xs text-tone-muted">What went well</span>
-          <textarea
-            name="what_went_well"
-            rows={3}
-            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
-          />
-        </label>
-        <label className="block">
-          <span className="text-xs text-tone-muted">What went wrong</span>
-          <textarea
-            name="what_went_wrong"
-            rows={3}
-            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
-          />
-          <span className="mt-1 block text-xs leading-relaxed text-tone-muted">
-            This is the most useful box on the page. Anything you write here reaches a
-            person, and somebody will call you about it.
-          </span>
-        </label>
-      </div>
-
-      <button
-        type="submit"
-        disabled={state === "sending"}
-        className="mt-7 rounded-full bg-gold px-6 py-3 text-sm font-medium text-midnight transition-transform active:scale-[0.98] disabled:opacity-60"
+      <FormGroup
+        legend="Would you tell somebody else to travel with us?"
+        note="Nought is definitely not. Ten is without hesitation."
       >
-        {state === "sending" ? "Sending…" : "Send"}
-      </button>
+        <ScaleRow
+          name="recommend_score"
+          label="On a scale of nought to ten."
+          options={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+          labelHidden
+        />
+      </FormGroup>
 
-      {state === "error" && error && (
-        <p role="alert" className="mt-4 text-sm text-status-suspended">
-          {error}
+      <FormGroup legend="In your own words">
+        <div className="grid gap-6">
+          <Field name="what_went_well" label="What went well" rows={4} optional />
+          <Field
+            name="what_went_wrong"
+            label="What went wrong"
+            rows={4}
+            optional
+            hint="This is the most useful box on the page. Anything you write here reaches a person, and somebody will call you about it."
+          />
+        </div>
+      </FormGroup>
+
+      {state === "error" && failure && <FormAlert>{failure}</FormAlert>}
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+        <Submit busy={busy}>Send</Submit>
+        <p aria-live="polite" className="type-meta text-tone-body">
+          {busy ? "Sending your feedback." : ""}
         </p>
-      )}
+      </div>
     </form>
   );
 }

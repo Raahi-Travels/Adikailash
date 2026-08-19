@@ -29,6 +29,12 @@ export function StagingNotice() {
 
   return (
     <p
+      // `data-staging-notice` is read by `components/nav-register.tsx`, which
+      // measures this strip and publishes its height as `--chrome-top` so the
+      // floating nav pill sits below it rather than on top of it. The day this
+      // stops rendering, that variable stays at its 0px default and the pill moves
+      // up on its own.
+      data-staging-notice
       // Not marked `data-site-chrome`: the trip companion and family share pages hide
       // that, and those are the two pages where a reader is most likely to act on
       // what they see. `print:hidden` keeps it off the trip pack.
@@ -43,10 +49,15 @@ export function StagingNotice() {
       // body's background was being set by an unlayered rule that outranked the
       // utility meant to control it. A warning is the last thing on a page that
       // should depend on the cascade going the way you expected.
-      className="bg-[#2a1c10] px-4 py-2 text-center text-xs leading-relaxed text-[#e8dcc8] print:hidden"
+      // 15px, up from 12px, and capped at 72ch rather than running the full 150ch
+      // of a desktop window. This is a warning about travel at 4,500 m; it should
+      // not be the smallest text on the page.
+      className="type-meta bg-[#2a1c10] px-4 py-2.5 text-center text-[#e8dcc8] print:hidden"
     >
-      Test site. No route status has been verified yet and the photographs are
-      placeholders. Please do not plan travel from anything on this page.
+      <span className="measure-meta mx-auto block">
+        Test site. No route status has been verified yet and the photographs are
+        placeholders. Please do not plan travel from anything on this page.
+      </span>
     </p>
   );
 }

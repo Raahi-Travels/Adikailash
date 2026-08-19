@@ -56,6 +56,18 @@ export type Scene = {
   brief: string;
   /** True for above-the-fold images, which skip lazy loading. */
   priority?: boolean;
+  /**
+   * Where the subject is, as data rather than as a class on one call site.
+   *
+   * `object-cover` crops from the centre, and the centre is wrong for most of
+   * these: the checkpost barrier sits low and left of frame, the hero panorama
+   * puts its peaks well right of centre. A CSS class on one page fixed it there
+   * and nowhere else, so it lives with the image.
+   *
+   * Two values because the crop changes shape: `base` is the phone crop (tall,
+   * narrow) and `sm` the desktop one. Both are plain `object-position` strings.
+   */
+  focus?: { base: string; sm?: string };
 };
 
 export const SCENES: Record<SceneKey, Scene> = {
@@ -65,6 +77,9 @@ export const SCENES: Record<SceneKey, Scene> = {
     brief:
       "The first sight of the range on the drive up, shot on the field trip at the hour it actually looks like this.",
     priority: true,
+    // The peaks sit right of centre; `object-center` cropped them out entirely at
+    // desktop widths and left a hero backed by empty sky.
+    focus: { base: "68% 50%", sm: "62% 46%" },
   },
   "homestay-kitchen": {
     alt: "A traditional Kumaoni village kitchen, firelight on copper and brass vessels",
@@ -83,6 +98,8 @@ export const SCENES: Record<SceneKey, Scene> = {
     ratio: "3/2",
     brief:
       "The inner-line checkpost as it actually looks, so people know what to expect before they arrive.",
+    // The barrier sits low and left of frame.
+    focus: { base: "30% 62%", sm: "50% 45%" },
   },
 
   "journeys/adi-kailash-om-parvat": {

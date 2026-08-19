@@ -10,7 +10,9 @@
     "check:imagery": "bun run scripts/check-imagery.ts",
     "check:brand": "bun run scripts/check-brand.ts",
     "check:copy": "bun run scripts/check-copy.ts",
-    "check:origins": "bun run scripts/check-origins.ts"
+    "check:design": "node scripts/audit-design.mjs",
+    "check:origins": "bun run scripts/check-origins.ts",
+    "check:a11y": "node scripts/audit-a11y.mjs"
   },
   "dependencies": {
     "better-auth": "^1.6.26",

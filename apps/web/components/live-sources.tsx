@@ -1,3 +1,6 @@
+import { StatusChip, type ChipShape, type ChipTone } from "@/components/status-badge";
+import { QuietAction } from "@/components/ui/action";
+import { Surface } from "@/components/ui/surface";
 import type { LiveSource, LiveSources as LiveSourcesData, Locale } from "@/lib/api";
 
 /**
@@ -52,6 +55,76 @@ type BedsPayload = {
   }[];
 };
 
+/* ---------------------------------------------------------------- permit state */
+
+export type PermitVerdict = {
+  /** `unreadable` means the portal answered too long ago to repeat, not that it said no. */
+  state: "issuing" | "not_issuing" | "unclear" | "unreadable";
+  /** A whole sentence, because a bare word here is the one thing worth misreading. */
+  headline: string;
+  chip: string;
+  tone: ChipTone;
+  shape: ChipShape;
+};
+
+/**
+ * The permit verdict, derived once and used twice: as the headline of the panel
+ * below, and as the alert the status page raises at the top of itself.
+ *
+ * **A stale permit verdict is withheld rather than shown**, which is the opposite of
+ * how every other reading on this page degrades, and deliberately so. This one is
+ * binary and consequential in both directions: a stale "not being issued" turns away
+ * somebody whose trip is now possible, and a stale "being issued" sends somebody
+ * towards a closed border. Everything else here is a detail a reader can discount;
+ * this is the fact they would act on.
+ *
+ * It matters in practice rather than in theory. The production host is in Kuala
+ * Lumpur and this portal refuses non-Indian addresses, so the reading can sit
+ * un-refreshable for as long as that is true.
+ */
+export function permitVerdict(data: LiveSourcesData | null): PermitVerdict | null {
+  const permit = data?.permit_portal;
+  if (!permit) return null;
+  const payload = permit.payload as unknown as PermitPayload | undefined;
+
+  if (permit.is_stale) {
+    return {
+      state: "unreadable",
+      headline: "We cannot tell you whether Inner Line Permits are being issued",
+      chip: "Cannot tell",
+      tone: "unverified",
+      shape: "clock",
+    };
+  }
+  if (payload?.is_issuing === true) {
+    return {
+      state: "issuing",
+      headline: "The state portal says Inner Line Permits are being issued",
+      chip: "Being issued",
+      tone: "open",
+      shape: "tick",
+    };
+  }
+  if (payload?.is_issuing === false) {
+    return {
+      state: "not_issuing",
+      headline: "The state portal says Inner Line Permits are not being issued",
+      chip: "Not being issued",
+      tone: "suspended",
+      shape: "cross",
+    };
+  }
+  return {
+    state: "unclear",
+    headline: "The state portal did not say whether Inner Line Permits are being issued",
+    chip: "No answer",
+    tone: "unverified",
+    shape: "ring",
+  };
+}
+
+/* -------------------------------------------------------------------- helpers */
+
 function age(iso: string, locale: Locale) {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   const rtf = new Intl.RelativeTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
@@ -64,7 +137,7 @@ function age(iso: string, locale: Locale) {
 
 function Freshness({ source, locale }: { source: LiveSource; locale: Locale }) {
   return (
-    <p className="type-reading mt-2 text-xs text-tone-muted">
+    <p className="type-meta type-reading measure-meta mt-5 text-tone-muted">
       Read {age(source.fetched_at, locale)}
       {source.is_stale && ", and we have not been able to refresh it since"}
       {source.last_error && ". The last attempt failed"}
@@ -72,6 +145,13 @@ function Freshness({ source, locale }: { source: LiveSource; locale: Locale }) {
   );
 }
 
+/**
+ * A source block.
+ *
+ * No rule above it and no box around it. The redesign removed every hairline that
+ * was doing a divider's job: what separates these is the space, and the heading is
+ * at title size so it does not need a line to announce itself.
+ */
 function Block({
   title,
   children,
@@ -80,12 +160,32 @@ function Block({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-tone-line py-7">
-      <h3 className="text-[15px] font-medium text-tone-strong">{title}</h3>
-      <div className="mt-3">{children}</div>
+    <section className="mt-[var(--band-y-tight)] first:mt-0">
+      <h3 className="type-title-2 text-tone-strong">{title}</h3>
+      <div className="mt-[var(--stack-title)]">{children}</div>
     </section>
   );
 }
+
+/** One row of a source's table. Two lines on a phone, one from `sm`. */
+function Row({
+  name,
+  children,
+}: {
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="grid gap-x-8 gap-y-1.5 border-t border-tone-line py-4 first:border-t-0 first:pt-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline">
+      <span className="type-body text-tone-strong measure-none">{name}</span>
+      <span className="flex flex-wrap items-baseline gap-x-5 gap-y-1 sm:justify-end">
+        {children}
+      </span>
+    </li>
+  );
+}
+
+/* ----------------------------------------------------------------------------- */
 
 export function LiveSources({
   data,
@@ -98,6 +198,7 @@ export function LiveSources({
 
   const permit = data.permit_portal;
   const permitPayload = permit?.payload as unknown as PermitPayload | undefined;
+  const verdict = permitVerdict(data);
   const road = data.road_register;
   const roadPayload = road?.payload as unknown as RoadPayload | undefined;
   const alerts = data.hazard_alerts;
@@ -105,75 +206,65 @@ export function LiveSources({
   const beds = data.bed_availability;
   const bedsPayload = beds?.payload as unknown as BedsPayload | undefined;
 
-  // A stale permit verdict is withheld rather than shown, which is the opposite of
-  // how every other reading on this page degrades, and deliberately so. This one is
-  // binary and consequential in both directions: a stale "not being issued" turns
-  // away somebody whose trip is now possible, and a stale "being issued" sends
-  // somebody towards a closed border. Everything else here is a detail a reader can
-  // discount; this is the fact they would act on.
-  //
-  // It matters in practice rather than in theory. The production host is in Kuala
-  // Lumpur and this portal refuses non-Indian addresses, so the reading can sit
-  // un-refreshable for as long as that is true.
-  const permitIsCurrent = permit != null && !permit.is_stale;
-  const notIssuing = permitIsCurrent && permitPayload?.is_issuing === false;
-
-  // Written as one expression rather than nested ternaries in the markup, because
-  // the nested version silently rendered two verdicts at once: the "not issuing"
-  // branch fell through to "Being issued" and then appended its own text.
-  const verdict = !permitIsCurrent
-    ? "We cannot tell you right now"
-    : permitPayload?.is_issuing === true
-      ? "Being issued"
-      : permitPayload?.is_issuing === false
-        ? "Not being issued"
-        : "We could not tell";
+  const corridorClosures =
+    roadPayload?.closures.filter((c) => c.is_closed && c.on_corridor) ?? [];
 
   return (
     <div>
-      <h2 className="type-section text-tone-strong">What others are publishing</h2>
-      <p className="mt-4 max-w-[68ch] leading-relaxed text-tone-body">
+      <h2 id="outside" className="type-title-1 text-tone-strong">
+        What others are publishing
+      </h2>
+      <p className="type-lead mt-[var(--stack-title)] text-tone-body">
         Read from government portals rather than checked by us. Kept apart from the
-        route status above for that reason.
+        road above for exactly that reason.
       </p>
 
       {/* The permit state, given the weight it actually carries. Not a row in a
           list: it is the fact that decides whether anything else matters. */}
-      {permit && permitPayload && (
-        <section
-          className={`mt-8 rounded-2xl p-5 ring-1 sm:p-6 ${
-            notIssuing
-              ? "bg-status-suspended/12 ring-status-suspended/35"
-              : "bg-ink/[0.04] ring-tone-line"
-          }`}
+      {permit && permitPayload && verdict && (
+        <Surface
+          radius="frame"
+          className="mt-[var(--stack-block)] p-6 sm:p-8 lg:p-10"
         >
-          <h3 className="text-[15px] font-medium text-tone-strong">
-            Inner Line Permits
-          </h3>
-          <p className="mt-2 text-lg text-tone-strong">{verdict}</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <StatusChip tone={verdict.tone} shape={verdict.shape}>
+              {verdict.chip}
+            </StatusChip>
+            <p className="type-meta text-tone-muted">Inner Line Permits</p>
+          </div>
 
-          {!permitIsCurrent && (
-            <p className="mt-3 max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
-              We have not been able to reach the permit portal recently enough to
-              trust what it last told us, so we are not going to repeat it. Ask us,
-              or read the portal yourself using the link below.
+          <h3 className="type-title-2 mt-5 text-tone-strong">{verdict.headline}</h3>
+
+          {verdict.state === "unreadable" && (
+            <p className="type-body measure-body mt-5 text-tone-body">
+              We have not been able to reach the portal recently enough to trust what
+              it last told us, so we are not going to repeat it. Ask us, or read the
+              portal yourself.
             </p>
           )}
 
-          {permitIsCurrent && permitPayload.notice && (
-            <blockquote className="mt-4 border-l-2 border-status-suspended/50 pl-4 text-[15px] leading-relaxed text-tone-body">
-              {permitPayload.notice}
+          {/* Verbatim, and set apart by indent and italic rather than by a rule
+              down the side. "Suspended until further orders" is not a sentence to
+              put in our own words. */}
+          {verdict.state !== "unreadable" && permitPayload.notice && (
+            <blockquote className="mt-6 ps-5 sm:ps-8">
+              <p className="type-lead measure-body italic text-tone-body">
+                {permitPayload.notice}
+              </p>
+              <p className="type-meta mt-3 text-tone-muted">
+                Quoted as published, not paraphrased.
+              </p>
             </blockquote>
           )}
 
-          {permitIsCurrent && permitPayload.uncertainty && (
-            <p className="mt-3 text-[15px] leading-relaxed text-tone-body">
+          {verdict.state !== "unreadable" && permitPayload.uncertainty && (
+            <p className="type-body measure-body mt-5 text-tone-body">
               {permitPayload.uncertainty}
             </p>
           )}
 
-          {notIssuing && (
-            <p className="mt-4 text-[15px] leading-relaxed text-tone-body">
+          {verdict.state === "not_issuing" && (
+            <p className="type-body measure-body mt-5 text-tone-body">
               While this holds, nobody can travel above Chiyalekh, including us.
               Departures are not sold against a suspended permit. Talk to us about
               dates once it reopens rather than booking around it.
@@ -182,54 +273,40 @@ export function LiveSources({
 
           <Freshness source={permit} locale={locale} />
           {permit.source_url && (
-            <a
-              href={permit.source_url}
-              rel="nofollow noopener"
-              className="mt-1 inline-block text-sm font-medium text-tone-strong underline decoration-gold decoration-2 underline-offset-4"
-            >
+            <QuietAction href={permit.source_url} className="mt-6">
               Read the portal yourself
-            </a>
+            </QuietAction>
           )}
-        </section>
+        </Surface>
       )}
 
-      <div className="mt-4">
+      <div className="mt-[var(--band-y-tight)]">
         {road && roadPayload && (
           <Block title="State road closure register">
             {/* The caveat comes first. It is the more important half of what this
                 source has to say, and a reader who takes "no closures" as "open"
                 would be reading the most exposed stretch as clear. */}
-            <p className="max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
+            <p className="type-body measure-body text-tone-body">
               {roadPayload.caveat}
             </p>
 
-            {roadPayload.closures.filter((c) => c.is_closed && c.on_corridor).length >
-            0 ? (
-              <ul className="mt-4">
-                {roadPayload.closures
-                  .filter((c) => c.is_closed && c.on_corridor)
-                  .slice(0, 6)
-                  .map((closure) => (
-                    <li
-                      key={`${closure.road}-${closure.from}`}
-                      className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-tone-line py-2.5 first:border-t-0"
-                    >
-                      <span className="min-w-0 flex-1 text-[15px] text-tone-strong">
-                        {closure.road}
+            {corridorClosures.length > 0 ? (
+              <ul className="mt-6">
+                {corridorClosures.slice(0, 6).map((closure) => (
+                  <Row key={`${closure.road}-${closure.from}`} name={closure.road}>
+                    <span className="type-meta font-medium text-status-suspended">
+                      {closure.status}
+                    </span>
+                    {closure.duration && (
+                      <span className="type-meta type-reading text-tone-muted">
+                        {closure.duration}
                       </span>
-                      <span className="text-sm text-status-suspended">
-                        {closure.status}
-                      </span>
-                      {closure.duration && (
-                        <span className="type-reading text-sm text-tone-muted">
-                          {closure.duration}
-                        </span>
-                      )}
-                    </li>
-                  ))}
+                    )}
+                  </Row>
+                ))}
               </ul>
             ) : (
-              <p className="mt-3 text-[15px] text-tone-muted">
+              <p className="type-body measure-body mt-4 text-tone-muted">
                 No closures listed on our stretch right now, which is not the same as
                 the road being clear.
               </p>
@@ -240,17 +317,14 @@ export function LiveSources({
 
         {alerts && alertsPayload && alertsPayload.alerts.length > 0 && (
           <Block title="Weather warnings for this district">
-            <ul className="space-y-2.5">
+            <ul className="flex flex-col gap-3">
               {alertsPayload.alerts.slice(0, 4).map((alert) => (
-                <li
-                  key={alert.title}
-                  className="max-w-[68ch] text-[15px] leading-relaxed text-tone-body"
-                >
+                <li key={alert.title} className="type-body measure-body text-tone-body">
                   {alert.title}
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-sm text-tone-muted">
+            <p className="type-meta measure-meta mt-4 text-tone-muted">
               This feed carries {alertsPayload.covers}.
             </p>
             <Freshness source={alerts} locale={locale} />
@@ -259,30 +333,28 @@ export function LiveSources({
 
         {beds && bedsPayload && bedsPayload.properties.length > 0 && (
           <Block title="Government rest house beds">
-            <p className="max-w-[68ch] text-[15px] leading-relaxed text-tone-body">
+            <p className="type-body measure-body text-tone-body">
               Kumaon Mandal Vikas Nigam runs the only accommodation above Dharchula.
               These are its own numbers for a night about a month out, which is a
               question about capacity rather than about this weekend.
             </p>
-            <ul className="mt-4">
+            <ul className="mt-6">
               {bedsPayload.properties.map((property) => (
-                <li
-                  key={property.name}
-                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-tone-line py-2.5 first:border-t-0"
-                >
-                  <span className="min-w-0 flex-1 text-[15px] text-tone-strong">
-                    {property.name}
-                  </span>
-                  <span className="type-reading text-sm text-tone-body">
+                <Row key={property.name} name={property.name}>
+                  <span className="type-meta type-reading text-tone-body">
                     {property.available_beds} of {property.total_beds} beds
                   </span>
                   {property.is_full && (
-                    <span className="text-sm text-status-suspended">Full</span>
+                    <span className="type-meta font-medium text-status-suspended">
+                      Full
+                    </span>
                   )}
                   {property.is_scarce && (
-                    <span className="text-sm text-status-limited">Nearly full</span>
+                    <span className="type-meta font-medium text-status-limited">
+                      Nearly full
+                    </span>
                   )}
-                </li>
+                </Row>
               ))}
             </ul>
             <Freshness source={beds} locale={locale} />
@@ -290,7 +362,7 @@ export function LiveSources({
         )}
       </div>
 
-      <p className="mt-6 max-w-[68ch] border-t border-tone-line pt-6 text-sm leading-relaxed text-tone-muted">
+      <p className="type-meta measure-meta mt-[var(--band-y-tight)] text-tone-muted">
         {data.coverage_note}
       </p>
     </div>

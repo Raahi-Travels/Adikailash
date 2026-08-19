@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { Surface } from "@/components/ui/surface";
+
 /**
  * Subscribe to route alerts.
  *
@@ -12,6 +14,12 @@ import { useState } from "react";
  * Consent is an explicit checkbox rather than implied by pressing the button. Doc 03
  * bans dark patterns and India's DPDP Act requires consent to be demonstrable, and a
  * form where submitting counts as agreeing is neither.
+ *
+ * Written against the type and shape systems rather than against raw utilities. It
+ * used not to be, and the audit found it by measurement: 12px field labels, a 14px
+ * call to action next to 15px ones everywhere else, a consent sentence running to
+ * 93 characters, and an 8px-radius panel with a visible hairline border on a site
+ * whose brief begins "no borders". It was the last template shape on the site.
  */
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
@@ -55,63 +63,71 @@ export function StatusAlerts({ segmentSlug }: { segmentSlug?: string }) {
 
   if (state === "done") {
     return (
-      <div role="status" className="rounded-lg bg-surface-raised px-5 py-5 ring-1 ring-tone-line">
-        <h3 className="text-lg text-tone-strong">Almost there</h3>
-        <p className="mt-2 max-w-[56ch] text-[15px] leading-relaxed text-tone-body">
-          {message}
-        </p>
-      </div>
+      <Surface className="px-6 py-6 sm:px-8 sm:py-7">
+        <div role="status">
+          <h3 className="type-title-2 text-tone-strong">Almost there</h3>
+          <p className="type-body measure-card mt-3 text-tone-body">{message}</p>
+        </div>
+      </Surface>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-ink/[0.04] px-5 py-5 ring-1 ring-tone-line">
-      <h3 className="text-lg">Tell me when this changes</h3>
-      <p className="mt-2 max-w-[58ch] text-[15px] leading-relaxed text-tone-body">
-        We will message you when the route status actually changes. Not when we
-        re-check it and find nothing new, which is most days.
-      </p>
-
-      <div className="mt-4 flex flex-wrap items-end gap-3">
-        <label className="min-w-52 flex-1">
-          <span className="text-xs text-tone-muted">Email</span>
-          <input
-            name="destination"
-            type="email"
-            required
-            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
-          />
-        </label>
-        <label className="min-w-36">
-          <span className="text-xs text-tone-muted">Name, optional</span>
-          <input
-            name="name"
-            className="mt-1 w-full rounded-md bg-ink/[0.04] px-3 py-2 text-[15px] text-tone-strong ring-1 ring-tone-line focus:outline-none focus:ring-2 focus:ring-gold"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={state === "sending"}
-          className="rounded-full bg-gold px-5 py-2.5 text-sm font-medium text-midnight transition-transform active:scale-[0.98] disabled:opacity-60"
-        >
-          {state === "sending" ? "Setting up…" : "Send me changes"}
-        </button>
-      </div>
-
-      {/* Unchecked by default. Submitting is not agreeing. */}
-      <label className="mt-4 flex items-start gap-2.5 text-sm leading-relaxed text-tone-body">
-        <input type="checkbox" name="consent" className="mt-1 size-4 shrink-0 accent-gold" />
-        <span>
-          Yes, email me when the route or permit status changes. We will confirm the
-          address first, and every message carries a one-click unsubscribe.
-        </span>
-      </label>
-
-      {state === "error" && message && (
-        <p role="alert" className="mt-3 text-sm text-status-suspended">
-          {message}
+    <Surface as="section" className="px-6 py-6 sm:px-8 sm:py-7">
+      <form onSubmit={onSubmit}>
+        <h3 className="type-title-2 text-tone-strong">Tell me when this changes</h3>
+        <p className="type-body measure-card mt-3 text-tone-body">
+          We will message you when the route status actually changes. Not when we
+          re-check it and find nothing new, which is most days.
         </p>
-      )}
-    </form>
+
+        <div className="mt-[var(--space-lg)] flex flex-wrap items-end gap-4">
+          <label className="min-w-52 flex-1">
+            <span className="type-meta block font-semibold text-tone-strong">Email</span>
+            <input
+              name="destination"
+              type="email"
+              required
+              className="field mt-2 hover:shadow-[0_0_0_1px_var(--color-tone-body)]"
+            />
+          </label>
+          <label className="min-w-44 flex-1">
+            <span className="type-meta block font-semibold text-tone-strong">
+              Your name <span className="font-normal text-tone-body">(optional)</span>
+            </span>
+            <input
+              name="name"
+              className="field mt-2 hover:shadow-[0_0_0_1px_var(--color-tone-body)]"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={state === "sending"}
+            className="cta-gold type-meta inline-flex min-h-12 shrink-0 items-center whitespace-nowrap rounded-pill px-6 font-semibold transition-transform duration-[var(--dur-press)] ease-standard active:scale-[0.97] disabled:cursor-progress disabled:opacity-75 motion-reduce:transition-none motion-reduce:active:scale-100"
+          >
+            {state === "sending" ? "Setting up" : "Send me changes"}
+          </button>
+        </div>
+
+        {/* Unchecked by default. Submitting is not agreeing. */}
+        <label className="mt-[var(--space-md)] flex min-h-11 cursor-pointer items-start gap-3 py-1.5">
+          <input
+            type="checkbox"
+            name="consent"
+            className="mt-1 size-5 shrink-0 accent-status-open"
+          />
+          <span className="type-body measure-card text-tone-body">
+            Yes, email me when the route or permit status changes. We will confirm the
+            address first, and every message carries a one-click unsubscribe.
+          </span>
+        </label>
+
+        {state === "error" && message && (
+          <p role="alert" className="type-body measure-card mt-4 text-status-suspended">
+            {message}
+          </p>
+        )}
+      </form>
+    </Surface>
   );
 }

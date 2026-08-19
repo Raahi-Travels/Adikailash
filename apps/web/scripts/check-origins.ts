@@ -22,6 +22,13 @@
 // tsc rejects them, and `next build` runs tsc over `scripts/` too.
 export {};
 
+// D4: brand values live in the config and nowhere else, so the domain is read
+// rather than repeated. `check:brand` fails on a second copy of the name, and it
+// was right to: this list was the one place a domain change would have been
+// missed, which is exactly the staleness that broke CORS here once already.
+import { brand } from "../lib/brand/config";
+import { isSettled } from "../lib/brand/types";
+
 const LOCAL_API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8010";
 const LIVE_API = "https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io";
 
@@ -32,9 +39,23 @@ const LIVE_API = "https://pos48g4k0sw4gw80ww0c0swg.72.62.241.119.sslip.io";
  * Per-deployment preview URLs are deliberately absent: they change on every push, so
  * listing them is how the list went stale in the first place.
  */
+const DOMAIN = isSettled(brand.web.domain)
+  ? brand.web.domain.value
+  : null;
+
+if (!DOMAIN) {
+  console.error(
+    "\nNo domain is settled in the brand config, so there is nothing to check.\n" +
+      "Settle `web.domain` (decision O7) and run this again.\n",
+  );
+  process.exit(1);
+}
+
 const ORIGINS = [
-  "https://sacrednorth.in",
-  "https://www.sacrednorth.in",
+  `https://${DOMAIN}`,
+  `https://www.${DOMAIN}`,
+  // The stable project host. Kept literal on purpose: it is a Vercel artefact,
+  // not a brand value, and it does not move when the domain does.
   "https://adikailash-ten.vercel.app",
 ];
 

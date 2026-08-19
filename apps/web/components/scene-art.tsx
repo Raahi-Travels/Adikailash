@@ -65,7 +65,26 @@ function ridge(
   return `M0,100 L0,${baseline.toFixed(2)} L${points.join(" L")} L100,100 Z`;
 }
 
-export function SceneArt({ seed, className = "" }: { seed: string; className?: string }) {
+export function SceneArt({
+  seed,
+  className = "",
+  feather = false,
+}: {
+  seed: string;
+  className?: string;
+  /**
+   * Dissolve the ridge into whatever is below it, rather than ending it on a line.
+   *
+   * Done as an SVG mask on the artwork group rather than as a CSS mask on the
+   * element, so anything a caller renders over the top (the "photograph pending"
+   * caption, a status chip) stays outside the masked group and at full opacity.
+   * The mask id is derived from the same hash as the sky gradient: ids here come
+   * from arbitrary strings including whole sentences from a photo brief, and a
+   * space or a full stop in an id makes `url(#...)` fail to resolve, which
+   * silently renders the sky as black.
+   */
+  feather?: boolean;
+}) {
   const rand = seeded(seed);
   // Seeds are arbitrary strings, including whole sentences from a photo brief, so
   // derive the gradient id from a hash. Spaces and full stops in an id make
@@ -102,6 +121,17 @@ export function SceneArt({ seed, className = "" }: { seed: string; className?: s
           <stop offset="100%" stopColor="#5c7489" />
         </linearGradient>
 
+        {/* Bottom 45% of the frame ramps to transparent: the same 40%-plus ramp
+            length a photograph gets, so the illustration and the photographs
+            leave the frame the same way. */}
+        <linearGradient id={`${gradientId}-fade`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="45%" stopColor="#fff" stopOpacity="1" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <mask id={`${gradientId}-mask`}>
+          <rect width="100" height="100" fill={`url(#${gradientId}-fade)`} />
+        </mask>
+
         {/* First light, low and warm. Kept faint: gold is the accent, not the sky. */}
         <linearGradient id={`${gradientId}-dawn`} x1="0" y1="1" x2="0" y2="0">
           <stop offset="0%" stopColor="#c89a4e" stopOpacity="0.3" />
@@ -110,26 +140,28 @@ export function SceneArt({ seed, className = "" }: { seed: string; className?: s
         </linearGradient>
       </defs>
 
-      <rect width="100" height="100" fill={`url(#${gradientId})`} />
-      <rect y="35" width="100" height="45" fill={`url(#${gradientId}-dawn)`} />
+      <g mask={feather ? `url(#${gradientId}-mask)` : undefined}>
+        <rect width="100" height="100" fill={`url(#${gradientId})`} />
+        <rect y="35" width="100" height="45" fill={`url(#${gradientId}-dawn)`} />
 
-      {/* The guiding star, the one warm note in the palette. */}
-      <g stroke="#e8c98a" strokeWidth="0.32" strokeLinecap="round" opacity="0.85">
-        <path d={`M${starX},${starY - 3} L${starX},${starY + 3}`} />
-        <path d={`M${starX - 3},${starY} L${starX + 3},${starY}`} />
-        <path
-          d={`M${starX - 1.6},${starY - 1.6} L${starX + 1.6},${starY + 1.6}`}
-          opacity="0.45"
-        />
-        <path
-          d={`M${starX + 1.6},${starY - 1.6} L${starX - 1.6},${starY + 1.6}`}
-          opacity="0.45"
-        />
+        {/* The guiding star, the one warm note in the palette. */}
+        <g stroke="#e8c98a" strokeWidth="0.32" strokeLinecap="round" opacity="0.85">
+          <path d={`M${starX},${starY - 3} L${starX},${starY + 3}`} />
+          <path d={`M${starX - 3},${starY} L${starX + 3},${starY}`} />
+          <path
+            d={`M${starX - 1.6},${starY - 1.6} L${starX + 1.6},${starY + 1.6}`}
+            opacity="0.45"
+          />
+          <path
+            d={`M${starX + 1.6},${starY - 1.6} L${starX - 1.6},${starY + 1.6}`}
+            opacity="0.45"
+          />
+        </g>
+
+        {layers.map((layer) => (
+          <path key={layer.fill} d={layer.d} fill={layer.fill} />
+        ))}
       </g>
-
-      {layers.map((layer) => (
-        <path key={layer.fill} d={layer.d} fill={layer.fill} />
-      ))}
     </svg>
   );
 }
