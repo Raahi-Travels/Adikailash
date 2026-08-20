@@ -382,11 +382,23 @@ export function SceneBackdrop({
               Darkening everything to make a paragraph legible spends the picture
               to save the text, when the radial carries most of it.
 
-              38% and not less: at 28% the picture looked better and the closing
-              headline measured 2.86:1 against the brightest sky behind it, under
-              the 3:1 floor for display type. This is the number where the barrier
-              is visible and the words still clear the floor. */}
-          <div className="absolute inset-0 bg-scrim/38" />
+              46%, and the number was arrived at twice because the first attempt
+              was measured at one width only. At 28% the picture looked best and
+              the headline fell to 2.86:1 at 1600px. 38% fixed that at 1600 and
+              shipped, and the audit then failed it at 390 and 768: the crop
+              changes with the viewport and the radial covers proportionally less
+              of a narrow frame, so a desktop measurement says nothing about a
+              phone. Measured across all three:
+
+                38%   390: 2.77   768: 2.78   1600: 3.53
+                46%   390: 3.42   768: 3.42   1600: 4.29
+                54%   390: 4.16   768: 4.24   1600: 5.14
+
+              46% is the lightest value that clears the 3:1 floor with margin at
+              every width, which is the trade this is making: the barrier stays
+              visible and the words stay legible on the device most of this
+              audience is holding. */}
+          <div className="absolute inset-0 bg-scrim/46" />
           <div className="scrim-centre absolute inset-0" />
         </>
       )}
