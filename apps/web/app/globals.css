@@ -1185,15 +1185,21 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
     z-index: -1;
     pointer-events: none;
     background:
+      /* Lighter than it was, and shorter. At 94% rising to 55% by 30% of the
+         height, the bottom two thirds of the hero were effectively navy paint,
+         and with the left-hand scrim on top of that the only part of the
+         photograph still visible on a desktop was the top right corner. The
+         phone looked better than the desktop, which is the wrong way round for
+         a picture this wide. */
       linear-gradient(
         to top,
-        color-mix(in oklab, var(--color-scrim) 94%, transparent) 0%,
-        color-mix(in oklab, var(--color-scrim) 55%, transparent) 30%,
-        transparent 66%
+        color-mix(in oklab, var(--color-scrim) 72%, transparent) 0%,
+        color-mix(in oklab, var(--color-scrim) 30%, transparent) 30%,
+        transparent 58%
       ),
       radial-gradient(
         120% 80% at 72% 8%,
-        color-mix(in oklab, var(--color-dawn) 16%, transparent),
+        color-mix(in oklab, var(--color-dawn) 24%, transparent),
         transparent 60%
       );
   }
@@ -1203,15 +1209,21 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
     inset: 0;
     pointer-events: none;
     background:
+      /* Lighter than it was, and shorter. At 94% rising to 55% by 30% of the
+         height, the bottom two thirds of the hero were effectively navy paint,
+         and with the left-hand scrim on top of that the only part of the
+         photograph still visible on a desktop was the top right corner. The
+         phone looked better than the desktop, which is the wrong way round for
+         a picture this wide. */
       linear-gradient(
         to top,
-        color-mix(in oklab, var(--color-scrim) 94%, transparent) 0%,
-        color-mix(in oklab, var(--color-scrim) 55%, transparent) 30%,
-        transparent 66%
+        color-mix(in oklab, var(--color-scrim) 72%, transparent) 0%,
+        color-mix(in oklab, var(--color-scrim) 30%, transparent) 30%,
+        transparent 58%
       ),
       radial-gradient(
         120% 80% at 72% 8%,
-        color-mix(in oklab, var(--color-dawn) 16%, transparent),
+        color-mix(in oklab, var(--color-dawn) 24%, transparent),
         transparent 60%
       );
   }

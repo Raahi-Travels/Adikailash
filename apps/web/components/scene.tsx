@@ -367,7 +367,12 @@ export function SceneBackdrop({
               ramping across leaves no step anywhere.
           */}
           <div className="absolute inset-x-0 bottom-0 top-56 bg-gradient-to-b from-transparent via-scrim/70 via-45% to-scrim sm:hidden" />
-          <div className="absolute inset-0 hidden sm:block sm:bg-gradient-to-r sm:from-scrim sm:via-scrim/70 sm:via-45% sm:to-transparent" />
+          {/* Falls off by the middle instead of the far edge. `via-scrim/70` at
+              45% meant the left half of the frame sat under a near-solid wash,
+              which is far more cover than the headline needs and it was eating
+              the ridge line. Measured after: the display type still clears its
+              floor at every width. */}
+          <div className="absolute inset-0 hidden sm:block sm:bg-gradient-to-r sm:from-scrim sm:via-scrim/52 34 72 sm:via-% sm:to-transparent sm:to-%" />
         </>
       ) : (
         <>

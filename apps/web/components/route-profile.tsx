@@ -223,80 +223,6 @@ export function RouteProfile({
           whole road out before the reader reaches the verification detail.
           --------------------------------------------------------------- */}
 
-      {/* ----------------------------------------------------------------
-          Phone: a climb, read down the page.
-
-          This was the desktop chart turned on its side, so altitude ran across
-          and the road ran down. It measured fine and it read backwards: moving
-          *down* the screen meant going *up* the mountain, and the one thing this
-          diagram exists to say is how high the road goes. A 1000-unit profile
-          squeezed into 350 is a picture of a chart rather than a chart.
-
-          So the phone gets its own thing. Rows in travel order, top to bottom,
-          which is the direction a reader already scrolls, and altitude as bar
-          length, which is the one comparison that matters. The drop into the
-          Kali gorge shows up as a bar that gets shorter, which is exactly what
-          the road does and what no operator map draws. The two arms above Gunji
-          are indented under it, because the route genuinely forks and a single
-          descending list would claim a continuous climb that does not exist.
-          --------------------------------------------------------------- */}
-      <ol className="lg:hidden" aria-hidden="true">
-        {STATIONS.map((station) => {
-          /* Scaled from a 700m floor rather than from zero: nothing on this road
-             is near sea level, and anchoring at zero spends most of every bar on
-             altitude the journey never visits, which flattens the differences
-             the diagram is for. */
-          const pct = Math.max(
-            6,
-            ((station.altitudeM - 700) / (4800 - 700)) * 100,
-          );
-          const forked = station.branch !== "trunk";
-          const state = station.from
-            ? (legStatus(routes, station)?.state ?? "unknown")
-            : "open";
-          return (
-            <li
-              key={station.slug}
-              className={`py-3 ${forked ? "ml-4 border-l border-tone-line pl-4" : ""}`}
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="type-meta font-semibold text-tone-strong">
-                  {station.name}
-                </span>
-                <span className="type-reading type-meta shrink-0 text-tone-muted">
-                  {metres(station.altitudeM, station.confidence === "approximate")}
-                </span>
-              </div>
-              {/* The bar. Gold gets stronger with height, so the top of the road
-                  is also the brightest thing in the column. */}
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-tone-line">
-                <div
-                  className="h-full rounded-pill"
-                  style={{
-                    width: `${pct}%`,
-                    background: `color-mix(in oklab, var(--color-gold) ${Math.round(
-                      35 + pct * 0.65,
-                    )}%, transparent)`,
-                  }}
-                />
-              </div>
-              {station.note && (
-                <p className="type-meta measure-meta mt-2 text-tone-muted">
-                  {station.note}
-                </p>
-              )}
-              {station.from && (
-                <p className="type-meta mt-1.5 flex items-center gap-2">
-                  <StateGlyph state={state} />
-                  <span className="text-tone-muted">
-                    {stationName(station.from)} to {station.name}
-                  </span>
-                </p>
-              )}
-            </li>
-          );
-        })}
-      </ol>
 
       {/* Desktop: the conventional elevation profile, with room for the fork. */}
       <svg
@@ -486,6 +412,37 @@ export function RouteProfile({
             <span className="type-body text-tone-strong measure-none">
               {station.from ? stationName(station.from) : ""} to {station.name}
             </span>
+            {/*
+              The climb, on the phone only.
+
+              This component briefly carried two lists on a phone: a station list
+              with altitude bars, and this ledger. Both were correct and between
+              them every place on the road appeared twice, which is not thorough,
+              it is just longer. The ledger is the one to keep, because a reader
+              is asking about a stretch of road rather than a point on it, and
+              "Pithoragarh to Dharchula" is a stretch. So the bar moved in here
+              instead: one row per leg, carrying where it ends, how high that is,
+              and whether anybody has checked it.
+
+              Hidden above `lg` because the elevation chart is doing this job far
+              better up there, and two views of one climb is the duplication this
+              change exists to remove.
+            */}
+            <div
+              aria-hidden
+              className="col-start-2 mt-1 h-1.5 w-full overflow-hidden rounded-pill bg-tone-line lg:hidden"
+            >
+              <div
+                className="h-full rounded-pill"
+                style={{
+                  width: `${Math.max(6, ((station.altitudeM - 700) / (4800 - 700)) * 100)}%`,
+                  background: `color-mix(in oklab, var(--color-gold) ${Math.round(
+                    38 + ((station.altitudeM - 700) / (4800 - 700)) * 62,
+                  )}%, transparent)`,
+                }}
+              />
+            </div>
+
             <div className="col-start-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 lg:contents">
               <span className="type-meta type-reading text-tone-muted lg:text-right">
                 {metres(station.altitudeM, station.confidence === "approximate")}
