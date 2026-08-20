@@ -16,12 +16,20 @@ import {
  * scanning numbers does not feel the drop into the Kali gorge before the climb, and
  * does not see that the whole gain happens in the last quarter of the drive.
  *
- * **It now draws at every width.** The previous version was `hidden md:block`, which
- * meant most of this audience, who are on a phone on mobile data, never saw the one
- * thing worth seeing. A 1,000-unit-wide diagram genuinely does not work at 390 px, so
- * below `md` the same profile is drawn rotated: altitude runs left to right, the road
- * runs top to bottom, the ground fills the low side, and every station keeps its
- * name and its altitude beside it. Same data, same shapes, same fork above Gunji.
+ * **The drawing is `lg` and up. A phone gets the climb in the ledger instead.**
+ *
+ * This has now been wrong in both directions and the history is worth keeping. It
+ * started `hidden md:block`, so the audience most likely to be on a phone never saw
+ * the one thing worth seeing. Then it was drawn rotated below `md`, altitude running
+ * left to right and the road top to bottom, which measured fine and read backwards:
+ * moving *down* the screen meant going *up* the mountain. Then a station list with
+ * altitude bars replaced it, and that duplicated the ledger underneath, so every
+ * place on the road appeared twice.
+ *
+ * What is here now is one list on a phone. The ledger already names each leg as a
+ * stretch of road, which is what a reader is asking about, and each row carries a
+ * bar for the altitude it ends at. The 1,000-unit profile stays above `lg`, where
+ * there is room for it to be read rather than merely displayed.
  *
  * **No script.** The earlier version animated the legs in with `motion/react`, which
  * gated the station labels behind `whileInView` and left a keyboard user tabbing into

@@ -185,7 +185,16 @@ export function TerrainField({ className = "" }: { className?: string }) {
     const visibility = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        if (visible && !reduced) frame = requestAnimationFrame(tick);
+        // `!frame` is the whole fix. An IntersectionObserver invokes its callback
+        // once on `observe()` with the element's current state, so on a hero that
+        // starts in view this branch started a loop, and then the block below
+        // started a second one. Both called `tick`, both rescheduled themselves,
+        // and `frame` holds one handle, so cleanup cancelled one and leaked the
+        // other. Measured before the guard: 62 draws against 31 display frames,
+        // exactly 2.0x. On a 60 Hz Android that is 120 passes a second through a
+        // shader doing ~250 ALU ops and 20 sin() calls per pixel, on a page whose
+        // audience is on mobile data at altitude.
+        if (visible && !reduced && !frame) frame = requestAnimationFrame(tick);
       },
       { threshold: 0 },
     );
@@ -195,7 +204,14 @@ export function TerrainField({ className = "" }: { className?: string }) {
     const started = performance.now();
 
     function tick(now: number) {
-      if (!visible) return;
+      // Clearing the handle is what lets the observer restart it. Returning
+      // without clearing leaves `frame` holding an id that has already fired, so
+      // the guard above would read it as "a loop is running" and the field would
+      // stay frozen for the rest of the session once scrolled past.
+      if (!visible) {
+        frame = 0;
+        return;
+      }
       material.uniforms.uTime.value = (now - started) / 1000;
       // Sampled here rather than through a scroll listener: one read per frame that
       // is already scheduled, instead of a handler firing on every scroll event.
