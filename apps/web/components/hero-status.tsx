@@ -60,6 +60,8 @@ const COPY = {
     unreachable:
       "We cannot reach our status service from here, so we are not going to guess at the road. Please speak to the team before making travel plans.",
     permitTitle: "Permits are not being issued.",
+    permitShort: "The district portal has suspended Inner Line Permits.",
+    legsLabel: "legs confirmed",
     permitBody:
       "The district portal has suspended Inner Line Permits, so nobody is travelling above Chiyalekh at the moment, us included.",
     ask: "Ask about your dates on WhatsApp",
@@ -79,89 +81,13 @@ const COPY = {
     unreachable:
       "यहाँ से हमारी स्थिति सेवा तक नहीं पहुँच पा रहे, इसलिए हम सड़क के बारे में अनुमान नहीं लगाएँगे। यात्रा की योजना बनाने से पहले टीम से बात करें।",
     permitTitle: "परमिट जारी नहीं हो रहे।",
+    permitShort: "ज़िला पोर्टल ने इनर लाइन परमिट रोक दिए हैं।",
+    legsLabel: "हिस्से पुष्ट",
     permitBody:
       "ज़िला पोर्टल ने इनर लाइन परमिट रोक दिए हैं, इसलिए इस समय च्यालेख से ऊपर कोई नहीं जा रहा, हम भी नहीं।",
     ask: "अपनी तारीख़ों के बारे में व्हाट्सएप पर पूछें",
   },
 } as const;
-
-/**
- * Lives outside the component because `Date.now()` in a component body is a read of
- * mutable global state, which the React compiler rejects: the same render would
- * produce a different result on a re-run, and that is exactly what memoisation
- * assumes cannot happen.
- */
-function age(iso: string, locale: Locale) {
-  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-  const rtf = new Intl.RelativeTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
-    numeric: "auto",
-  });
-  if (mins < 60) return rtf.format(-Math.max(mins, 1), "minute");
-  if (mins < 1440) return rtf.format(-Math.round(mins / 60), "hour");
-  return rtf.format(-Math.round(mins / 1440), "day");
-}
-
-function Header({ title, everySegment }: { title: string; everySegment: string }) {
-  return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1">
-      <h2 className="type-title-2 text-tone-on-glass">{title}</h2>
-      <Link
-        href="/status"
-        className="type-meta text-tone-on-glass underline decoration-gold decoration-2 underline-offset-4 transition-colors hover:decoration-saffron"
-      >
-        {everySegment}
-      </Link>
-    </div>
-  );
-}
-
-/**
- * One node on the road.
- *
- * A dot on a vertical rail rather than a row in a table, because the thing being
- * listed is a road and a road is a line. The rail is drawn by each node except the
- * last, which is why the connector is a child rather than a border on the list.
- */
-function Node({
-  name,
-  detail,
-  state,
-  isLast,
-  quiet = false,
-}: {
-  name: string;
-  detail: string;
-  state: LegState | null;
-  isLast: boolean;
-  quiet?: boolean;
-}) {
-  return (
-    <li className="relative flex gap-3.5 pb-3 last:pb-0">
-      {!isLast && (
-        <span
-          aria-hidden
-          className="absolute bottom-0 left-[3.5px] top-3 w-px bg-tone-on-glass/25"
-        />
-      )}
-      <span
-        aria-hidden
-        className="relative mt-[0.45rem] size-2 shrink-0 rounded-pill"
-        style={{
-          background: state ? STATE_COLOUR[state] : "var(--color-tone-on-glass)",
-          boxShadow: quiet ? undefined : "0 0 0 3px oklch(1 0 0 / 0.08)",
-        }}
-      />
-      <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-3">
-        <span className="type-meta text-tone-on-glass">{name}</span>
-        <span
-          className={`type-meta text-tone-on-glass ${quiet ? "font-normal opacity-90" : "font-normal"}`}
-        >
-          {detail}
-        </span>
-      </div>
-    </li>
-  );
-}
 
 function Ask({ href, label }: { href: string; label: string }) {
   return (
@@ -206,9 +132,8 @@ export function HeroStatus({
   */
   if (data === null) {
     return (
-      <GlassPanel rim label={t.title} className="p-6 sm:p-7">
-        <Header title={t.title} everySegment={t.everySegment} />
-        <p className="type-body mt-4 text-tone-on-glass">{t.unreachable}</p>
+      <GlassPanel rim label={t.title} className="px-5 py-4 sm:px-6">
+        <p className="type-meta measure-meta text-tone-on-glass">{t.unreachable}</p>
         {wa && <Ask href={wa} label={t.ask} />}
       </GlassPanel>
     );
@@ -232,77 +157,61 @@ export function HeroStatus({
     (permit.payload as { is_issuing?: boolean | null }).is_issuing === false;
 
   return (
-    <GlassPanel rim label={t.title} className="p-6">
-      <Header title={t.title} everySegment={t.everySegment} />
+    /*
+      A bar, not a panel, and the difference is the argument.
 
-      {/*
-        The headline reading, at the size a competitor would give a green tick.
+      This was a 550px ledger whose six rows all read "Never checked". Every word of
+      it was true and it was in the wrong place: it occupied the right five columns
+      of the hero, which is exactly where the sunlit massif sits, so the one
+      photograph that could make somebody want to come was hidden behind a list of
+      things we have not done. "Never checked" appeared thirteen times on this page
+      before a reader met a single reason to go.
 
-        `.type-figure` is the site's one "measured number given weight" class, and
-        the honest answer here is not a number, it is the absence of one. Setting it
-        anyway is the whole argument of the page in one line.
-      */}
-      <p className="type-figure mt-4 text-tone-on-glass">
-        {confirmed === 0 ? t.neverChecked : `${confirmed} ${t.of} ${legs.length}`}
-      </p>
-      <p className="type-body mt-2.5 text-tone-on-glass">
-        {confirmed === 0 ? t.neverCheckedNote : t.confirmedNote}
-      </p>
+      Honesty is what earns trust once somebody wants to travel. It is not what
+      makes them want to travel, and spending the desire slot on it bought neither.
+      The live reading stays in the fold, because a competitor cannot fake it, and it
+      stays to one line: the condition, the count, and a way through. The full ledger
+      already exists twice further down this page and in full on /status.
+    */
+    <GlassPanel rim label={t.title} className="px-5 py-4 sm:px-6">
+      <div className="flex flex-col gap-x-8 gap-y-3.5 lg:flex-row lg:items-center">
+        {notIssuing ? (
+          <p className="type-meta flex flex-1 items-start gap-3 text-tone-on-glass">
+            {/* The same dot the road nodes carry. On glass the suspended token
+                measures about 1.9:1, so colour marks the line and the words carry
+                the meaning, never the other way round. */}
+            <span
+              aria-hidden
+              className="mt-[0.4rem] size-2 shrink-0 rounded-pill"
+              style={{
+                background: "var(--color-status-suspended)",
+                boxShadow: "0 0 0 3px oklch(1 0 0 / 0.08)",
+              }}
+            />
+            <span>
+              <span className="font-semibold">{t.permitTitle}</span> {t.permitShort}
+            </span>
+          </p>
+        ) : (
+          <p className="type-meta measure-meta flex-1 text-tone-on-glass">
+            {t.coverage}
+          </p>
+        )}
 
-      {/*
-        Not a ringed red box: that is a panel inside a panel, which the surface rules
-        ban, and not a side stripe either, which the brief bans by name. On glass the
-        suspended token measures about 1.9:1, so neither would have been legible as a
-        signal. It gets the same dot the road nodes get, in front of a sentence that
-        says the thing in words.
-      */}
-      {notIssuing && (
-        <p className="type-meta measure-meta mt-4 flex gap-3.5 text-tone-on-glass">
-          <span
-            aria-hidden
-            className="mt-[0.45rem] size-2 shrink-0 rounded-pill"
-            style={{
-              background: "var(--color-status-suspended)",
-              boxShadow: "0 0 0 3px oklch(1 0 0 / 0.08)",
-            }}
-          />
-          <span>
-            <span className="font-semibold">{t.permitTitle}</span> {t.permitBody}
-          </span>
+        <p className="type-meta shrink-0 text-tone-on-glass">
+          <span className="font-semibold">
+            {confirmed} {t.of} {legs.length}
+          </span>{" "}
+          {t.legsLabel}
         </p>
-      )}
 
-      <ul aria-label={t.railLabel} className="mt-6">
-        {legs.map(({ station, status, state }, i) => (
-          <Node
-            key={station.slug}
-            name={station.name}
-            /*
-              `legLabel` lives in `lib/route-profile.ts` and returns English for
-              every state, so on /hi the one row a reader most needs would arrive in
-              the wrong language. The unchecked case, which is every row today, is
-              localised here; the four checked labels still need to move into the
-              shared lib behind a locale, which is flagged rather than duplicated.
-            */
-            detail={
-              status
-                ? `${legLabel(status)}, ${age(status.verified_at, locale)}`
-                : t.railNever
-            }
-            state={state}
-            isLast={i === legs.length - 1}
-          />
-        ))}
-      </ul>
-
-      {/*
-        The reason the list above is honest rather than lazy, in one line. It stays
-        in the panel: a reader who does not know that nobody publishes road status
-        above Tawaghat will read six "never checked" rows as neglect.
-      */}
-      {/* `measure-meta` caps this at 72ch. Without it the line ran to 76ch at
-          768px, where the panel is full width and nothing else holds it in. */}
-      <p className="type-meta measure-meta mt-5 text-tone-on-glass">{t.coverage}</p>
+        <Link
+          href="/status"
+          className="type-meta shrink-0 text-tone-on-glass underline decoration-gold decoration-2 underline-offset-4 transition-colors hover:decoration-saffron"
+        >
+          {t.everySegment}
+        </Link>
+      </div>
     </GlassPanel>
   );
 }

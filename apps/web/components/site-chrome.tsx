@@ -282,9 +282,15 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
     <footer
       data-site-chrome
       data-register-mark="dark"
-      className="register-dark px-[var(--gutter)] pb-[var(--space-2xl)] pt-[var(--space-2xl)] text-tone-body"
+      className="register-dark px-[var(--gutter)] pb-[var(--space-xl)] pt-[var(--space-2xl)] text-tone-body"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-[var(--space-2xl)]">
+      {/*
+        `--space-xl` and not `--space-2xl`. Five rows at 4.5rem apiece put about
+        350px of nothing between the wordmark and the legal line, which on a dark
+        ground reads as an unfinished page rather than as generous. The rows are
+        short; the gap does not have to carry the whole hierarchy on its own.
+      */}
+      <div className="mx-auto flex max-w-6xl flex-col gap-[var(--space-xl)]">
         <div className="flex items-center gap-2.5 text-tone-strong">
           <Mark className="size-6 text-gold" />
           {/* One brand string, the same one the header wears. */}
@@ -292,7 +298,11 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
         </div>
 
         <div className="grid gap-[var(--space-lg)] sm:grid-cols-3 sm:gap-[var(--space-xl)]">
-          <p className="type-body">{displayLocalized(brand.identity.promise, locale)}</p>
+          {/* The promise used to be repeated here. It is the closing line of the
+              landing page, set large, and reprinting it three hundred pixels
+              lower in body size read as an echo rather than a signature. The
+              footer's job below this point is contact, obligation and law. */}
+          <p className="type-body">{displayLocalized(brand.identity.tagline, locale)}</p>
 
           {/*
             Doc 06: the site "must not imply that a partner's registration belongs to

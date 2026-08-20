@@ -232,17 +232,9 @@ export function Scene({
       {/* Sibling, never a child of the mask. Resolves through `--color-scrim`, so
           it dissolves into navy on a dark page and into snow on a light one. */}
       {wantsScrim && (
-        <div aria-hidden className="scrim-bottom absolute inset-x-0 bottom-0 h-1/2" />
+        <div aria-hidden className="scrim-bottom absolute inset-x-0 bottom-0 h-1/3" />
       )}
 
-      {/* Outside the masked wrapper on purpose: a marker that fades out is a
-          marker that stops doing its job. Sentence case at 15px rather than 10px
-          tracked caps, because it is a note to the team, not a design element. */}
-      {process.env.NODE_ENV !== "production" && (
-        <span className="type-meta absolute bottom-3 right-3 rounded-chip bg-midnight/85 px-2 py-0.5 text-gold/90">
-          Placeholder
-        </span>
-      )}
     </div>
   );
 }

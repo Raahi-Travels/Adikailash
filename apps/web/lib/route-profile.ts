@@ -151,6 +151,16 @@ export const STATIONS: Station[] = [
 
 export const HIGHEST = STATIONS.reduce((a, b) => (b.altitudeM > a.altitudeM ? b : a));
 
+/**
+ * The floor of the drive, which is not where it starts.
+ *
+ * Pithoragarh sits at 1,645 m and the road drops to Dharchula before it climbs at
+ * all. Every operator map draws this route as a continuous ascent, and the descent
+ * into the Kali gorge is the detail that tells a reader this page was written by
+ * somebody who has been on it.
+ */
+export const LOWEST = STATIONS.reduce((a, b) => (b.altitudeM < a.altitudeM ? b : a));
+
 const BY_SLUG = new Map(STATIONS.map((s) => [s.slug, s]));
 
 export function stationBySlug(slug: string): Station | undefined {

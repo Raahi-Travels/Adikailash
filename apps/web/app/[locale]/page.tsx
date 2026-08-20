@@ -11,8 +11,8 @@ import { PhotoFigure } from "@/components/ui/figure";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { api, type Locale } from "@/lib/api";
-import { brand, displayLocalized, whatsappLink } from "@/lib/brand";
-import { HIGHEST, legStatus, STATIONS } from "@/lib/route-profile";
+import { brand, display, displayLocalized, whatsappLink } from "@/lib/brand";
+import { HIGHEST, LOWEST, legStatus, STATIONS } from "@/lib/route-profile";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -85,6 +85,7 @@ const COPY = {
       "The drive drops into the Kali gorge before it climbs, and above Gunji it forks: one arm to Jyolingkong below Adi Kailash, the other to Nabhidhang for Om Parvat. This is what your body is being asked to do.",
     routeLink: "Every segment, with who checked it",
     closeLead: "Talk to someone who lives in Pithoragarh and has driven this road.",
+    closeHours: "Someone answers",
     factHighest: "Highest ground",
     factHighestNote: "Jyolingkong, the base below Adi Kailash",
     factDocs: "Documents required",
@@ -92,6 +93,8 @@ const COPY = {
     factDocsPending: "Being confirmed",
     factLegs: "Legs confirmed",
     factLegsNote: "Anything else is unknown to us",
+    factLowest: "Lowest point",
+    factLowestNote: "Dharchula, in the Kali gorge, before the climb begins",
     factChecked: "Last checked",
     factCheckedNote: "By a coordinator, on the ground",
     notYet: "not yet",
@@ -124,6 +127,7 @@ const COPY = {
     routeLink: "हर हिस्सा, और किसने जाँचा",
     closeLead:
       "उस व्यक्ति से बात करें जो पिथौरागढ़ में रहता है और इस सड़क पर गाड़ी चला चुका है।",
+    closeHours: "कोई जवाब देता है",
     factHighest: "सबसे ऊँचा स्थान",
     factHighestNote: "ज्योलिंगकोंग, आदि कैलाश के नीचे का पड़ाव",
     factDocs: "ज़रूरी दस्तावेज़",
@@ -131,6 +135,8 @@ const COPY = {
     factDocsPending: "पुष्ट किया जा रहा है",
     factLegs: "पुष्ट हिस्से",
     factLegsNote: "बाकी सब हमारे लिए अज्ञात है",
+    factLowest: "सबसे नीचा स्थान",
+    factLowestNote: "धारचूला, काली नदी की खाई में, चढ़ाई शुरू होने से पहले",
     factChecked: "पिछली जाँच",
     factCheckedNote: "समन्वयक द्वारा, मौके पर",
     notYet: "अभी नहीं",
@@ -279,7 +285,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           // sky with a rumour of a mountain. Pushed right until the lit ridge sits
           // in the frame. This wants to move into `lib/imagery.ts` as the scene's
           // focus, which is a shared file: flagged, not edited here.
-          position="object-[86%_48%]"
+          position="object-[72%_46%]"
           scrim="left"
           sizes="(min-width: 1024px) 1440px, calc(100vw * 1.35)"
         />
@@ -292,8 +298,17 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             darkening the picture until nobody can see it, which loses both. The
             band is 320px, so the copy starts clear of it.
           */}
-          <div className="grid items-end gap-x-[clamp(2rem,4vw,4rem)] gap-y-[var(--stack-block)] pt-[11.5rem] sm:pt-[var(--band-y-tight)] lg:grid-cols-12">
-            <div className="lg:col-span-7">
+          {/*
+            One column, not seven-and-five.
+
+            The status panel used to hold the right five columns, which is where the
+            lit massif is, so the hero read as navy sky with a rumour of a mountain
+            behind a list of unknowns. The panel is a bar now and it sits under the
+            whole fold, so the photograph finally gets the width it was cropped for
+            and the headline stops sharing the eye with a ledger.
+          */}
+          <div className="pt-[11.5rem] sm:pt-[var(--band-y-tight)]">
+            <div className="max-w-[46rem]">
               <p className="type-title-2 max-w-[22ch] text-tone-body">
                 {displayLocalized(campaign.headlineLead, locale)}
               </p>
@@ -313,9 +328,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               </div>
             </div>
 
-            <div className="lg:col-span-5">
-              <HeroStatus data={status} live={live} locale={typed} />
-            </div>
+          </div>
+
+          {/* Full width, under the fold's copy: the live proof a competitor cannot
+              fake, kept in the first screen without spending the picture on it. */}
+          <div className="mt-[var(--stack-block)]">
+            <HeroStatus data={status} live={live} locale={typed} />
           </div>
 
         </Content>
@@ -362,10 +380,18 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
                 value={mandatory > 0 ? String(mandatory) : t.factDocsPending}
                 note={t.factDocsNote}
               />
+              {/*
+                This read "0 of 6 legs confirmed", which is the same sentence the
+                hero bar now carries eight hundred pixels above it. Repeating an
+                absence is not extra honesty, it is just the page saying less.
+                The gorge is a fact from the same table and it is the one detail
+                that tells a reader we have driven this: the road goes *down*
+                before it goes up, and no brochure map draws it that way.
+              */}
               <Reading
-                label={t.factLegs}
-                value={`${confirmed} ${t.of} ${legs.length}`}
-                note={t.factLegsNote}
+                label={t.factLowest}
+                value={`${LOWEST.altitudeM.toLocaleString("en-IN")} ${t.metres}`}
+                note={t.factLowestNote}
               />
               <Reading
                 label={t.factChecked}
@@ -498,11 +524,40 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             {displayLocalized(brand.identity.promise, locale)}
           </p>
           <p className="type-lead mt-[var(--stack-title)] text-tone-body">{t.closeLead}</p>
-          <div className="mt-[var(--stack-block)]">
-            <PrimaryAction href="/enquire">
+
+          {/*
+            Two doors, not one.
+
+            This offered a single button to a form. The two people who reach the
+            foot of this page are not the same person: one has decided and wants a
+            human today, the other is still deciding and wants to see what is on
+            offer. Sending both to the same form loses one of them, and on this
+            route the one it loses is the one who would have messaged from a phone
+            in Delhi at eleven at night.
+          */}
+          <div className="mt-[var(--stack-block)] flex flex-wrap items-center justify-center gap-3">
+            <PrimaryAction href={wa ?? "/enquire"}>
               {displayLocalized(campaign.secondaryCta, locale)}
             </PrimaryAction>
+            <QuietAction href="/journeys">
+              {displayLocalized(campaign.primaryCta, locale)}
+            </QuietAction>
           </div>
+
+          {/*
+            When somebody actually answers, read from the brand config rather than
+            written here.
+
+            This line first said no deposit is taken at enquiry. That is true today
+            only because payments are switched off entirely, and doc 09 holds that
+            deposit and refund terms (O3, O4) are not approved yet, so publishing one
+            as a promise would have been exactly the unapproved commercial claim the
+            rest of this codebase refuses to make. Support hours are settled, so this
+            says that instead.
+          */}
+          <p className="type-meta mt-[var(--stack-title)] text-tone-muted">
+            {t.closeHours} {display(brand.contact.supportHours)}
+          </p>
         </Content>
       </section>
     </main>

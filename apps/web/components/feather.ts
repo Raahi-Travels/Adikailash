@@ -40,9 +40,9 @@ export type Feather =
 /**
  * Ramp lengths, chosen against rule 1 above rather than by eye.
  *
- * Read `mask-b-from-45%` as "opaque down to 45% of the height, then ramping to
+ * Read `mask-b-from-74%` as "opaque down to 74% of the height, then ramping to
  * nothing at the foot": the ramp is 55% of the box, over 200 real pixels on
- * anything taller than 364px. `mask-r-from-62%` is a 38% ramp across the width.
+ * a 26% ramp at the foot. `mask-r-from-86%` is a 14% ramp across the width.
  *
  * **These are Tailwind's own mask utilities and not an arbitrary
  * `[mask-image:…]` property, and that is not a style preference.** The arbitrary
@@ -56,8 +56,8 @@ export type Feather =
  */
 export const FEATHER: Record<Feather, string> = {
   none: "",
-  bottom: "mask-b-from-45%",
-  "bottom-right": "mask-b-from-50% mask-r-from-62%",
+  bottom: "mask-b-from-74%",
+  "bottom-right": "mask-b-from-76% mask-r-from-86%",
   /*
    * `crest` is `bottom` with the top and leading edges dissolved as well, for a
    * picture that sits *inside* a band rather than under it.
@@ -68,14 +68,23 @@ export const FEATHER: Record<Feather, string> = {
    * horizontal rule across the page and read as exactly the boxed-off rectangle the
    * feather exists to prevent.
    *
-   * 35% of the height at the top, 45% at the bottom, 20% across the leading edge.
-   * The ramps do not meet, so the subject keeps a fully opaque middle, and each
-   * one clears the 120px floor at every breakpoint this figure is used at (110px
-   * at the narrowest, 4/3 at 390px, which is the one case that is close).
+   * 10% of the height at the top, 20% at the bottom, 8% across the leading edge.
+   *
+   * These were 35 / 45 / 20, and at those lengths `mask-composite: intersect`
+   * left only the band between 35% and 55% of the height fully opaque. Four
+   * fifths of every figure was ramp, so the photograph read as fog with a strip
+   * of picture in it, which is the opposite of the problem the feather was added
+   * to solve. A feather is meant to remove the *edge*, not the subject.
+   *
+   * The scrim compounded it: where a feather reaches the foot, `.scrim-bottom`
+   * paints another half-height of page ground over the same pixels, so the
+   * bottom was washed twice. Judge any change here on the homestay figure on the
+   * home page, at 1440 and at 390, and look at whether you can still read the
+   * copper vessels.
    */
-  crest: "mask-t-from-65% mask-b-from-55% mask-l-from-80%",
-  "crest-right": "mask-t-from-65% mask-b-from-55% mask-r-from-62%",
-  vignette: "mask-radial-from-45% mask-radial-to-95%",
+  crest: "mask-t-from-90% mask-b-from-80% mask-l-from-92%",
+  "crest-right": "mask-t-from-90% mask-b-from-80% mask-r-from-88%",
+  vignette: "mask-radial-from-72% mask-radial-to-100%",
 };
 
 /** Which feathers reach the bottom edge, and therefore need the scrim. */
