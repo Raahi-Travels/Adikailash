@@ -733,31 +733,41 @@
    *
    * Test at 1, 2, 4 and 7 items before shipping anything that uses this.
    */
+  /*
+   * Equal tiles, and no arithmetic that has to know how many there are.
+   *
+   * This was a twelve-column layout that gave every third child a different span
+   * and pushed the second one down by 5rem. With exactly three offerings it read
+   * as arrangement; the founder read it as randomly placed, which is the more
+   * honest description, because nothing in the composition said why the middle
+   * journey sat lower or why the first was wider. Weighting tiles differently is
+   * a claim that one matters more, and these are three ways in, not a ranking.
+   *
+   * It also did not scale. The pattern keys off `3n`, so a fourth journey starts
+   * the cycle again and lands in the wide left span beside a tall gap; five and
+   * seven are worse. The catalogue is expected to grow.
+   *
+   * `auto-fit` with a floor means the browser decides the column count from the
+   * space available, so the same rule holds for three journeys and for eleven,
+   * with no breakpoint to maintain. At 1200px of content a 20rem floor fits three
+   * across and wraps the fourth, which is the density this card wants; on a wider
+   * screen it takes four. `stretch` rather than `start` so a longer summary does
+   * not leave its neighbour short: equal importance has to include equal height.
+   */
   .constellation {
     display: grid;
     gap: var(--stack-block);
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    align-items: stretch;
   }
   @media (min-width: 64rem) {
     .constellation {
-      grid-template-columns: repeat(12, 1fr);
-      gap: clamp(2rem, 5vw, 4.5rem);
-      align-items: start;
+      gap: clamp(1.75rem, 2.5vw, 2.5rem);
     }
-    .constellation > :nth-child(3n + 1) {
-      grid-column: 1 / 8;
-    }
-    .constellation > :nth-child(3n + 2) {
-      grid-column: 8 / 13;
-      margin-block-start: 5rem;
-    }
-    .constellation > :nth-child(3n + 3) {
-      grid-column: 3 / 11;
-    }
-    /* A lone trailing item should not sit in a half-width column looking
-       abandoned; it takes the wide middle span instead. */
-    .constellation > :nth-child(3n + 1):last-child {
-      grid-column: 3 / 11;
-    }
+  }
+  /* The card is the grid item, so it has to fill the row it was stretched to. */
+  .constellation > * {
+    block-size: 100%;
   }
 }
 

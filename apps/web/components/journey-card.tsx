@@ -150,9 +150,20 @@ export function JourneyCard({
         The picture, and nothing else in here, so the slow hover scale moves the
         photograph without moving a single word.
 
-        Ramp check, the rule that decides whether a feather reads as mist or as a
-        defect: `mask-b-from-45%` spends 55% of this box, which is 202px at the
-        shortest height below and 281px at the tallest. Both clear the 200px floor.
+        No feather on a card, and that is a reversal.
+
+        The picture used to dissolve into the card's own midnight ground so the
+        words could start inside the fade. It worked as a diagram of an idea and
+        it looked like a printing fault: the bottom third of every photograph
+        went to fog, and on a card the fog has nowhere to go, because the card is
+        a hard-edged object sitting on a page rather than a picture bleeding into
+        one. Feathering suits a figure that has to leave its frame. A card IS the
+        frame.
+
+        What makes it lift instead is the edge itself: a crisp photograph, a
+        solid caption block under it, both clipped by the card radius, and the
+        elevation doing the separating. That is the editorial move, and it is
+        also the honest one, because nothing about the picture is hidden.
       */}
       <div
         className={`relative w-full overflow-hidden ${
@@ -164,7 +175,7 @@ export function JourneyCard({
             name={scene.key}
             fill
             grade
-            feather="bottom"
+            feather="none"
             scrim={false}
             radius="none"
             sizes={
@@ -182,11 +193,12 @@ export function JourneyCard({
         ancestor: put `relative` here and the tap target silently shrinks to the
         text block while nothing looks any different.
 
-        Barely any top padding, because the last fifth of the picture above is
-        already almost transparent: the words start inside the fade rather than
-        below a gap, without ever landing on anything bright enough to fight them.
+        Real top padding now. `pt-1` existed because the words were meant to begin
+        inside a fade; with a hard edge above them they need the same breathing
+        room as any caption under any photograph, or they read as having fallen
+        out of the picture.
       */}
-      <div className="px-6 pb-6 pt-1 sm:px-8 sm:pb-8 sm:pt-2">
+      <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-8 sm:pb-8 sm:pt-7">
         <p className="type-meta text-tone-muted">{familyLabel(journey.family)}</p>
 
         <h3
@@ -208,7 +220,24 @@ export function JourneyCard({
           </p>
         )}
 
-        <dl className="mt-7 flex flex-wrap gap-x-8 gap-y-4">
+        {/*
+          Three fixed columns, not a wrapping flex row.
+
+          Wrapping means each card breaks wherever its own values happen to run
+          out of room: the flagship's gateway is "Kathgodam / Pithoragarh" and it
+          pushed the third fact onto a second line, so one card's facts sat on a
+          different baseline from its neighbours'. Three columns put Nights, From
+          and Highest point in the same place on every card no matter how long a
+          gateway is, which is the point of showing them side by side. Long values
+          wrap inside their own column instead of moving anybody else.
+
+          `mt-auto` pins the block to the foot of the card. Summaries are written
+          by a person and will never be the same length, so without it the facts
+          floated to wherever each summary happened to stop and the three rows of
+          labels sat at three different heights. The tiles are the same height
+          already; the things a reader compares across them have to be too.
+        */}
+        <dl className="mt-auto grid grid-cols-3 gap-x-4 gap-y-4 pt-7">
           <Fact
             label="Nights"
             value={journey.duration_nights ? String(journey.duration_nights) : null}
