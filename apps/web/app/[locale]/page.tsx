@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 
+import { ActionBar } from "@/components/action-bar";
 import { HeroStatus } from "@/components/hero-status";
 import { JourneyCard } from "@/components/journey-card";
 import { RouteProfile } from "@/components/route-profile";
@@ -86,6 +87,7 @@ const COPY = {
     routeLink: "Every segment, with who checked it",
     closeLead: "Talk to someone who lives in Pithoragarh and has driven this road.",
     closeHours: "Someone answers",
+    barAction: "Talk to us",
     factHighest: "Highest ground",
     factHighestNote: "Jyolingkong, the base below Adi Kailash",
     factDocs: "Documents required",
@@ -128,6 +130,7 @@ const COPY = {
     closeLead:
       "उस व्यक्ति से बात करें जो पिथौरागढ़ में रहता है और इस सड़क पर गाड़ी चला चुका है।",
     closeHours: "कोई जवाब देता है",
+    barAction: "हमसे बात करें",
     factHighest: "सबसे ऊँचा स्थान",
     factHighestNote: "ज्योलिंगकोंग, आदि कैलाश के नीचे का पड़ाव",
     factDocs: "ज़रूरी दस्तावेज़",
@@ -427,7 +430,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
                 unequal vertical offsets, so each photograph gets a different crop
                 and the row stops reading as one template printed three times.
               */}
-              <Constellation className="reveal mt-[var(--stack-block)]">
+              {/* The reveal moved onto the cards themselves. On the container
+                  the whole grid rose as one block, which is why a stagger had
+                  nothing to stagger: there was a single animated element. */}
+              <Constellation className="mt-[var(--stack-block)]">
                 {journeys.map((journey) => (
                   <JourneyCard key={journey.id} journey={journey} />
                 ))}
@@ -570,6 +576,21 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           </p>
         </Content>
       </section>
+
+      {/*
+        The phone's standing offer. Server-rendered with the same readings the
+        hero bar uses, so the two can never disagree by a verification.
+      */}
+      <ActionBar
+        href={wa ?? "/enquire"}
+        /* A short label, not the hero's "Speak to a Journey Guide". Every bar in
+           the survey uses two or three words, and the reason shows up the moment
+           you build one: a long button squeezes the live reading beside it into
+           an ellipsis, and the reading is the half a competitor cannot fake. */
+        action={t.barAction}
+        condition={`${confirmed} ${t.of} ${legs.length} ${t.factLegs.toLowerCase()}`}
+        conditionHref="/status"
+      />
     </main>
   );
 }

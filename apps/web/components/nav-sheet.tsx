@@ -32,6 +32,7 @@ export function NavSheet({
   extra,
   title,
   openLabel,
+  menuWord,
   closeLabel,
 }: {
   /** The main navigation, in the same order as the desktop pill. */
@@ -41,6 +42,9 @@ export function NavSheet({
   /** The brand string, shown as the sheet's heading. */
   title: string;
   openLabel: string;
+  /** The short visible word. `openLabel` stays the accessible name: "Open menu"
+      is the right thing to announce and the wrong thing to print in a pill. */
+  menuWord: string;
   closeLabel: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -120,11 +124,25 @@ export function NavSheet({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen(true)}
+        aria-label={openLabel}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="pointer-events-auto -mr-1 grid size-11 shrink-0 place-items-center rounded-pill text-tone-strong transition-transform duration-[var(--dur-press)] ease-standard active:scale-[0.94] motion-reduce:transition-none motion-reduce:active:scale-100 lg:hidden"
+        className="pointer-events-auto -mr-1 flex min-h-11 shrink-0 items-center gap-2 rounded-pill px-2 text-tone-strong transition-transform duration-[var(--dur-press)] ease-standard active:scale-[0.94] motion-reduce:transition-none motion-reduce:active:scale-100 lg:hidden"
       >
-        <span className="sr-only">{openLabel}</span>
+        {/*
+          The word, not just the bars.
+
+          Six of six travel apps surveyed on Mobbin (Booking, Expedia, Marriott,
+          Hyatt, IHG, Vrbo) put navigation in a persistent bottom tab bar and not
+          one of them uses a bare hamburger; IHG puts its overflow behind a tab
+          labelled "More". The reason is the obvious one: an icon with no label
+          is a guess, and a reader who does not take the guess never learns the
+          site has five other pages.
+
+          A website with six destinations does not want an app's tab bar, but it
+          does want the label. The bars stay, because they are the learned
+          affordance, and the word removes the guess.
+        */}
         <svg viewBox="0 0 24 24" aria-hidden className="size-6" fill="none">
           <path
             d="M4 8h16M4 16h16"
@@ -133,6 +151,7 @@ export function NavSheet({
             strokeLinecap="round"
           />
         </svg>
+        <span aria-hidden className="type-meta pr-1 font-medium">{menuWord}</span>
       </button>
 
       {/*

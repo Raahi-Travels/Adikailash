@@ -62,6 +62,7 @@ const COPY = {
     permitTitle: "Permits are not being issued.",
     permitShort: "The district portal has suspended Inner Line Permits.",
     legsLabel: "legs confirmed",
+    toLabel: "to",
     permitBody:
       "The district portal has suspended Inner Line Permits, so nobody is travelling above Chiyalekh at the moment, us included.",
     ask: "Ask about your dates on WhatsApp",
@@ -83,6 +84,7 @@ const COPY = {
     permitTitle: "परमिट जारी नहीं हो रहे।",
     permitShort: "ज़िला पोर्टल ने इनर लाइन परमिट रोक दिए हैं।",
     legsLabel: "हिस्से पुष्ट",
+    toLabel: "से",
     permitBody:
       "ज़िला पोर्टल ने इनर लाइन परमिट रोक दिए हैं, इसलिए इस समय च्यालेख से ऊपर कोई नहीं जा रहा, हम भी नहीं।",
     ask: "अपनी तारीख़ों के बारे में व्हाट्सएप पर पूछें",
@@ -150,6 +152,31 @@ export function HeroStatus({
   // keep turning away enquiries after the portal reopened, and the production host
   // is in a country this portal refuses to talk to, so "stale" is the normal case
   // rather than the rare one.
+  /* Highest ground first, and only if it is fresh, so "the reading that matters"
+     does not depend on the order the API happens to return rows in.
+
+     Ranked in both scripts, because the API localises `place`: on /hi the rows
+     come back as गुंजी and आदि कैलाश, so an English-only list matched nothing,
+     every station tied at the bottom, and the bar quietly showed whichever row
+     happened to be first. It read as a working feature and it was picking a
+     station at random. A lookup keyed on data the API translates has to carry
+     every form of that data or it fails silently in exactly one locale. */
+  const WEATHER_RANK = [
+    ["Adi Kailash", "आदि कैलाश"],
+    ["Nabhidhang", "नाभीढांग"],
+    ["Gunji", "गुंजी"],
+    ["Dharchula", "धारचूला"],
+    ["Pithoragarh", "पिथौरागढ़"],
+  ];
+  const rankOf = (place: string) => {
+    const i = WEATHER_RANK.findIndex((names) => names.includes(place));
+    return i === -1 ? 99 : i;
+  };
+  const topWeather =
+    data.weather
+      ?.filter((w) => !w.is_stale)
+      .sort((a, b) => rankOf(a.place) - rankOf(b.place))[0] ?? null;
+
   const permit = live?.permit_portal;
   const notIssuing =
     permit != null &&
@@ -204,6 +231,35 @@ export function HeroStatus({
           </span>{" "}
           {t.legsLabel}
         </p>
+
+        {/*
+          The live reading that was already arriving and had nowhere to go.
+
+          The panel called itself "Live route status" and showed nothing live,
+          because it only ever looked at `routes`, and `routes` is empty until a
+          coordinator drives a leg and says so. Meanwhile the same response
+          carries five weather readings, refreshed every eight hours and
+          corrected for elevation, including the ground below Adi Kailash. That
+          is genuinely live, genuinely ours, and it was being thrown away on the
+          one surface whose whole argument is that we report what we know.
+
+          The highest reading rather than an average: this is a page about
+          altitude, and what the weather is doing at 4,570 m is the number that
+          decides a journey. Rendered only when the reading is fresh, because a
+          stale temperature is exactly the "old yes" this site refuses.
+        */}
+        {topWeather && (
+          <p className="type-meta shrink-0 text-tone-on-glass">
+            <span className="font-semibold">{topWeather.place}</span>{" "}
+            {topWeather.temp_min_c !== null && topWeather.temp_max_c !== null && (
+              <span className="type-reading">
+                {Math.round(topWeather.temp_min_c)}
+                {"\u00b0"} {t.toLabel} {Math.round(topWeather.temp_max_c)}
+                {"\u00b0"}
+              </span>
+            )}
+          </p>
+        )}
 
         <Link
           href="/status"

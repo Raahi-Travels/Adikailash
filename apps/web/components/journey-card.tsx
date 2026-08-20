@@ -111,7 +111,12 @@ export function JourneyCard({
   return (
     <article
       className={[
-        "group relative isolate flex flex-col overflow-hidden",
+        // `reveal` sits here rather than on the grid. On the container the whole
+        // row rose as one element, so there was nothing to stagger; per card,
+        // the row resolves across as it enters. Content is visible by default
+        // and the animation is progress-mapped, so a headless renderer or a
+        // hidden tab still ships a fully painted card.
+        "reveal group relative isolate flex flex-col overflow-hidden",
         // `register-dark` carries the midnight fill and flips every tone token, so
         // the words read exactly as they would on any dark band. `ground-none`
         // takes the luminosity wash back off that fill: the picture's mask has to

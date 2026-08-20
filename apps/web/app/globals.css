@@ -1517,6 +1517,30 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
 
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
+      /*
+        A stagger, expressed as range rather than delay.
+
+        These reveals are progress-mapped, not time-based: `animation-delay` does
+        nothing on a view() timeline because there is no clock to delay against.
+        The equivalent is to start each sibling a little further into its own
+        entry, so a row of cards resolves left to right as the row rises instead
+        of the three of them snapping into place together. Capped at the fourth
+        child: past that the last card in a long catalogue would still be
+        settling when it is already fully on screen.
+      */
+      .constellation > :nth-child(2) .reveal,
+      .constellation > :nth-child(2).reveal {
+        animation-range: entry 6% entry 52%;
+      }
+      .constellation > :nth-child(3) .reveal,
+      .constellation > :nth-child(3).reveal {
+        animation-range: entry 12% entry 58%;
+      }
+      .constellation > :nth-child(n + 4) .reveal,
+      .constellation > :nth-child(n + 4).reveal {
+        animation-range: entry 18% entry 64%;
+      }
+
       .reveal {
         animation: sn-rise linear both;
         animation-timeline: view();

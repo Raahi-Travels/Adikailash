@@ -220,8 +220,19 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                  moving the label or changing the type. */
               className="type-meta inline-flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-pill px-2 text-tone-body transition-colors duration-[var(--dur-fast)] hover:text-tone-strong"
             >
+              {/*
+                "हिंदी" and "English", not "हि" and "EN".
+
+                The two-character form was chosen to keep the header on one line,
+                and it half-worked: "हि" is a consonant plus a vowel sign with no
+                inherent vowel, so it is not a word, it is the start of one. A
+                reader scanning for their own language sees a fragment. The
+                switcher now says the language it switches TO, in that language,
+                which is what a bilingual reader is actually looking for. It fits
+                because the mobile pill no longer carries the five nav links.
+              */}
               <span aria-hidden className="sm:hidden">
-                {other === "hi" ? "हि" : "EN"}
+                {other === "hi" ? "हिंदी" : "English"}
               </span>
               <span aria-hidden className="hidden sm:inline">
                 {tc("switchLanguage")}
@@ -256,6 +267,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               extra={FOOTER_NAV}
               title={wordmark}
               openLabel={tc("openMenu")}
+              menuWord={tc("menuWord")}
               closeLabel={tc("closeMenu")}
             />
           </div>
