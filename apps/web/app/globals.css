@@ -1131,9 +1131,18 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
    * bright picture on both sides of it, so there is nowhere for a directional
    * gradient to hide the contrast it needs.
    */
+  /* Concentrated where the words are, and gone by the edges, so the picture
+     survives at the frame while the centred copy keeps its contrast. Carries
+     more weight in the middle than it used to, because it is now doing the job
+     three stacked passes were sharing. */
   .scrim-centre {
     background:
-      radial-gradient(ellipse 60% 55% at 50% 50%, var(--color-scrim) 0%, transparent 75%);
+      radial-gradient(
+        ellipse 52% 48% at 50% 50%,
+        var(--color-scrim) 0%,
+        color-mix(in oklab, var(--color-scrim) 72%, transparent) 46%,
+        transparent 78%
+      );
   }
 
   .scrim-top {

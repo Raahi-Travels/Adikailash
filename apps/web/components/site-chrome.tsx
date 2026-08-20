@@ -291,19 +291,31 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
         short; the gap does not have to carry the whole hierarchy on its own.
       */}
       <div className="mx-auto flex max-w-6xl flex-col gap-[var(--space-xl)]">
-        <div className="flex items-center gap-2.5 text-tone-strong">
-          <Mark className="size-6 text-gold" />
-          {/* One brand string, the same one the header wears. */}
-          <span className="wordmark">{display(brand.identity.shortName)}</span>
-        </div>
+        {/*
+          The brand block and the facts sit on one row now.
 
-        <div className="grid gap-[var(--space-lg)] sm:grid-cols-3 sm:gap-[var(--space-xl)]">
-          {/* The promise used to be repeated here. It is the closing line of the
-              landing page, set large, and reprinting it three hundred pixels
-              lower in body size read as an echo rather than a signature. The
-              footer's job below this point is contact, obligation and law. */}
-          <p className="type-body">{displayLocalized(brand.identity.tagline, locale)}</p>
+          The wordmark used to be a row of its own with the tagline stranded in
+          the first of three equal columns underneath it, so the left third held
+          two short lines, the right third held nothing at all below "Where we
+          are", and the whole foot of the site read as a page that had run out
+          rather than one that had finished. A footer is the last thing a reader
+          sees; sparse is not the same as calm.
 
+          Twelve columns: identity takes four and keeps the mark and the line it
+          belongs with together, and the two fact columns take four each so the
+          row actually reaches the right edge.
+        */}
+        <div className="grid gap-[var(--space-lg)] lg:grid-cols-12 lg:gap-[var(--space-xl)]">
+          <div className="lg:col-span-4">
+            <div className="flex items-center gap-2.5 text-tone-strong">
+              <Mark className="size-6 text-gold" />
+              {/* One brand string, the same one the header wears. */}
+              <span className="wordmark">{display(brand.identity.shortName)}</span>
+            </div>
+            <p className="type-body mt-3 max-w-[26ch]">
+              {displayLocalized(brand.identity.tagline, locale)}
+            </p>
+          </div>
           {/*
             Doc 06: the site "must not imply that a partner's registration belongs to
             the brand owner". O1 and O2 settled on 17 Aug 2026 as the same entity, so
@@ -314,7 +326,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             out the fallback had become unreachable, and this keeps working if either
             value ever returns to undecided.
           */}
-          <div>
+          <div className="lg:col-span-4">
             <h2 className="type-meta text-tone-strong">Who you contract with</h2>
             <p className="type-meta mt-2">{display(entity)}</p>
             {/* One line when one entity does both, which is the case today. Printing
@@ -325,7 +337,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             )}
           </div>
 
-          <div>
+          <div className="lg:col-span-4">
             <h2 className="type-meta text-tone-strong">Where we are</h2>
             <p className="type-meta mt-2">{display(brand.contact.baseCity)}</p>
             <p className="type-meta mt-1">{display(brand.contact.supportHours)}</p>

@@ -372,8 +372,21 @@ export function SceneBackdrop({
       ) : (
         <>
           {/* Centred copy has bright picture on both sides of it, so there is
-              nowhere for a directional gradient to hide the contrast it needs. */}
-          <div className="absolute inset-0 bg-scrim/70" />
+              nowhere for a directional gradient to hide the contrast it needs.
+
+              The flat pass used to be `bg-scrim/70`, which is 70% navy over the
+              entire frame, and it sat under a radial and a wash on top of that.
+              Three passes to solve one problem, and the result was a photograph
+              nobody could see: the checkpost barrier below Chiyalekh, which is
+              the actual gate this page spends its whole length describing.
+              Darkening everything to make a paragraph legible spends the picture
+              to save the text, when the radial carries most of it.
+
+              38% and not less: at 28% the picture looked better and the closing
+              headline measured 2.86:1 against the brightest sky behind it, under
+              the 3:1 floor for display type. This is the number where the barrier
+              is visible and the words still clear the floor. */}
+          <div className="absolute inset-0 bg-scrim/38" />
           <div className="scrim-centre absolute inset-0" />
         </>
       )}

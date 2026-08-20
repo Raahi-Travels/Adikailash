@@ -118,41 +118,6 @@ const H_TERRAIN =
   "C377,265 423,178 470,178 C517,178 563,154 610,154 " +
   "C690,156 845,148 930,78 L1000,70 L1000,320 L0,320 Z";
 
-/* ------------------------------------------------------------------ vertical */
-
-const V_LEFT = 24;
-const V_RIGHT = 176;
-
-const VY: Record<string, number> = {
-  pithoragarh: 44,
-  dharchula: 126,
-  tawaghat: 208,
-  budhi: 290,
-  gunji: 372,
-  nabhidhang: 454,
-  jyolingkong: 536,
-};
-
-function vx(altitudeM: number) {
-  const t = (altitudeM - ALT_MIN) / (ALT_MAX - ALT_MIN);
-  return V_LEFT + t * (V_RIGHT - V_LEFT);
-}
-
-/** The same profile turned a quarter turn: altitude across, the road downward. */
-const V_LEG: Record<string, string> = {
-  dharchula: "M59,44 C59,71 32,99 32,126",
-  tawaghat: "M32,126 C32,153 39,181 39,208",
-  budhi: "M39,208 C39,235 98,263 98,290",
-  gunji: "M98,290 C98,317 115,345 115,372",
-  nabhidhang: "M115,372 C115,399 156,427 156,454",
-  jyolingkong: "M115,372 C108,450 150,500 168,536",
-};
-
-const V_TERRAIN =
-  "M59,0 L59,44 C59,71 32,99 32,126 C32,153 39,181 39,208 " +
-  "C39,235 98,263 98,290 C98,317 115,345 115,372 " +
-  "C108,450 150,500 168,536 L168,592 L0,592 L0,0 Z";
-
 /* ---------------------------------------------------------------------------- */
 
 type RouteLike = {
@@ -258,126 +223,80 @@ export function RouteProfile({
           whole road out before the reader reaches the verification detail.
           --------------------------------------------------------------- */}
 
-      {/* Phone: altitude runs across, the road runs down. */}
-      <svg
-        viewBox="0 0 350 592"
-        className="w-full max-w-[27rem] text-tone-strong lg:hidden"
-        aria-hidden="true"
-        role="presentation"
-      >
-        <defs>
-          <linearGradient id="rp-v-fill" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
-            <stop offset="52%" stopColor="var(--color-gold)" stopOpacity="0.14" />
-            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.42" />
-          </linearGradient>
-          {/* The ground and the grid leave the frame by dissolving, not by
-              stopping on a line. Same rule the photographs follow. */}
-          <linearGradient id="rp-v-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0" />
-            <stop offset="9%" stopColor="#fff" stopOpacity="1" />
-            <stop offset="90%" stopColor="#fff" stopOpacity="1" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="rp-v-base" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
-            <stop offset="26%" stopColor="var(--color-gold)" stopOpacity="0.05" />
-            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.08" />
-          </linearGradient>
-          <mask id="rp-v-edge" maskUnits="userSpaceOnUse" x="0" y="0" width="350" height="592">
-            <rect width="350" height="592" fill="url(#rp-v-fade)" />
-          </mask>
-        </defs>
+      {/* ----------------------------------------------------------------
+          Phone: a climb, read down the page.
 
-        <g mask="url(#rp-v-edge)">
-          <path d={V_TERRAIN} fill="url(#rp-v-base)" />
-          <path d={V_TERRAIN} fill="url(#rp-v-fill)" />
-          {GRID_V.map((m) => (
-            <line
-              key={m}
-              x1={vx(m)}
-              x2={vx(m)}
-              y1="0"
-              y2="592"
-              stroke="currentColor"
-              strokeOpacity="0.16"
-              strokeWidth="1"
-            />
-          ))}
-        </g>
-        {GRID_V.map((m) => (
-          <text
-            key={m}
-            x={vx(m)}
-            y="14"
-            textAnchor="middle"
-            className="type-reading"
-            fill="currentColor"
-            fillOpacity="0.62"
-            fontSize="15"
-          >
-            {m.toLocaleString("en-IN")} m
-          </text>
-        ))}
+          This was the desktop chart turned on its side, so altitude ran across
+          and the road ran down. It measured fine and it read backwards: moving
+          *down* the screen meant going *up* the mountain, and the one thing this
+          diagram exists to say is how high the road goes. A 1000-unit profile
+          squeezed into 350 is a picture of a chart rather than a chart.
 
-        {Object.values(V_LEG).map((d) => (
-          <path
-            key={d}
-            d={d}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity="0.3"
-            strokeWidth="1.5"
-          />
-        ))}
-        {legs.map(({ station, state }) => (
-          <path
-            key={station.slug}
-            d={V_LEG[station.slug]}
-            fill="none"
-            stroke={STATE_INK[state]}
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeDasharray={STATE_DASH[state]}
-          />
-        ))}
-
+          So the phone gets its own thing. Rows in travel order, top to bottom,
+          which is the direction a reader already scrolls, and altitude as bar
+          length, which is the one comparison that matters. The drop into the
+          Kali gorge shows up as a bar that gets shorter, which is exactly what
+          the road does and what no operator map draws. The two arms above Gunji
+          are indented under it, because the route genuinely forks and a single
+          descending list would claim a continuous climb that does not exist.
+          --------------------------------------------------------------- */}
+      <ol className="lg:hidden" aria-hidden="true">
         {STATIONS.map((station) => {
-          const x = vx(station.altitudeM);
-          const y = VY[station.slug];
+          /* Scaled from a 700m floor rather than from zero: nothing on this road
+             is near sea level, and anchoring at zero spends most of every bar on
+             altitude the journey never visits, which flattens the differences
+             the diagram is for. */
+          const pct = Math.max(
+            6,
+            ((station.altitudeM - 700) / (4800 - 700)) * 100,
+          );
+          const forked = station.branch !== "trunk";
+          const state = station.from
+            ? (legStatus(routes, station)?.state ?? "unknown")
+            : "open";
           return (
-            <g key={station.slug}>
-              <circle
-                cx={x}
-                cy={y}
-                r="5.5"
-                fill="var(--color-tone-raised)"
-                stroke={STATE_INK[stateOf(station)]}
-                strokeWidth="2.5"
-              />
-              <text
-                x={x + 15}
-                y={y - 2}
-                fill="currentColor"
-                fontSize="16"
-                fontWeight="600"
-              >
-                {station.name}
-              </text>
-              <text
-                x={x + 15}
-                y={y + 19}
-                className="type-reading"
-                fill="currentColor"
-                fillOpacity="0.66"
-                fontSize="15"
-              >
-                {metres(station.altitudeM, station.confidence === "approximate")}
-              </text>
-            </g>
+            <li
+              key={station.slug}
+              className={`py-3 ${forked ? "ml-4 border-l border-tone-line pl-4" : ""}`}
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="type-meta font-semibold text-tone-strong">
+                  {station.name}
+                </span>
+                <span className="type-reading type-meta shrink-0 text-tone-muted">
+                  {metres(station.altitudeM, station.confidence === "approximate")}
+                </span>
+              </div>
+              {/* The bar. Gold gets stronger with height, so the top of the road
+                  is also the brightest thing in the column. */}
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-tone-line">
+                <div
+                  className="h-full rounded-pill"
+                  style={{
+                    width: `${pct}%`,
+                    background: `color-mix(in oklab, var(--color-gold) ${Math.round(
+                      35 + pct * 0.65,
+                    )}%, transparent)`,
+                  }}
+                />
+              </div>
+              {station.note && (
+                <p className="type-meta measure-meta mt-2 text-tone-muted">
+                  {station.note}
+                </p>
+              )}
+              {station.from && (
+                <p className="type-meta mt-1.5 flex items-center gap-2">
+                  <StateGlyph state={state} />
+                  <span className="text-tone-muted">
+                    {stationName(station.from)} to {station.name}
+                  </span>
+                </p>
+              )}
+            </li>
           );
         })}
-      </svg>
+      </ol>
 
       {/* Desktop: the conventional elevation profile, with room for the fork. */}
       <svg
@@ -388,9 +307,9 @@ export function RouteProfile({
       >
         <defs>
           <linearGradient id="rp-h-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.34" />
-            <stop offset="55%" stopColor="var(--color-gold)" stopOpacity="0.1" />
-            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.52" />
+            <stop offset="42%" stopColor="var(--color-gold)" stopOpacity="0.20" />
+            <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.02" />
           </linearGradient>
           <linearGradient id="rp-h-fade" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#fff" stopOpacity="0" />
@@ -401,9 +320,9 @@ export function RouteProfile({
           {/* The base mass, faded out at the foot so the fill does not end on a
               horizontal line at the bottom of the box. */}
           <linearGradient id="rp-h-base" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.09" />
-            <stop offset="62%" stopColor="var(--color-gold)" stopOpacity="0.075" />
-            <stop offset="88%" stopColor="var(--color-gold)" stopOpacity="0.03" />
+            <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.16" />
+            <stop offset="62%" stopColor="var(--color-gold)" stopOpacity="0.12" />
+            <stop offset="88%" stopColor="var(--color-gold)" stopOpacity="0.05" />
             <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
           </linearGradient>
           <mask id="rp-h-edge" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="320">
@@ -457,8 +376,8 @@ export function RouteProfile({
             d={d}
             fill="none"
             stroke="currentColor"
-            strokeOpacity="0.3"
-            strokeWidth="1.5"
+            strokeOpacity="0.22"
+            strokeWidth="2"
           />
         ))}
         {legs.map(({ station, state }) => (
@@ -467,8 +386,9 @@ export function RouteProfile({
             d={H_LEG[station.slug]}
             fill="none"
             stroke={STATE_INK[state]}
-            strokeWidth="3"
+            strokeWidth="4"
             strokeLinecap="round"
+            strokeLinejoin="round"
             strokeDasharray={STATE_DASH[state]}
           />
         ))}
@@ -478,12 +398,32 @@ export function RouteProfile({
           const y = hy(station.altitudeM);
           return (
             <g key={station.slug}>
+              {/* The two arms above Gunji do not merely end, they arrive: one
+                  below Adi Kailash, one at the viewpoint for Om Parvat. A halo
+                  on those two nodes is the only place the diagram says which
+                  points are the destination rather than a stop on the way, and
+                  it does it without a word, so it costs nothing in Hindi. */}
+              {station.branch !== "trunk" && (
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="13"
+                  fill="none"
+                  stroke="var(--color-gold)"
+                  strokeOpacity="0.32"
+                  strokeWidth="1.5"
+                />
+              )}
               <circle
                 cx={x}
                 cy={y}
-                r="5.5"
+                r={station.branch !== "trunk" ? 7 : 5.5}
                 fill="var(--color-tone-raised)"
-                stroke={STATE_INK[stateOf(station)]}
+                stroke={
+                  station.branch !== "trunk"
+                    ? "var(--color-gold)"
+                    : STATE_INK[stateOf(station)]
+                }
                 strokeWidth="2.5"
               />
               <text

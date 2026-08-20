@@ -408,7 +408,11 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         have verified, and the ground says so before a word is read.
       */}
       <Band register="light" glow grain>
-        <Content>
+        {/* `wide`: this band is a row of pictures, not a run of prose. At the
+            reading width the cards came out 352px across on a 1600px screen with
+            400px of margin doing nothing either side. The heading and lead below
+            keep their own measure caps, so only the grid gets the extra room. */}
+        <Content wide>
           <h2 className="type-title-1 max-w-[18ch]">
             {t.journeysHeading(journeys?.length ?? 0, typed)}
           </h2>
@@ -440,12 +444,18 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       {/*
         3. THE ROOM. Still light: an offer, not a reading.
 
-        The page's one sanctioned grid break. The photograph leaves the reading
-        column and runs to the viewport edge, feathering into the snow ground at its
-        foot rather than ending on a rounded rectangle, and the argument continues
-        underneath it. A picture bordered on four sides reads as an illustration
-        dropped into an article; one that leaves the frame reads as the room the
-        paragraph is describing.
+        The photograph used to break the grid, running from the reading column out
+        to the viewport edge and feathering into the snow at its foot. The idea was
+        that a picture bordered on four sides reads as an illustration dropped into
+        an article, while one that leaves the frame reads as the room itself.
+
+        Two things went wrong with it. The feather put a white haze over the
+        subject from every side, which is worse on a light band than a dark one
+        because the ramp crosses the whole tonal range on its way to cream. And
+        anchoring at the content edge while bleeding off the right made it sit
+        visibly left of everything above it, with no compositional reason a reader
+        could see. Now that it carries a frame, bleeding off one edge fights the
+        frame, so it sits in the column, centred, at full content width.
       */}
       <Band register="light" tight>
         <BleedGrid>
@@ -459,7 +469,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <PhotoFigure
             name="homestay-kitchen"
             register="light"
-            className="reveal pop-right mt-[var(--stack-block)]"
+            className="reveal mt-[var(--stack-block)]"
             caption={t.homestayCaption}
             sizes="(min-width: 1024px) 68vw, calc(100vw * 1.35)"
           />

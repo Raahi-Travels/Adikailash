@@ -13,7 +13,8 @@ import type { SceneKey } from "@/lib/imagery";
 /**
  * `photo-figure`: an inline figure that dissolves into the ground.
  *
- * The picture has **no radius**, because its feathered edges would clip at full
+ * The picture carries the site radius and an elevation step rather than a
+ * feather. It had neither, on the theory that feathered edges would clip
  * opacity against a rounded corner and leave a notch. It has a mask and a scrim,
  * always together, because a mask alone goes muddy over snow and a scrim alone
  * leaves the hard edge.
@@ -73,18 +74,27 @@ export function PhotoFigure({
   return (
     <figure className={className}>
       {/*
-        16/10 on a desktop, 4/3 on a phone. The aspect changes because the crop
-        does: a 16/10 letterbox at 390px leaves a 244px-tall strip, which is under
-        the ramp-length floor for its own feather.
+        16/10 on a desktop, 4/3 on a phone, because the crop changes: a 16/10
+        letterbox at 390px leaves a 244px strip with nothing readable in it.
+
+        No feather, and this is the same correction the journey card needed. The
+        four edges used to ramp into the page ground so the picture would not
+        read as a rectangle dropped on a page. What it actually produced was a
+        white haze eating the subject from every side, worst on a light band
+        where the ramp passes through the whole tonal range on its way to cream.
+        A feather suits a photograph that genuinely bleeds off the layout. This
+        one sits in a column with a caption under it, which is a framed figure,
+        so it gets a frame: crisp edge, the site radius, and elevation to lift it
+        off the ground. Same language as the cards, which is the point.
       */}
-      <div className="relative aspect-4/3 w-full md:aspect-16/10">
+      <div className="relative aspect-4/3 w-full overflow-hidden rounded-frame lift-2 md:aspect-16/10">
         <Scene
           name={name}
           fill
           sizes={sizes}
           grade={grade}
           priority={priority}
-          feather={register === "dark" ? "crest-right" : "crest"}
+          feather="none"
           radius="none"
         />
       </div>

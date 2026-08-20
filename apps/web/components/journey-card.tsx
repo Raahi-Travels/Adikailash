@@ -165,9 +165,19 @@ export function JourneyCard({
         elevation doing the separating. That is the editorial move, and it is
         also the honest one, because nothing about the picture is hidden.
       */}
+      {/*
+        An aspect ratio, not a fixed height.
+
+        `h-[26rem]` was 416px tall inside a 352px-wide card, so every landscape
+        photograph was being cropped to a portrait slot and the card came out
+        352 by 839, a 1:2.4 sliver. These pictures are valleys and ridgelines;
+        cropping them upright throws away the part that makes them worth showing.
+        A ratio keeps the crop landscape at every column count the grid can
+        produce, and lets the card height follow its width instead of fighting it.
+      */}
       <div
         className={`relative w-full overflow-hidden ${
-          lead ? "h-[26rem] sm:h-[32rem]" : "h-[23rem] sm:h-[26rem]"
+          lead ? "aspect-[3/2]" : "aspect-[4/3]"
         }`}
       >
         <div className="absolute inset-0 transition-transform duration-[var(--dur-image)] ease-out-soft group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
@@ -198,7 +208,7 @@ export function JourneyCard({
         room as any caption under any photograph, or they read as having fallen
         out of the picture.
       */}
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-8 sm:pb-8 sm:pt-7">
+      <div className="@container flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-8 sm:pb-8 sm:pt-7">
         <p className="type-meta text-tone-muted">{familyLabel(journey.family)}</p>
 
         <h3
@@ -236,8 +246,16 @@ export function JourneyCard({
           floated to wherever each summary happened to stop and the three rows of
           labels sat at three different heights. The tiles are the same height
           already; the things a reader compares across them have to be too.
+
+          Two columns until the card itself is wide enough for three, measured on
+          the card with a container query rather than on the viewport. Three
+          columns inside a 352px card gave each fact 85px, which broke "Highest
+          point" over two lines and "Kathgodam / Pithoragarh" over two more: the
+          alignment was right and the fit was not. A media query cannot express
+          this, because the same card is 352px in a three-across row and 550px in
+          a two-across one at the identical viewport width.
         */}
-        <dl className="mt-auto grid grid-cols-3 gap-x-4 gap-y-4 pt-7">
+        <dl className="mt-auto grid grid-cols-2 gap-x-5 gap-y-4 pt-7 @[26rem]:grid-cols-3">
           <Fact
             label="Nights"
             value={journey.duration_nights ? String(journey.duration_nights) : null}

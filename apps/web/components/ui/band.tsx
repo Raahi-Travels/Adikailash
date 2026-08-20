@@ -113,12 +113,26 @@ export function Band({
 export function Content({
   children,
   className = "",
+  wide = false,
 }: {
   children: ReactNode;
   className?: string;
+  /**
+   * A wider measure, for rows of cards rather than runs of prose.
+   *
+   * 75rem is a reading width and it is the right default: it exists so a
+   * paragraph never runs past 72ch. A grid of pictures is not reading, and at
+   * 1600px the cards were 352px wide with 400px of viewport left empty either
+   * side, which is how a row of tall thin slivers happens on a wide screen.
+   */
+  wide?: boolean;
 }) {
   return (
-    <div className={`mx-auto w-full max-w-[75rem] px-[var(--gutter)] ${className}`}>
+    <div
+      className={`mx-auto w-full px-[var(--gutter)] ${
+        wide ? "max-w-[88rem]" : "max-w-[75rem]"
+      } ${className}`}
+    >
       {children}
     </div>
   );
@@ -149,12 +163,19 @@ export function BleedGrid({
 }
 
 /**
- * A list of three or more, laid out as a constellation rather than a row.
+ * A list of three or more, laid out as equal tiles that reflow.
  *
- * **Three equal boxes in a row is banned site-wide.** Items take unequal column
- * spans and unequal vertical offsets, so each photograph gets a different crop
- * and the row stops reading as one template printed three times. Collapses to a
- * single stacked column below 1024px.
+ * **This used to do the opposite**, giving items unequal spans and vertical
+ * offsets so a row would not read as one template printed three times. The
+ * intent was right and the result was not: with three journeys it read as
+ * randomly placed, because nothing in the composition said why the middle one
+ * sat lower, and weighting tiles differently claims one matters more when these
+ * are three ways in rather than a ranking. It also keyed off `3n`, so a fourth
+ * journey restarted the cycle beside a tall gap.
+ *
+ * What keeps it from reading as a template is the photography and the crop, not
+ * the geometry. The grid itself is `auto-fit` with a floor, so the column count
+ * comes from the space available and one rule covers any catalogue size.
  *
  * Test at 1, 2, 4 and 7 items before you ship anything using it.
  */
