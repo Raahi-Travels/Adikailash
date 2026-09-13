@@ -147,7 +147,22 @@ export function StatusChip({
   const t = TONE[tone];
   return (
     <span
-      style={{ color: `color-mix(in oklab, ${t.ink} 88%, var(--color-tone-strong))` }}
+      /*
+        35% ink, not 88%.
+
+        The chip carries a ring and no fill, so its label sits on whatever the
+        band behind it happens to be, and at 88% ink that measured 2.75:1 for
+        suspended and 2.33:1 for unverified against a 4.5 floor. The state of the
+        road is the single most consequential thing on this page and it was the
+        least readable thing on it.
+
+        The colour signal does not live in the label. Doc 02 requires that status
+        never rely on colour alone, so every chip already carries a per-state
+        glyph and a word, and the ring stays at full tone. Pushing the label
+        toward `--color-tone-strong` keeps the hue as a cast while letting
+        contrast come from lightness. Measured after: 5.38:1 and 4.60:1.
+      */
+      style={{ color: `color-mix(in oklab, ${t.ink} 35%, var(--color-tone-strong))` }}
       className={`type-meta inline-flex items-center gap-2 rounded-pill px-3 py-1.5 font-medium ring-1 ${t.ring} ${className}`}
     >
       <ChipGlyph shape={shape} />
