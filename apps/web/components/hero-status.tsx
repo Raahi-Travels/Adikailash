@@ -1,4 +1,4 @@
-import { GlassPanel } from "@/components/ui/surface";
+import { LiquidGlass } from "@/components/ui/liquid";
 import { Link } from "@/i18n/navigation";
 import { api, type Locale, type LiveSources } from "@/lib/api";
 import { whatsappLink } from "@/lib/brand";
@@ -134,10 +134,10 @@ export function HeroStatus({
   */
   if (data === null) {
     return (
-      <GlassPanel rim label={t.title} className="px-5 py-4 sm:px-6">
+      <LiquidGlass rim label={t.title} className="px-5 py-4 sm:px-6">
         <p className="type-meta measure-meta text-tone-on-glass">{t.unreachable}</p>
         {wa && <Ask href={wa} label={t.ask} />}
-      </GlassPanel>
+      </LiquidGlass>
     );
   }
 
@@ -200,7 +200,7 @@ export function HeroStatus({
       stays to one line: the condition, the count, and a way through. The full ledger
       already exists twice further down this page and in full on /status.
     */
-    <GlassPanel rim label={t.title} className="px-5 py-4 sm:px-6">
+    <LiquidGlass rim label={t.title} className="px-5 py-4 sm:px-6">
       <div className="flex flex-col gap-x-8 gap-y-3.5 lg:flex-row lg:items-center">
         {notIssuing ? (
           <p className="type-meta flex flex-1 items-start gap-3 text-tone-on-glass">
@@ -268,6 +268,6 @@ export function HeroStatus({
           {t.everySegment}
         </Link>
       </div>
-    </GlassPanel>
+    </LiquidGlass>
   );
 }

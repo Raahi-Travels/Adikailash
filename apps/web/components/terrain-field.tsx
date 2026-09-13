@@ -51,6 +51,13 @@ const FRAGMENT = /* glsl */ `
   varying vec2 vUv;
   uniform float uTime;
   uniform float uScroll;
+  /* Signed scroll rate, already clamped and smoothed on the JS side. The field
+     leans against the direction of travel, which is the only cue in this scene
+     that the page has any weight. */
+  uniform float uVelocity;
+  /* Pointer in UV space, parked at the centre on touch, so a coarse pointer
+     produces a still field rather than one stuck wherever the last tap was. */
+  uniform vec2 uPointer;
   uniform float uAspect;
   uniform vec3  uColour;
 
@@ -89,7 +96,19 @@ const FRAGMENT = /* glsl */ `
     // photograph rather than sliding across it.
     p.y += uScroll * 0.45;
 
-    float h = fbm(p + vec2(uTime * 0.010, uTime * 0.004));
+    /* Warp toward the pointer. Inverse-square falloff so the deformation is
+       local: contours bend near the cursor and are untouched a third of the
+       frame away, which reads as the surface having depth rather than as the
+       whole field sliding. */
+    vec2 toPointer = vec2(uPointer.x * uAspect, uPointer.y) * 3.2 - p;
+    float pull = 0.20 / (1.0 + dot(toPointer, toPointer) * 0.6);
+
+    float h = fbm(
+      p
+      + vec2(uTime * 0.010, uTime * 0.004)
+      + toPointer * pull
+      + vec2(0.0, uVelocity * 0.06)
+    );
 
     // Iso-contours: bands of constant height. fwidth keeps the line one pixel wide
     // wherever the gradient is steep, which is what stops the dense areas from
@@ -158,6 +177,8 @@ export function TerrainField({ className = "" }: { className?: string }) {
       uniforms: {
         uTime: { value: 0 },
         uScroll: { value: 0 },
+        uVelocity: { value: 0 },
+        uPointer: { value: new Vector2(0.5, 0.5) },
         uAspect: { value: 1 },
         uColour: { value: rgb },
       },
@@ -202,6 +223,21 @@ export function TerrainField({ className = "" }: { className?: string }) {
 
     let frame = 0;
     const started = performance.now();
+    let lastScroll = window.scrollY / window.innerHeight;
+    let lastTime = started;
+    let velocity = 0;
+
+    /* Pointer in UV space. Fine pointers only: a finger has no hover state, so
+       on touch this stays centred and the warp term resolves to a constant,
+       which is a still field rather than one frozen at the last tap. */
+    const pointer = { x: 0.5, y: 0.5 };
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const onPointer = (event: PointerEvent) => {
+      const r = mount.getBoundingClientRect();
+      pointer.x = (event.clientX - r.left) / r.width;
+      pointer.y = 1 - (event.clientY - r.top) / r.height;
+    };
+    if (fine) window.addEventListener("pointermove", onPointer, { passive: true });
 
     function tick(now: number) {
       // Clearing the handle is what lets the observer restart it. Returning
@@ -215,7 +251,23 @@ export function TerrainField({ className = "" }: { className?: string }) {
       material.uniforms.uTime.value = (now - started) / 1000;
       // Sampled here rather than through a scroll listener: one read per frame that
       // is already scheduled, instead of a handler firing on every scroll event.
-      material.uniforms.uScroll.value = window.scrollY / window.innerHeight;
+      const scroll = window.scrollY / window.innerHeight;
+      material.uniforms.uScroll.value = scroll;
+
+      /* Velocity is differentiated here for the same reason scroll is sampled
+         here: the value is wanted once per painted frame, and a `scroll`
+         listener fires far more often than that on a trackpad. Smoothed toward
+         the instantaneous rate rather than taken raw, because an unsmoothed
+         difference between two frames is mostly noise, and clamped because a
+         fling would otherwise saturate the warp. */
+      const dt = Math.max(now - lastTime, 1);
+      const instant = ((scroll - lastScroll) / dt) * 1000;
+      velocity += (Math.max(-3, Math.min(3, instant)) - velocity) * 0.12;
+      material.uniforms.uVelocity.value = velocity;
+      lastScroll = scroll;
+      lastTime = now;
+
+      material.uniforms.uPointer.value.set(pointer.x, pointer.y);
       renderer.render(scene, camera);
       frame = requestAnimationFrame(tick);
     }
@@ -228,6 +280,10 @@ export function TerrainField({ className = "" }: { className?: string }) {
       frame = requestAnimationFrame(tick);
     }
 
+    const removePointer = () => {
+      if (fine) window.removeEventListener("pointermove", onPointer);
+    };
+
     const onLost = (event: Event) => {
       event.preventDefault();
       cancelAnimationFrame(frame);
@@ -238,6 +294,7 @@ export function TerrainField({ className = "" }: { className?: string }) {
       cancelAnimationFrame(frame);
       observer.disconnect();
       visibility.disconnect();
+      removePointer();
       renderer.domElement.removeEventListener("webglcontextlost", onLost);
       geometry.dispose();
       material.dispose();

@@ -26,6 +26,19 @@
 
 import { chromium } from "playwright-core";
 
+/**
+ * The origin under test.
+ *
+ * Was hardcoded to localhost:3000 in both audit scripts, which is fine until it
+ * is not: `next dev` has `autoPort` on, so when 3000 is busy the server moves and
+ * the audit keeps pointing at 3000. That happened, and the run came back with 192
+ * findings against `a.nav-cta` and `span.brand-full`, classes this codebase has
+ * never contained, because a different project was answering on that port. The
+ * loud version of that failure is an afternoon lost. The quiet version is an audit
+ * that passes because whatever is on 3000 happens to be clean.
+ */
+const BASE = process.env.AUDIT_BASE ?? "http://localhost:3000";
+
 const ONE = process.argv[2];
 const PATHS = ONE
   ? [ONE]
@@ -52,7 +65,7 @@ for (const width of [1440, 1024, 768, 390]) {
   const page = await browser.newPage({ viewport: { width, height: 900 } });
 
   for (const path of PATHS) {
-    await page.goto("http://localhost:3000" + path, { waitUntil: "domcontentloaded" });
+    await page.goto(BASE + path, { waitUntil: "domcontentloaded" });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(900);
 
