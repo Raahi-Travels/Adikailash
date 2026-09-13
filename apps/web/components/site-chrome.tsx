@@ -212,7 +212,16 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="type-meta whitespace-nowrap text-tone-body transition-colors duration-[var(--dur-fast)] hover:text-tone-strong"
+                /* `text-tone-strong`, not `text-tone-body`.
+
+                  Body tone is for paragraphs on a known ground. These sit on
+                  glass over whatever photograph the page happens to open with,
+                  and measured across pages they ran 1.58:1 to 4.45:1 against a
+                  4.5 floor: the primary navigation of the site was the least
+                  legible text on it. Hover already went to strong, so this is
+                  the resting state catching up with the state it was heading
+                  for anyway. */
+                className="type-meta whitespace-nowrap text-tone-strong transition-colors duration-[var(--dur-fast)] hover:text-gold"
               >
                 {item.label}
               </Link>
@@ -234,7 +243,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               /* Measured 27.2x42.7 in English and 33.8x40 in Hindi, both under a
                  44px tap target. Centring inside a 44px box fixes it without
                  moving the label or changing the type. */
-              className="type-meta inline-flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-pill px-2 text-tone-body transition-colors duration-[var(--dur-fast)] hover:text-tone-strong"
+              className="type-meta inline-flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-pill px-2 text-tone-strong transition-colors duration-[var(--dur-fast)] hover:text-gold"
             >
               {/*
                 "हिंदी" and "English", not "हि" and "EN".
