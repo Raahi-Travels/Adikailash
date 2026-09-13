@@ -100,6 +100,29 @@ const OFFSETS = () => {
 };
 
 const COLLECT_AT = () => {
+  /*
+   * Resolve any CSS colour to sRGB, here in the page, with a canvas.
+   *
+   * `parseColor` in the Node half only matches `rgba?()`, and the audit loop
+   * skips anything it cannot parse. That looked harmless and was not: this
+   * codebase declares its tokens in oklch, so most computed colours arrive as
+   * `oklab(...)` or `lab(...)`. Measured on the status page, the audit was
+   * silently skipping 85 of 143 text elements and reporting a small finding
+   * count that read as a clean bill of health for 40% of the page. A checker
+   * that cannot parse a value should handle it or fail loudly; skipping it is a
+   * false pass.
+   */
+  const cv = document.createElement("canvas");
+  cv.width = cv.height = 1;
+  const cx = cv.getContext("2d", { willReadFrequently: true });
+  const RESOLVE = (css) => {
+    cx.fillStyle = "#000";
+    cx.fillStyle = css;
+    cx.fillRect(0, 0, 1, 1);
+    const d = cx.getImageData(0, 0, 1, 1).data;
+    return `rgb(${d[0]}, ${d[1]}, ${d[2]})`;
+  };
+
   const vh = innerHeight, vw = innerWidth, out = [];
   const occluders = [];
   for (const el of document.querySelectorAll("*")) {
@@ -145,7 +168,7 @@ const COLLECT_AT = () => {
     let fw = cs.fontWeight;
     fw = fw === "bold" ? 700 : fw === "normal" ? 400 : parseInt(fw, 10) || 400;
     out.push({
-      tag: el.tagName, fs, fw, color: cs.color,
+      tag: el.tagName, fs, fw, color: RESOLVE(cs.color),
       cls: (typeof el.className === "string" ? el.className : "").slice(0, 120),
       text: n.nodeValue.trim().slice(0, 48),
       rects: rects.map((r) => ({ x: Math.max(0, r.x), y: Math.max(0, r.y), w: r.width, h: r.height })),
