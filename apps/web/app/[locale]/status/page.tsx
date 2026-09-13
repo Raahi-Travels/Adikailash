@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { LiveSources, permitVerdict } from "@/components/live-sources";
+import { Atmosphere } from "@/components/atmosphere";
 import { RouteProfile } from "@/components/route-profile";
 import { SceneArt } from "@/components/scene-art";
 import { StatusAlerts } from "@/components/status-alerts";
@@ -149,6 +150,23 @@ export default async function StatusPage({ params }: PageProps<"/[locale]">) {
             large type is the whole proposition.
             --------------------------------------------------------------- */}
         <Band register="dark" tight lead glow grain>
+          {/*
+            Depth on the page that most needs it. This is the surface a traveller
+            checks before deciding whether to set off, and it was the flattest on
+            the site: a navy field with type on it and nothing behind. The mist
+            and dawn plates cost 32 KB between them, claim nothing about any
+            place, and give the scroll springs something to separate, which is
+            the difference between a page that is dark and a page that has air
+            in it.
+          */}
+          {/*
+            A third of the hero's strength. This band has no photograph between
+            the plates and the words, so type sits straight on them; at full
+            strength the lead measured 1.38:1 against a 4.5 floor. Measured at
+            0.3 the page reads the same as it did with no atmosphere at all,
+            which is the bar: depth that costs nothing legible.
+          */}
+          <Atmosphere intensity={0.3} />
           <Content>
             <h1 className="type-display glow-display text-tone-strong">
               Route and permit status

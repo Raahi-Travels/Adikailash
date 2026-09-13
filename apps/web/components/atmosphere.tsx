@@ -34,8 +34,20 @@ import { useCapability, useParallax, useScrollPhysics } from "@/lib/motion";
 export function Atmosphere({
   /** Rendered inside a `relative` section that already owns the photograph. */
   className = "",
+  /**
+   * Scales every layer.
+   *
+   * 1 assumes what the hero has: a photograph and its scrims sitting between
+   * these plates and the words. A band with no photograph puts type directly on
+   * them, and at full strength that measured 1.38:1 against a 4.5 floor on the
+   * status page, which is the same mistake as lightening a scrim and shipping
+   * it. Bands like that pass a fraction, and the number is measured rather than
+   * picked.
+   */
+  intensity = 1,
 }: {
   className?: string;
+  intensity?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const capability = useCapability();
@@ -49,9 +61,12 @@ export function Atmosphere({
 
   // The light steadies as the page settles and lifts slightly into a fast
   // scroll, so the dawn reads as a light source rather than a decal.
-  const rayOpacity = useTransform(lean, [-1, 0, 1], [0.5, 0.62, 0.78], {
-    clamp: true,
-  });
+  const rayOpacity = useTransform(
+    lean,
+    [-1, 0, 1],
+    [0.5 * intensity, 0.62 * intensity, 0.78 * intensity],
+    { clamp: true },
+  );
 
   if (capability === "static") return null;
 
@@ -67,7 +82,7 @@ export function Atmosphere({
         className="absolute inset-x-0 bottom-0 h-[62%] bg-cover bg-bottom bg-no-repeat mix-blend-plus-lighter"
         style={{
           backgroundImage: "url(/scenes/atmosphere/mist.webp)",
-          opacity: 0.34,
+          opacity: 0.34 * intensity,
           y: alive ? mistY : 0,
         }}
       />
@@ -92,10 +107,11 @@ export function Atmosphere({
         dithering in a shader.
       */}
       <div
-        className="absolute inset-0 opacity-[0.055] mix-blend-overlay"
+        className="absolute inset-0 mix-blend-overlay"
         style={{
           backgroundImage: "url(/scenes/atmosphere/grain.webp)",
           backgroundSize: "256px 256px",
+          opacity: 0.055 * intensity,
         }}
       />
     </div>
