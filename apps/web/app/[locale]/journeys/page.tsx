@@ -138,7 +138,7 @@ export default async function JourneysPage({ params }: PageProps<"/[locale]">) {
         ------------------------------------------------------------------ */}
         <section
           data-register-mark="dark"
-          className="register-dark relative isolate flex min-h-[28rem] items-end overflow-hidden sm:min-h-[34rem] lg:min-h-[38rem]"
+          className="register-dark relative isolate flex min-h-[28rem] items-end overflow-clip sm:min-h-[34rem] lg:min-h-[38rem]"
         >
           <SceneBackdrop
             name={heroScene}
@@ -243,7 +243,7 @@ export default async function JourneysPage({ params }: PageProps<"/[locale]">) {
                 goes muddy over snow. No radius, because a corner the mask has
                 already taken to nothing has nothing left to round.
               */}
-              <figure className="relative order-first aspect-4/5 w-full overflow-hidden sm:aspect-4/3 lg:order-none lg:aspect-5/4">
+              <figure className="relative order-first aspect-4/5 w-full overflow-clip sm:aspect-4/3 lg:order-none lg:aspect-5/4">
                 <Scene
                   name={flagshipFigure}
                   fill

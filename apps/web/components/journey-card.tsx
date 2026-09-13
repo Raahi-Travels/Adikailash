@@ -116,7 +116,7 @@ export function JourneyCard({
         // the row resolves across as it enters. Content is visible by default
         // and the animation is progress-mapped, so a headless renderer or a
         // hidden tab still ships a fully painted card.
-        "reveal group relative isolate flex flex-col overflow-hidden",
+        "reveal group relative isolate flex flex-col overflow-clip",
         // `register-dark` carries the midnight fill and flips every tone token, so
         // the words read exactly as they would on any dark band. `ground-none`
         // takes the luminosity wash back off that fill: the picture's mask has to
@@ -136,7 +136,7 @@ export function JourneyCard({
         // this carries the indicator instead.
         //
         // It has to sit on the `<article>` rather than inside it: this element is
-        // `overflow-hidden`, so any ring drawn on a child is clipped away at the
+        // `overflow-clip`, so any ring drawn on a child is clipped away at the
         // card edge. An element's own outline is not clipped by its own overflow,
         // so drawn from here it survives. Same 2px at 2px offset as the global
         // `:focus-visible`, so a card focuses like everything else.
@@ -181,7 +181,7 @@ export function JourneyCard({
         produce, and lets the card height follow its width instead of fighting it.
       */}
       <div
-        className={`relative w-full overflow-hidden ${
+        className={`relative w-full overflow-clip ${
           lead ? "aspect-[3/2]" : "aspect-[4/3]"
         }`}
       >

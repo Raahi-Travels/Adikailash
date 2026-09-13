@@ -58,7 +58,7 @@ export default async function PoliciesPage({ params }: PageProps<"/[locale]">) {
       <Band register="light" lead grain>
         <Content>
           <div className="grid gap-[var(--stack-block)] lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-[var(--space-2xl)]">
-            {/* Not sticky: `<Band>` is `overflow-hidden`, which makes it the
+            {/* Not sticky: `<Band>` is `overflow-clip`, which makes it the
                 scrollport a sticky child resolves against, and the column then
                 sits 112px lower than its own row for no visible reason. */}
             <div className="lg:self-start">

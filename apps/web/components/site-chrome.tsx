@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { NavRegister } from "@/components/nav-register";
 import { NavSheet, type SheetLink } from "@/components/nav-sheet";
+import { Sheen } from "@/components/ui/sheen";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/lib/api";
 import { brand, display, displayLocalized, whatsappLink } from "@/lib/brand";
@@ -149,9 +150,24 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         <div
           data-nav-pill
           data-nav-state="lifted"
-          className="register-dark glass pointer-events-auto flex w-full max-w-5xl items-center gap-2 rounded-pill pl-5 pr-2 sm:gap-4 sm:pl-7 sm:pr-3"
+          /* `relative` is for the sheen. Without it the highlight's `inset-0` resolves
+             against whichever ancestor happens to be positioned, and measured here
+             that ancestor produced the identical box, so it looked correct while
+             being correct by coincidence. One layout change upstream and the light
+             would have drifted off the pill with nothing in the diff to explain it. */
+          className="register-dark glass pointer-events-auto relative flex w-full max-w-5xl items-center gap-2 rounded-pill pl-5 pr-2 sm:gap-4 sm:pl-7 sm:pr-3"
           style={{ blockSize: "var(--nav-h)" }}
         >
+          {/*
+            The pill is server-rendered and stays that way: `Sheen` is a single
+            client span that finds its own parent, so this costs one small island
+            rather than turning the header into a client component.
+
+            Quieter than a panel's. This surface is small, permanently on screen
+            and sits over a photograph that is already doing the work, so a
+            highlight at panel strength reads as a smear rather than as glass.
+          */}
+          <Sheen travel={0.22} intensity={0.14} />
           {/*
             `min-h-11 min-w-11` is a 44px tap target, not a size.
 

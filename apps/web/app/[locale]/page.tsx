@@ -272,7 +272,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       */}
       <section
         data-register-mark="dark"
-        className="register-dark relative isolate overflow-hidden"
+        className="register-dark relative isolate overflow-clip"
         // The pill takes no space, so the hero has to buy its own clearance. As an
         // inline calc rather than a `pt-*` utility because `--chrome-top` is
         // measured at runtime (the staging notice is not there in production) and
@@ -368,7 +368,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       */}
       <section
         data-register-mark="dark"
-        className="register-dark band--tight relative isolate overflow-hidden"
+        className="register-dark band--tight relative isolate overflow-clip"
       >
         <Content>
           <dl className="grid gap-x-[clamp(2rem,4vw,4rem)] gap-y-[var(--space-lg)] lg:grid-cols-12">
@@ -532,7 +532,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       */}
       <section
         data-register-mark="dark"
-        className="register-dark band relative isolate overflow-hidden"
+        className="register-dark band relative isolate overflow-clip"
       >
         <SceneBackdrop
           name="permits"

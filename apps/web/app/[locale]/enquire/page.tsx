@@ -49,7 +49,7 @@ export default async function EnquirePage({ params }: PageProps<"/[locale]">) {
     <main id="main" data-lead-band data-register-mark="light" className="register-light flex-1">
       {/*
         Not `<Band>`, and this is the only deviation on this page. `Band` is
-        `relative isolate overflow-hidden`, which it has to be because it clips
+        `relative isolate overflow-clip`, which it has to be because it clips
         the bloom's `-inset-[20%]`. An `overflow: hidden` ancestor is a scroll
         container, and `position: sticky` resolves against the nearest scroll
         container: inside a Band, sticky silently never moves. The left rail

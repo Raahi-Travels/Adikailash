@@ -139,7 +139,7 @@ export default async function JourneyDetailPage({
         ------------------------------------------------------------------ */}
         <section
           data-register-mark="dark"
-          className="register-dark relative isolate flex min-h-[30rem] items-end overflow-hidden sm:min-h-[36rem] lg:min-h-[40rem]"
+          className="register-dark relative isolate flex min-h-[30rem] items-end overflow-clip sm:min-h-[36rem] lg:min-h-[40rem]"
         >
           <SceneBackdrop
             name={heroScene}

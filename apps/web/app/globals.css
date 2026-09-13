@@ -1454,6 +1454,15 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
  * blur or tint re-rasterises its backdrop snapshot every frame and is the one
  * reliable way to make this jank.
  * ======================================================================== */
+@keyframes sn-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 @keyframes sn-rise {
   from {
     opacity: 0.4;
@@ -1553,6 +1562,47 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
         animation-range: entry 18% entry 64%;
       }
 
+      /*
+        The road draws itself as the section arrives.
+
+        Scroll-driven, so there is no script: `animation-timeline: view()` maps
+        progress to the element's own pass through the viewport, and the legs
+        carry `pathLength="1"` so the draw is `stroke-dashoffset: 1 -> 0` with no
+        `getTotalLength()` and no measurement pass. Measured by the research at
+        581 bytes gzipped against 2.96 MB for the cheapest keyframe sequence that
+        does the same thing, and a mid-range Android cannot decode that sequence
+        fast enough anyway.
+
+        **Ranged over `entry`, which is what makes holding the start state safe.**
+        `both` holds the first keyframe before the range opens, and that keyframe
+        is an undrawn road. Before `entry 0%` the section has not touched the
+        viewport, so nobody can see it. This component's own history is the reason
+        to be careful here: an earlier version gated the labels behind
+        `whileInView` and left a keyboard user tabbing through invisible text. The
+        drawing is `aria-hidden` and the ledger underneath carries every fact in
+        it, so the worst case is decorative.
+
+        Staggered up the road by `--leg`, so the climb resolves in the order it is
+        driven rather than all at once.
+
+        **Named, not anonymous.** `animation-timeline: view()` on an SVG `<path>`
+        never resolves: a path has no layout box in the scroll container, so the
+        timeline has no subject. Measured that way it sat frozen at 1.65% at every
+        scroll offset, reported "finished", and drew the road on first paint. The
+        timeline is declared on the HTML wrapper, which does have a box, and the
+        paths reference it by name.
+      */
+      .route-track {
+        view-timeline: --route block;
+      }
+      .route-leg {
+        stroke-dasharray: 1;
+        animation: sn-draw linear both;
+        animation-timeline: --route;
+        animation-range: entry calc(2% + var(--leg, 0) * 6%) entry
+          calc(58% + var(--leg, 0) * 6%);
+      }
+
       .reveal {
         animation: sn-rise linear both;
         animation-timeline: view();
@@ -1587,6 +1637,13 @@ body:not(:has([data-hero-page])) [data-nav-scrim] {
  * an explicit `animation: none !important` here.
  */
 @media (prefers-reduced-motion: reduce) {
+  .route-leg {
+    /* Drawn, immediately and permanently. A reduced-motion reader gets the road,
+       not the absence of one. */
+    stroke-dasharray: none;
+    animation: none !important;
+  }
+
   .reveal,
   .depth-plane,
   .ken-burns,

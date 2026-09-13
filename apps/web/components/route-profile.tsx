@@ -232,7 +232,16 @@ export function RouteProfile({
           --------------------------------------------------------------- */}
 
 
-      {/* Desktop: the conventional elevation profile, with room for the fork. */}
+      {/* Desktop: the conventional elevation profile, with room for the fork.
+
+          `route-track` carries the named view timeline. It has to be this HTML
+          wrapper and not the paths themselves: an SVG `<path>` has no layout box
+          in the scroll container, so `animation-timeline: view()` on one never
+          resolves. Measured before this: currentTime frozen at 1.65% at every
+          scroll position, the animation reporting "finished", and the road drawn
+          from the first paint. A named timeline on a real box, referenced by the
+          paths, is the way that composition works. */}
+      <div className="route-track hidden lg:block">
       <svg
         viewBox="0 0 1000 320"
         className="hidden w-full text-tone-strong lg:block"
@@ -314,9 +323,15 @@ export function RouteProfile({
             strokeWidth="2"
           />
         ))}
-        {legs.map(({ station, state }) => (
+        {legs.map(({ station, state }, i) => (
           <path
             key={station.slug}
+            className="route-leg"
+            /* `pathLength="1"` normalises the geometry, so the draw can be
+               expressed as `stroke-dashoffset: 1 -> 0` in CSS without any
+               `getTotalLength()` call and therefore without any script. */
+            pathLength={1}
+            style={{ "--leg": i } as React.CSSProperties}
             d={H_LEG[station.slug]}
             fill="none"
             stroke={STATE_INK[state]}
@@ -385,6 +400,7 @@ export function RouteProfile({
           );
         })}
       </svg>
+      </div>
 
       {/* ---------------------------------------------------------------
           The ledger. Six legs, and what we know about each one.
@@ -438,7 +454,7 @@ export function RouteProfile({
             */}
             <div
               aria-hidden
-              className="col-start-2 mt-1 h-1.5 w-full overflow-hidden rounded-pill bg-tone-line lg:hidden"
+              className="col-start-2 mt-1 h-1.5 w-full overflow-clip rounded-pill bg-tone-line lg:hidden"
             >
               <div
                 className="h-full rounded-pill"

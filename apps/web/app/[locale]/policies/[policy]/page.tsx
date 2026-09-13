@@ -28,7 +28,7 @@ import { POLICIES, POLICY_ORDER, type PolicySlug } from "@/lib/policies";
  * the side stripe it used to have.
  *
  * The section wrapper is a hand-rolled `.band` rather than `<Band>` on purpose:
- * `<Band>` is `overflow-hidden` for its bloom layer, and an `overflow-hidden`
+ * `<Band>` is `overflow-clip` for its bloom layer, and an `overflow-clip`
  * ancestor becomes the scrollport a `position: sticky` child resolves against, so
  * the contents rail silently stops sticking. This page has no bloom, so it does not
  * need the clip.

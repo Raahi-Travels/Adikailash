@@ -200,7 +200,7 @@ export function Scene({
       data-provisional="ai-generated"
       className={[
         fill ? "absolute inset-0" : "relative",
-        "overflow-hidden",
+        "overflow-clip",
         RADIUS[radius],
         className,
       ]
@@ -256,7 +256,7 @@ export function Scene({
  * has a horizon either way.
  *
  * ```tsx
- * <section className="register-dark relative isolate overflow-hidden" data-register-mark="dark">
+ * <section className="register-dark relative isolate overflow-clip" data-register-mark="dark">
  *   <SceneBackdrop name="hero" scrim="left" />
  *   <h1 className="type-display glow-display">…</h1>
  * </section>
@@ -301,7 +301,7 @@ export function SceneBackdrop({
     <div
       aria-hidden
       {...(src ? { "data-provisional": "ai-generated" } : {})}
-      className={`absolute inset-0 -z-10 overflow-hidden ${className}`}
+      className={`absolute inset-0 -z-10 overflow-clip ${className}`}
     >
       {src ? (
         <div className={motion ? "depth-plane absolute inset-0" : "absolute inset-0"}>

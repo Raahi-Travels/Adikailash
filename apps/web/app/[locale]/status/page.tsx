@@ -294,7 +294,7 @@ export default async function StatusPage({ params }: PageProps<"/[locale]">) {
                        one, this is the true answer and the page gives it whole. */
                     <Surface
                       radius="frame"
-                      className="relative mt-[var(--stack-block)] overflow-hidden"
+                      className="relative mt-[var(--stack-block)] overflow-clip"
                     >
                       <div
                         aria-hidden

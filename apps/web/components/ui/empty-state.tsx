@@ -47,7 +47,7 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <Surface radius="frame" className={`relative overflow-hidden ${className}`}>
+    <Surface radius="frame" className={`relative overflow-clip ${className}`}>
       {/* Masked, and holding nothing but the artwork: the text below is a sibling,
           so none of it fades. */}
       <div

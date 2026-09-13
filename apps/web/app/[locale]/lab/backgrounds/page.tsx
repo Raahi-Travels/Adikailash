@@ -116,7 +116,7 @@ const SPECIMENS: Specimen[] = [
 function Specimen({ specimen }: { specimen: Specimen }) {
   return (
     <section id={specimen.id} className="scroll-mt-16 border-t border-tone-line">
-      <div className="relative isolate overflow-hidden register-dark px-6 py-16 text-tone-strong">
+      <div className="relative isolate overflow-clip register-dark px-6 py-16 text-tone-strong">
         {specimen.layers}
 
         <div className="relative mx-auto max-w-4xl">
@@ -141,7 +141,7 @@ function Specimen({ specimen }: { specimen: Specimen }) {
           </div>
 
           {/* The real trust strip. If a treatment hurts legibility, it shows here first. */}
-          <div className="mt-10 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-3">
+          <div className="mt-10 grid gap-px overflow-clip rounded-lg bg-white/10 sm:grid-cols-3">
             {[
               ["Route", "Open, not recently verified"],
               ["Permits", "Permit pending"],

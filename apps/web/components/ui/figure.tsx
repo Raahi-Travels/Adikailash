@@ -87,7 +87,7 @@ export function PhotoFigure({
         so it gets a frame: crisp edge, the site radius, and elevation to lift it
         off the ground. Same language as the cards, which is the point.
       */}
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-frame lift-2 md:aspect-16/10">
+      <div className="relative aspect-4/3 w-full overflow-clip rounded-frame lift-2 md:aspect-16/10">
         <Scene
           name={name}
           fill
@@ -140,7 +140,7 @@ export function PhotoNote({
     // Tailwind's candidate scanner, and a width that silently does not exist is
     // worse than one that is not a utility.
     <figure style={{ width: "clamp(13.75rem, 26vw, 21.25rem)" }} className={className}>
-      <div className="lift-3 relative aspect-square overflow-hidden rounded-pill">
+      <div className="lift-3 relative aspect-square overflow-clip rounded-pill">
         <Scene
           name={name}
           fill

@@ -13,7 +13,7 @@
  * The alphas below are at that edge; drop to 0.18 and 0.22 if the founder says he
  * can see blobs.
  *
- * The parent must be `relative isolate overflow-hidden`, or the negative inset
+ * The parent must be `relative isolate overflow-clip`, or the negative inset
  * leaks a horizontal scrollbar. `<Band>` already is.
  *
  * Register-aware through `--ground`, which each register sets: warm top right and

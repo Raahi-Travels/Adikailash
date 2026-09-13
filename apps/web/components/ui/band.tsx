@@ -88,7 +88,7 @@ export function Band({
       data-register-mark={register}
       className={[
         `register-${register}`,
-        "relative isolate overflow-hidden",
+        "relative isolate overflow-clip",
         tight ? "band--tight" : "band",
         lead ? "band--lead" : "",
         className,

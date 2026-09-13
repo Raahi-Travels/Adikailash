@@ -54,7 +54,7 @@ export function PhotoSlot({
 
   return (
     <div
-      className={`relative flex items-end overflow-hidden ${rounding} ${className}`}
+      className={`relative flex items-end overflow-clip ${rounding} ${className}`}
       style={{ aspectRatio: ratio }}
       role="img"
       aria-label={`Illustration. Photograph pending: ${brief}`}

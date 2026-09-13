@@ -61,7 +61,7 @@ export function Atmosphere({
     <div
       ref={ref}
       aria-hidden
-      className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
+      className={`pointer-events-none absolute inset-0 overflow-clip ${className}`}
     >
       <motion.div
         className="absolute inset-x-0 bottom-0 h-[62%] bg-cover bg-bottom bg-no-repeat mix-blend-plus-lighter"
