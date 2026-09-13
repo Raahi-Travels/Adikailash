@@ -43,3 +43,6 @@ departures.webp                              ai_generated
 atmosphere/mist.webp                         illustrative
 atmosphere/rays.webp                         illustrative
 atmosphere/grain.webp                        illustrative
+atmosphere/ridges.webp                       illustrative
+atmosphere/altglow.webp                      illustrative
+atmosphere/drift.webp                        illustrative

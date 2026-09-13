@@ -241,7 +241,62 @@ export function RouteProfile({
           scroll position, the animation reporting "finished", and the road drawn
           from the first paint. A named timeline on a real box, referenced by the
           paths, is the way that composition works. */}
-      <div className="route-track hidden lg:block">
+      <div className="route-track relative isolate hidden lg:block">
+        {/*
+          Terrain behind the instrument.
+
+          The chart was accurate and it sat on a flat band, so the one thing it
+          has to convey, that this road climbs into serious mountains, was
+          carried entirely by a line. These are receding ridge silhouettes, a
+          cold glow at the high end where the road tops out, and a faint drift
+          of wind, composited in screen blend so their black contributes nothing.
+
+          16 KB for all three, and they are inside a `hidden lg:block` wrapper,
+          so a phone never fetches them: a background image on a `display: none`
+          element is not requested. The audience most likely to be on mobile data
+          pays nothing for this.
+
+          Not of anywhere, like the hero plates. No named summit, no horizon that
+          claims to be the Kali valley. The diagram's own geometry is the only
+          thing here making a claim about the route, and that comes from the MEA
+          itineraries in `lib/route-profile.ts`.
+        */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 overflow-clip"
+          /*
+            Feathered on all four edges. Without this the layers lifted a clean
+            rectangle out of the band: each plate fades to black at its own
+            edges, but `plus-lighter` still adds a little everywhere, so the
+            region inside this wrapper sat measurably brighter than the navy
+            around it and read as a box drawn on the page. That is the same
+            hard-edged rectangle the image treatment elsewhere exists to remove,
+            and it is easier to see here because a straight edge next to a chart
+            looks like part of the chart.
+          */
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 18%, black 82%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 18%, black 82%, transparent)",
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
+          }}
+        >
+          <div
+            className="absolute inset-x-0 bottom-0 h-[78%] bg-cover bg-bottom bg-no-repeat opacity-[0.42] mix-blend-plus-lighter"
+            style={{ backgroundImage: "url(/scenes/atmosphere/ridges.webp)" }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.30] mix-blend-plus-lighter"
+            style={{ backgroundImage: "url(/scenes/atmosphere/altglow.webp)" }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.16] mix-blend-plus-lighter"
+            style={{ backgroundImage: "url(/scenes/atmosphere/drift.webp)" }}
+          />
+        </div>
+
       <svg
         viewBox="0 0 1000 320"
         className="hidden w-full text-tone-strong lg:block"
