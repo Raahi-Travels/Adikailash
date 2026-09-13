@@ -33,9 +33,11 @@ export function generateStaticParams() {
 }
 
 export const metadata = buildMetadata({
-  title: "Speak to a Journey Guide",
-  description:
-    "Ask about routes, permits, altitude or taking family. A person replies, not an automated sequence.",
+  title: { en: "Speak to a Journey Guide", hi: "गाइड से बात करें" },
+  description: {
+    en: "Ask about routes, permits, altitude or taking family. A person replies, not an automated sequence.",
+    hi: "अपनी तारीख़ों के बारे में पूछें। पिथौरागढ़ में रहने वाला कोई व्यक्ति, जो इस सड़क पर गाड़ी चला चुका है, जवाब देगा।",
+  },
   path: "/enquire",
 });
 

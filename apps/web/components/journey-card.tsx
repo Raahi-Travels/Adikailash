@@ -177,12 +177,17 @@ export function JourneyCard({
         photograph was being cropped to a portrait slot and the card came out
         352 by 839, a 1:2.4 sliver. These pictures are valleys and ridgelines;
         cropping them upright throws away the part that makes them worth showing.
-        A ratio keeps the crop landscape at every column count the grid can
-        produce, and lets the card height follow its width instead of fighting it.
+        A ratio keeps the card height following its width instead of fighting it.
+
+        Square for a card in the grid, 4:3 for the lead. It was 4:3 and 3:2, which
+        gave the picture about 43% of the card on a desktop against roughly 55% on
+        a phone, where the card is full width. The photograph was doing less work
+        on the screen with more room for it, which is backwards: these are the
+        images that have to make somebody want to go.
       */}
       <div
         className={`relative w-full overflow-clip ${
-          lead ? "aspect-[3/2]" : "aspect-[4/3]"
+          lead ? "aspect-[4/3]" : "aspect-square"
         }`}
       >
         <div className="absolute inset-0 transition-transform duration-[var(--dur-image)] ease-out-soft group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100">

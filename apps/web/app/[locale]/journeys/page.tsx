@@ -24,9 +24,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   return buildMetadata({
-    title: "Journeys",
-    description:
-      "Pilgrimages and cultural journeys through Kumaon, guided from Pithoragarh.",
+    title: { en: "Journeys", hi: "यात्राएँ" },
+    description: {
+      en: "Pilgrimages and cultural journeys through Kumaon, guided from Pithoragarh.",
+      hi: "कुमाऊँ से संचालित यात्राएँ। हर यात्रा तभी प्रकाशित होती है जब उसका कार्यक्रम, ऊँचाइयाँ और ठहरने की व्यवस्था पुष्ट हो जाए।",
+    },
     path: "/journeys",
     locale,
   });

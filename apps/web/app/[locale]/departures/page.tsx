@@ -36,9 +36,11 @@ import { buildMetadata, whatsappLink } from "@/lib/brand";
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   return buildMetadata({
-    title: "Departure dates",
-    description:
-      "Confirmed and forming departure dates for Adi Kailash and Om Parvat, with group size, what is included and what each date is currently open for.",
+    title: { en: "Departure dates", hi: "प्रस्थान तिथियाँ" },
+    description: {
+      en: "Confirmed and forming departure dates for Adi Kailash and Om Parvat, with group size, what is included and what each date is currently open for.",
+      hi: "आगामी प्रस्थान तिथियाँ और उपलब्धता। कुमाऊँ से संचालित आदि कैलाश और ओम पर्वत यात्रा।",
+    },
     path: "/departures",
     locale,
   });

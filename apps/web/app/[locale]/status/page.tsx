@@ -40,9 +40,11 @@ import { legStatus, STATIONS } from "@/lib/route-profile";
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   return buildMetadata({
-    title: "Route and permit status",
-    description:
-      "Current road, permit and weather conditions on the route to Adi Kailash and Om Parvat, with the time each was last verified.",
+    title: { en: "Route and permit status", hi: "मार्ग और परमिट की स्थिति" },
+    description: {
+      en: "Current road, permit and weather conditions on the route to Adi Kailash and Om Parvat, with the time each was last verified.",
+      hi: "सड़क और इनर लाइन परमिट की ताज़ा स्थिति, और वह कब जाँची गई। जो पुष्ट नहीं है उसे हम अज्ञात कहते हैं, खुला नहीं।",
+    },
     path: "/status",
     locale,
   });

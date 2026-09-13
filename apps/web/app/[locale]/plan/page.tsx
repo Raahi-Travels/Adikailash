@@ -23,9 +23,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   return buildMetadata({
-    title: "Plan your journey",
-    description:
-      "Documents, permits, altitude and preparation for the journey to Adi Kailash and Om Parvat.",
+    title: { en: "Plan your journey", hi: "यात्रा की तैयारी" },
+    description: {
+      en: "Documents, permits, altitude and preparation for the journey to Adi Kailash and Om Parvat.",
+      hi: "परमिट, दस्तावेज़, ऊँचाई और तैयारी: आदि कैलाश और ओम पर्वत की यात्रा से पहले क्या जानना ज़रूरी है।",
+    },
     path: "/plan",
     locale,
   });

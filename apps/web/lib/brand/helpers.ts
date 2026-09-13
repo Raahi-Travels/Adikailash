@@ -60,9 +60,27 @@ export function whatsappLink(context: EnquiryContext = {}): string | null {
  * passed. Guessing would be worse than omitting: a wrong canonical tells search
  * engines a page lives somewhere it does not, and that is expensive to undo.
  */
+/**
+ * A string that may differ by locale.
+ *
+ * Titles and descriptions were plain strings, so every Hindi page inherited the
+ * English one: `/hi/plan` shipped "Plan your journey: The Sacred North" over
+ * Hindi body copy. `hreflang` is correct here, so Google does understand the two
+ * as language variants rather than duplicates, which is the part a crawler's
+ * duplicate-title report cannot see. The cost is narrower and still real: a
+ * Hindi searcher reads an English title in the result, and the page carries no
+ * Hindi in the element search engines weight most.
+ */
+export type LocalisedText = string | { en: string; hi: string };
+
+function pick(text: LocalisedText, locale?: string): string {
+  if (typeof text === "string") return text;
+  return locale === "hi" ? text.hi : text.en;
+}
+
 export function buildMetadata(input: {
-  title: string;
-  description: string;
+  title: LocalisedText;
+  description: LocalisedText;
   /** Locale-agnostic path, e.g. `/status`. Drives hreflang and canonical. */
   path?: string;
   /** The locale being rendered. Required before a canonical is emitted. */
@@ -103,16 +121,18 @@ export function buildMetadata(input: {
     docs/IMAGE-FOLLOWUP.md.
   */
   const image = domain ? `https://${domain}${input.image ?? "/og/default.jpg"}` : null;
-  const cardTitle = `${input.title}: ${suffix}`;
+  const title = pick(input.title, input.locale);
+  const description = pick(input.description, input.locale);
+  const cardTitle = `${title}: ${suffix}`;
 
   return {
     title: cardTitle,
-    description: input.description,
+    description,
     ...(domain ? { metadataBase: new URL(`https://${domain}`) } : {}),
     ...(alternates ? { alternates } : {}),
     openGraph: {
       title: cardTitle,
-      description: input.description,
+      description,
       siteName: display(brand.identity.name),
       locale: isSettled(brand.locale.defaultLanguage) ? "en_IN" : undefined,
       type: "website",
@@ -130,7 +150,7 @@ export function buildMetadata(input: {
           twitter: {
             card: "summary_large_image" as const,
             title: cardTitle,
-            description: input.description,
+            description,
             images: [image],
           },
         }
