@@ -39,6 +39,21 @@ export const preferredRegion = ["bom1"];
  */
 export const revalidate = 300;
 
+/*
+ * Bounded, and bounded *inside* what the callers will wait for.
+ *
+ * The fetch below waited 45 seconds. Nothing waits that long for it: the ingest
+ * job's httpx client gives up at 20, and the platform kills the function before
+ * that, which is where the 502s came from. So a slow portal produced a hang and
+ * then an ambiguous failure, rather than a quick answer of "could not reach it".
+ *
+ * The government portal this relays is intermittently slow to the point of being
+ * unreachable, which is not something a timeout can fix. What a timeout fixes is
+ * the shape of the failure: fail inside the caller's budget and the ingest writes
+ * a clean unknown, which this site already renders honestly.
+ */
+export const maxDuration = 20;
+
 /** The only pages this can fetch. Not configurable, not caller-supplied. */
 const SOURCES = {
   road: "https://mis.pwduk.in/pwd/roadClosure",
@@ -87,7 +102,11 @@ function fetchLegacyTls(target: URL): Promise<Fetched> {
         method: "GET",
         headers: OUTGOING,
         secureOptions: cryptoConstants.SSL_OP_LEGACY_SERVER_CONNECT,
-        timeout: 45_000,
+        // Same 12s bound as the plain path. This is the branch the permit
+        // portal actually takes, since it needs `OP_LEGACY_SERVER_CONNECT`, so
+        // leaving it at 45 would have fixed the timeout everywhere except the
+        // one source that prompted the change.
+        timeout: 12_000,
       },
       (res) => {
         const chunks: Buffer[] = [];
@@ -122,7 +141,7 @@ async function fetchPlain(target: URL): Promise<Fetched> {
   const upstream = await fetch(target.toString(), {
     redirect: "manual",
     headers: OUTGOING,
-    signal: AbortSignal.timeout(45_000),
+    signal: AbortSignal.timeout(12_000),
   });
   return {
     status: upstream.status,
