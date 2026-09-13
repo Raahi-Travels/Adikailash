@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from api.live import kmvn, pwd, sachet
+from api.live import ilp_portal, kmvn, pwd, sachet
 
 PWD_MARKUP = """
 <table><tbody>
@@ -221,3 +221,67 @@ def test_ist_is_the_timezone_forecasts_are_requested_in() -> None:
     from api.live.ingest import IST
 
     assert str(IST) == open_meteo.TIMEZONE
+
+
+# --------------------------------------------------------------- ILP portal ---
+
+#: What the portal actually served on 13 Sep 2026. It stopped answering
+#: `/registeruser` with a form or an HTTP redirect and began answering with a 200
+#: and a meta refresh, which is neither of the two shapes the parser knew.
+ILP_META_REFRESH = """
+<html><head>
+  <meta http-equiv="refresh" content="0;url='https://ilppithoragarh.uk.gov.in/registration-disabled'" />
+  <title>Redirecting to https://ilppithoragarh.uk.gov.in/registration-disabled</title>
+</head><body>
+  Redirecting to <a href="https://ilppithoragarh.uk.gov.in/registration-disabled">here</a>
+</body></html>
+"""
+
+ILP_REAL_FORM = """
+<html><body><h1>Register</h1>
+<form action="/registeruser" method="post"><input name="applicant" /></form>
+</body></html>
+"""
+
+ILP_BANNER = """
+<html><body><p>Registration Disabled until further notice.</p></body></html>
+"""
+
+
+def _registration_open(markup: str) -> bool:
+    """The 200 branch of `ilp_portal.fetch`, isolated from the network."""
+    haystack = ilp_portal._norm(markup + " " + ilp_portal._refresh_target(markup))
+    return "registration disabled" not in haystack
+
+
+def test_a_meta_refresh_to_registration_disabled_is_read_as_closed() -> None:
+    """The regression this file exists for.
+
+    The check tested for "registration disabled" with a space against text that
+    said `registration-disabled` in a URL. A hyphen is not a space, so it did not
+    match, and the branch concluded registration was **open** on a day the state
+    had switched applications off. Unknown reading as unknown is this codebase's
+    whole posture; closed reading as open is the one direction that cannot ship.
+    """
+    assert _registration_open(ILP_META_REFRESH) is False
+
+
+def test_the_refresh_target_survives_tag_stripping() -> None:
+    """A meta refresh keeps its destination in an attribute, and the text
+    extractor removes attributes, so the most explicit statement on the page was
+    the one part of it the parser could not see."""
+    assert (
+        ilp_portal._refresh_target(ILP_META_REFRESH)
+        == "https://ilppithoragarh.uk.gov.in/registration-disabled"
+    )
+
+
+def test_a_real_registration_form_still_reads_as_open() -> None:
+    """The fix must not buy its correctness by calling everything closed."""
+    assert _registration_open(ILP_REAL_FORM) is True
+
+
+def test_the_spaced_banner_phrase_still_matches() -> None:
+    """The original signal keeps working; normalising punctuation widens the
+    match rather than replacing it."""
+    assert _registration_open(ILP_BANNER) is False

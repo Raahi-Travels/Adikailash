@@ -89,6 +89,39 @@ def _text(markup: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", without_code)))
 
 
+def _norm(markup: str) -> str:
+    """Lowercased text with every run of punctuation flattened to one space.
+
+    The portal began answering `/registeruser` with a 200 and a meta-refresh to
+    `/registration-disabled`, and the check here tested for the phrase
+    "registration disabled" with a space. A hyphen is not a space, so the token
+    did not match, and the branch concluded that registration was **open**. The
+    portal was saying the opposite in the URL it was redirecting to.
+
+    That is the worst direction for this particular check to fail in. Everything
+    else on this site is built so an unknown reads as unknown; this one could
+    have told a traveller they could start an application on a day the state had
+    switched applications off.
+    """
+    return re.sub(r"[^a-z0-9]+", " ", _text(markup).lower())
+
+
+def _refresh_target(markup: str) -> str:
+    """The URL from a `<meta http-equiv="refresh">`, which `_text` throws away.
+
+    A meta refresh is not an HTTP redirect, so it arrives as a 200 with the
+    destination held in an attribute. Attributes are exactly what tag-stripping
+    removes, so without this the most explicit statement on the page is the one
+    part of it the parser cannot see.
+    """
+    match = re.search(
+        r"""http-equiv=["']?refresh["']?[^>]*?url=['"]?([^'"\s>]+)""",
+        markup,
+        flags=re.I,
+    )
+    return match.group(1) if match else ""
+
+
 async def fetch(*, client: httpx.AsyncClient | None = None) -> PortalState:
     now = datetime.now(UTC)
     owned = client is None
@@ -132,7 +165,10 @@ async def fetch(*, client: httpx.AsyncClient | None = None) -> PortalState:
             if status in (301, 302, 303, 307, 308):
                 registration_open = False
             elif status == 200:
-                registration_open = "registration disabled" not in _text(body).lower()
+                # Body text and the meta-refresh target together, normalised, so
+                # neither a hyphen nor an attribute can hide the answer.
+                haystack = _norm(body + " " + _refresh_target(body))
+                registration_open = "registration disabled" not in haystack
         except httpx.HTTPError as exc:
             logger.warning("ILP registration page unreachable: %s", exc)
     finally:
