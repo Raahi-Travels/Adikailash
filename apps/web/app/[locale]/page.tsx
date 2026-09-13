@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { ActionBar } from "@/components/action-bar";
+import { Atmosphere } from "@/components/atmosphere";
 import { HeroStatus } from "@/components/hero-status";
 import { JourneyCard } from "@/components/journey-card";
 import { RouteProfile } from "@/components/route-profile";
@@ -293,6 +294,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           sizes="(min-width: 1024px) 1440px, calc(100vw * 1.35)"
         />
         <TerrainField />
+        {/* Mist and dawn light on their own planes, so the scroll springs have
+            something to separate. The photograph is one plane and cannot parallax
+            against itself. */}
+        <Atmosphere />
 
         <Content className="relative flex flex-col justify-end pb-[var(--band-y-tight)]">
           {/*

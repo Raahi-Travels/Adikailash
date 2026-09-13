@@ -31,3 +31,15 @@ journeys/homestay-immersion-detail.webp      ai_generated
 journeys/kumaon-spiritual-circuit.webp       ai_generated
 journeys/kumaon-spiritual-circuit-detail.webp ai_generated
 departures.webp                              ai_generated
+
+# Atmosphere plates. Generated, and deliberately not of anywhere.
+#
+# These are luminance layers composited in screen blend: mist, dawn light, and a
+# grain tile. They carry no horizon, no landform and no recognisable place, which
+# is why they sit outside the doc 02 rule rather than against it: that rule bans
+# synthetic imagery standing in for an actual stay, vehicle or route condition,
+# and a bank of fog claims none of those. They exist to give the real photograph
+# depth to parallax against.
+atmosphere/mist.webp                         illustrative
+atmosphere/rays.webp                         illustrative
+atmosphere/grain.webp                        illustrative
