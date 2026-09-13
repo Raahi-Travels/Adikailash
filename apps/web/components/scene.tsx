@@ -372,7 +372,7 @@ export function SceneBackdrop({
               which is far more cover than the headline needs and it was eating
               the ridge line. Measured after: the display type still clears its
               floor at every width. */}
-          <div className="absolute inset-0 hidden sm:block sm:bg-gradient-to-r sm:from-scrim sm:via-scrim/52 34 72 sm:via-% sm:to-transparent sm:to-%" />
+          <div className="absolute inset-0 hidden sm:block sm:bg-gradient-to-r sm:from-scrim sm:via-scrim/52 sm:via-34% sm:to-transparent sm:to-72%" />
         </>
       ) : (
         <>
